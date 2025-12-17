@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, Wifi, AlertTriangle, Activity, Shield, Power } from 'lucide-react';
+import { Radio, Wifi, AlertTriangle, Activity, Shield, Power, MapPin } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { StatsCard } from '@/components/dashboard/StatsCard';
@@ -15,6 +15,7 @@ import {
   generateMockAlerts,
   simulateRealtimeIMSI,
   simulateRealtimeAlert,
+  getCountryFromCoords,
 } from '@/lib/mockData';
 
 const Index = () => {
@@ -22,20 +23,41 @@ const Index = () => {
   const [imsiRecords, setImsiRecords] = useState<IMSIRecord[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [frequency, setFrequency] = useState('935.2 MHz');
+  const [userLocation, setUserLocation] = useState<{ lat: number; lng: number } | null>(null);
+  const [userCountry, setUserCountry] = useState<string>('');
 
-  // Initialize with mock data
+  // Get user location and initialize with location-based mock data
   useEffect(() => {
-    setImsiRecords(generateMockIMSIRecords(15));
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setUserLocation({ lat: latitude, lng: longitude });
+          setUserCountry(getCountryFromCoords(latitude, longitude));
+          setImsiRecords(generateMockIMSIRecords(15, latitude, longitude));
+        },
+        () => {
+          // Fallback to default location
+          setImsiRecords(generateMockIMSIRecords(15));
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      setImsiRecords(generateMockIMSIRecords(15));
+    }
     setAlerts(generateMockAlerts());
   }, []);
 
-  // Simulate real-time data
+  // Simulate real-time data with location awareness
   useEffect(() => {
     if (!isScanning) return;
 
+    const lat = userLocation?.lat ?? 40.7128;
+    const lng = userLocation?.lng ?? -74.006;
+
     const unsubIMSI = simulateRealtimeIMSI((record) => {
       setImsiRecords(prev => [record, ...prev].slice(0, 50));
-    });
+    }, lat, lng);
 
     const unsubAlert = simulateRealtimeAlert((alert) => {
       setAlerts(prev => [alert, ...prev]);
@@ -45,7 +67,7 @@ const Index = () => {
       unsubIMSI();
       unsubAlert();
     };
-  }, [isScanning]);
+  }, [isScanning, userLocation]);
 
   const handleAcknowledgeAlert = (id: string) => {
     setAlerts(prev =>
@@ -127,6 +149,14 @@ const Index = () => {
                 </div>
 
                 <div className="space-y-3">
+                  {userCountry && (
+                    <div className="flex items-center justify-between text-sm">
+                      <span className="text-muted-foreground flex items-center gap-1">
+                        <MapPin className="w-3 h-3" /> Region:
+                      </span>
+                      <span className="font-mono text-foreground">{userCountry}</span>
+                    </div>
+                  )}
                   <div className="flex items-center justify-between text-sm">
                     <span className="text-muted-foreground">Frequency:</span>
                     <span className="font-mono text-foreground">{frequency}</span>
