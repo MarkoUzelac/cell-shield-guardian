@@ -87,16 +87,30 @@ export const getOperatorsForLocation = (lat: number, lng: number) => {
 // Legacy operators for backward compatibility
 const operators = operatorsByRegion.US;
 
-const generateRandomIMSI = () => {
-  const op = operators[Math.floor(Math.random() * operators.length)];
-  return `${op.mcc}${op.mnc}${Math.random().toString().slice(2, 12)}`;
+// Generate realistic IMSI: MCC (3 digits) + MNC (2-3 digits) + MSIN (9-10 digits)
+const generateRealisticIMSI = (mcc: string, mnc: string) => {
+  // MSIN is typically 9-10 digits, contains subscriber info
+  const msinLength = mnc.length === 2 ? 10 : 9;
+  const msin = Array.from({ length: msinLength }, () => Math.floor(Math.random() * 10)).join('');
+  return `${mcc}${mnc.padStart(2, '0')}${msin}`;
 };
 
-const generateRandomTMSI = () => {
-  return Math.random().toString(16).slice(2, 10).toUpperCase();
+// Generate realistic TMSI: 32-bit hex value (8 hex chars)
+const generateRealisticTMSI = () => {
+  // TMSI is a temporary 32-bit identifier assigned by the network
+  const bytes = new Uint8Array(4);
+  crypto.getRandomValues(bytes);
+  return Array.from(bytes).map(b => b.toString(16).padStart(2, '0')).join('').toUpperCase();
 };
 
-const generateRandomCellId = () => {
+// Generate realistic Cell ID: typically 16-bit (0-65535) for GSM, 28-bit for LTE
+const generateRealisticCellId = (isLTE: boolean = false) => {
+  const max = isLTE ? 268435455 : 65535; // 28-bit vs 16-bit
+  return Math.floor(Math.random() * max).toString();
+};
+
+// Generate realistic LAC (Location Area Code): 16-bit value
+const generateRealisticLAC = () => {
   return Math.floor(Math.random() * 65535).toString();
 };
 
@@ -115,8 +129,8 @@ export const generateMockCellTowers = (
       id: `tower-${i}`,
       mcc: op.mcc,
       mnc: op.mnc,
-      lac: Math.floor(Math.random() * 65535).toString(),
-      cellId: generateRandomCellId(),
+      lac: generateRealisticLAC(),
+      cellId: generateRealisticCellId(Math.random() > 0.4),
       lat: baseLat + (Math.random() - 0.5) * 0.08,
       lng: baseLng + (Math.random() - 0.5) * 0.08,
       signalStrength: -50 - Math.floor(Math.random() * 60),
@@ -131,26 +145,59 @@ export const generateMockCellTowers = (
   });
 };
 
-export const generateMockIMSIRecords = (count: number = 20): IMSIRecord[] => {
+export const generateMockIMSIRecords = (
+  count: number = 20,
+  baseLat: number = 40.7128,
+  baseLng: number = -74.006
+): IMSIRecord[] => {
+  const regionOperators = getOperatorsForLocation(baseLat, baseLng);
+  
   return Array.from({ length: count }, (_, i) => {
-    const op = operators[Math.floor(Math.random() * operators.length)];
+    const op = regionOperators[Math.floor(Math.random() * regionOperators.length)];
     const isSuspicious = Math.random() > 0.9;
     const alertTypes: IMSIRecord['alertType'][] = ['IMSI_CATCHER', 'RAPID_HANDOVER', 'SILENT_SMS', 'DOWNGRADE_ATTACK'];
+    const isLTE = Math.random() > 0.4; // 60% LTE traffic
     
     return {
-      id: `imsi-${i}`,
-      imsi: generateRandomIMSI(),
-      tmsi: generateRandomTMSI(),
+      id: `imsi-${Date.now()}-${i}`,
+      imsi: generateRealisticIMSI(op.mcc, op.mnc),
+      tmsi: generateRealisticTMSI(),
       mcc: op.mcc,
       mnc: op.mnc,
       operator: op.name,
       signalStrength: -50 - Math.floor(Math.random() * 60),
       timestamp: new Date(Date.now() - Math.random() * 3600000),
-      cellId: generateRandomCellId(),
+      cellId: generateRealisticCellId(isLTE),
       isSuspicious,
       alertType: isSuspicious ? alertTypes[Math.floor(Math.random() * alertTypes.length)] : undefined,
     };
   });
+};
+
+// Generate a single new IMSI record for real-time simulation
+export const generateSingleIMSIRecord = (
+  baseLat: number = 40.7128,
+  baseLng: number = -74.006
+): IMSIRecord => {
+  const regionOperators = getOperatorsForLocation(baseLat, baseLng);
+  const op = regionOperators[Math.floor(Math.random() * regionOperators.length)];
+  const isSuspicious = Math.random() > 0.92;
+  const alertTypes: IMSIRecord['alertType'][] = ['IMSI_CATCHER', 'RAPID_HANDOVER', 'SILENT_SMS', 'DOWNGRADE_ATTACK'];
+  const isLTE = Math.random() > 0.4;
+  
+  return {
+    id: `imsi-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+    imsi: generateRealisticIMSI(op.mcc, op.mnc),
+    tmsi: generateRealisticTMSI(),
+    mcc: op.mcc,
+    mnc: op.mnc,
+    operator: op.name,
+    signalStrength: -50 - Math.floor(Math.random() * 60),
+    timestamp: new Date(),
+    cellId: generateRealisticCellId(isLTE),
+    isSuspicious,
+    alertType: isSuspicious ? alertTypes[Math.floor(Math.random() * alertTypes.length)] : undefined,
+  };
 };
 
 export const generateMockAlerts = (): Alert[] => {
@@ -239,12 +286,16 @@ export const generateMockScanStatus = (): ScanStatus => {
   };
 };
 
-// Real-time data simulation
-export const simulateRealtimeIMSI = (callback: (record: IMSIRecord) => void) => {
+// Real-time data simulation with location awareness
+export const simulateRealtimeIMSI = (
+  callback: (record: IMSIRecord) => void,
+  lat: number = 40.7128,
+  lng: number = -74.006
+) => {
   const interval = setInterval(() => {
     if (Math.random() > 0.7) {
-      const records = generateMockIMSIRecords(1);
-      callback(records[0]);
+      const record = generateSingleIMSIRecord(lat, lng);
+      callback(record);
     }
   }, 2000);
   
