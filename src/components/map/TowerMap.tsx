@@ -77,77 +77,75 @@ export const TowerMap = ({
         />
 
         {towers.map((tower) => (
-          <div key={tower.id}>
-            {/* Range circle */}
-            {showRangeCircles && (
-              <Circle
-                center={[tower.lat, tower.lng]}
-                radius={500}
-                pathOptions={{
-                  color: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
-                  fillColor: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
-                  fillOpacity: 0.1,
-                  weight: 1,
-                }}
-              />
-            )}
+          <Circle
+            key={`circle-${tower.id}`}
+            center={[tower.lat, tower.lng]}
+            radius={showRangeCircles ? 500 : 0}
+            pathOptions={{
+              color: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
+              fillColor: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
+              fillOpacity: showRangeCircles ? 0.1 : 0,
+              weight: showRangeCircles ? 1 : 0,
+            }}
+          />
+        ))}
 
-            {/* Tower marker */}
-            <Marker
-              position={[tower.lat, tower.lng]}
-              icon={createTowerIcon(tower.isSuspicious)}
-              eventHandlers={{
-                click: () => onTowerClick?.(tower),
-              }}
-            >
-              <Popup className="tower-popup">
-                <div className="p-2 min-w-[200px]">
-                  <div className="flex items-center gap-2 mb-2">
-                    <span
-                      className={cn(
-                        'w-2 h-2 rounded-full',
-                        tower.isSuspicious ? 'bg-destructive' : 'bg-success'
-                      )}
-                    />
-                    <span className="font-semibold">
-                      {tower.isSuspicious ? 'Suspicious Tower' : 'Verified Tower'}
-                    </span>
-                  </div>
-                  <div className="space-y-1 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Operator:</span>
-                      <span className="font-mono">{tower.operator}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Cell ID:</span>
-                      <span className="font-mono">{tower.cellId}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">MCC/MNC:</span>
-                      <span className="font-mono">{tower.mcc}/{tower.mnc}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">LAC:</span>
-                      <span className="font-mono">{tower.lac}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Technology:</span>
-                      <span className="font-mono">{tower.technology}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-muted-foreground">Signal:</span>
-                      <span className="font-mono">{tower.signalStrength} dBm</span>
-                    </div>
-                  </div>
-                  {tower.isSuspicious && tower.suspiciousReason && (
-                    <div className="mt-2 p-2 bg-destructive/10 rounded text-xs text-destructive">
-                      ⚠️ {tower.suspiciousReason}
-                    </div>
-                  )}
+        {towers.map((tower) => (
+          <Marker
+            key={`marker-${tower.id}`}
+            position={[tower.lat, tower.lng]}
+            icon={createTowerIcon(tower.isSuspicious)}
+            eventHandlers={{
+              click: () => onTowerClick?.(tower),
+            }}
+          >
+            <Popup className="tower-popup">
+              <div className="p-2 min-w-[200px]">
+                <div className="flex items-center gap-2 mb-2">
+                  <span
+                    className={cn(
+                      'w-2 h-2 rounded-full',
+                      tower.isSuspicious ? 'bg-destructive' : 'bg-success'
+                    )}
+                  />
+                  <span className="font-semibold">
+                    {tower.isSuspicious ? 'Suspicious Tower' : 'Verified Tower'}
+                  </span>
                 </div>
-              </Popup>
-            </Marker>
-          </div>
+                <div className="space-y-1 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Operator:</span>
+                    <span className="font-mono">{tower.operator}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Cell ID:</span>
+                    <span className="font-mono">{tower.cellId}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">MCC/MNC:</span>
+                    <span className="font-mono">{tower.mcc}/{tower.mnc}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">LAC:</span>
+                    <span className="font-mono">{tower.lac}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Technology:</span>
+                    <span className="font-mono">{tower.technology}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-muted-foreground">Signal:</span>
+                    <span className="font-mono">{tower.signalStrength} dBm</span>
+                  </div>
+                </div>
+                {tower.isSuspicious && tower.suspiciousReason && (
+                  <div className="mt-2 p-2 bg-destructive/10 rounded text-xs text-destructive">
+                    ⚠️ {tower.suspiciousReason}
+                  </div>
+                )}
+              </div>
+            </Popup>
+          </Marker>
         ))}
       </MapContainer>
     </div>
