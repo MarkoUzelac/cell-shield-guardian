@@ -7,16 +7,40 @@ import { TriangulationForm } from '@/components/triangulation/TriangulationForm'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { CellTower } from '@/types/signal';
-import { generateMockCellTowers } from '@/lib/mockData';
+import { generateMockCellTowers, getCountryFromCoords } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
+import { MapPin, Loader2 } from 'lucide-react';
 
 const MapPage = () => {
   const [towers, setTowers] = useState<CellTower[]>([]);
   const [selectedTower, setSelectedTower] = useState<CellTower | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
+  const [mapCenter, setMapCenter] = useState<[number, number]>([40.7128, -74.006]);
+  const [userCountry, setUserCountry] = useState<string>('');
+  const [isLocating, setIsLocating] = useState(true);
 
   useEffect(() => {
-    setTowers(generateMockCellTowers(15));
+    // Get user's current location
+    if ('geolocation' in navigator) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const { latitude, longitude } = position.coords;
+          setMapCenter([latitude, longitude]);
+          setUserCountry(getCountryFromCoords(latitude, longitude));
+          setTowers(generateMockCellTowers(15, latitude, longitude));
+          setIsLocating(false);
+        },
+        () => {
+          // Fallback to default location on error
+          setTowers(generateMockCellTowers(15));
+          setIsLocating(false);
+        },
+        { enableHighAccuracy: true, timeout: 10000 }
+      );
+    } else {
+      setTowers(generateMockCellTowers(15));
+      setIsLocating(false);
+    }
   }, []);
 
   const handleTriangulation = async (data: {
@@ -63,9 +87,18 @@ const MapPage = () => {
       <div className="p-6 space-y-6">
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Map */}
-          <div className="lg:col-span-3 h-[600px]">
+          <div className="lg:col-span-3 h-[600px] relative">
+            {isLocating && (
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-background/80 backdrop-blur-sm rounded-xl">
+                <div className="flex flex-col items-center gap-3 text-muted-foreground">
+                  <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                  <span>Detecting your location...</span>
+                </div>
+              </div>
+            )}
             <TowerMap
               towers={towers}
+              center={mapCenter}
               onTowerClick={setSelectedTower}
               showRangeCircles
               trackLocation
@@ -86,6 +119,14 @@ const MapPage = () => {
                 <CardTitle className="text-lg">Detected Towers</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
+                {userCountry && (
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground flex items-center gap-1">
+                      <MapPin className="w-3 h-3" /> Region
+                    </span>
+                    <Badge variant="outline">{userCountry || 'Unknown'}</Badge>
+                  </div>
+                )}
                 <div className="flex items-center justify-between">
                   <span className="text-muted-foreground">Total</span>
                   <Badge variant="secondary">{towers.length}</Badge>
