@@ -68,6 +68,7 @@ const MapPage = () => {
               towers={towers}
               onTowerClick={setSelectedTower}
               showRangeCircles
+              trackLocation
             />
           </div>
 

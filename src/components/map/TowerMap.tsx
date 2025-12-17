@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import { CellTower } from '@/types/signal';
@@ -17,6 +17,7 @@ interface TowerMapProps {
   zoom?: number;
   onTowerClick?: (tower: CellTower) => void;
   showRangeCircles?: boolean;
+  trackLocation?: boolean;
 }
 
 function getCssColor(variable: string, fallback: string) {
@@ -54,10 +55,13 @@ export const TowerMap = ({
   zoom = 13,
   onTowerClick,
   showRangeCircles = true,
+  trackLocation = false,
 }: TowerMapProps) => {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<L.Map | null>(null);
   const layersRef = useRef<L.LayerGroup | null>(null);
+  const userLocationRef = useRef<{ marker: L.Marker; circle: L.Circle } | null>(null);
+  const [locationError, setLocationError] = useState<string | null>(null);
 
   const colors = useMemo(() => {
     const primary = getCssColor('--primary', 'hsl(172 66% 50%)');
@@ -98,6 +102,73 @@ export const TowerMap = ({
     if (!mapRef.current) return;
     mapRef.current.setView(center, zoom);
   }, [center, zoom]);
+
+  // Location tracking
+  useEffect(() => {
+    if (!trackLocation || !mapRef.current) return;
+
+    const map = mapRef.current;
+    let watchId: number;
+
+    const updateUserLocation = (position: GeolocationPosition) => {
+      const { latitude, longitude, accuracy } = position.coords;
+      const latlng: L.LatLngExpression = [latitude, longitude];
+
+      if (userLocationRef.current) {
+        userLocationRef.current.marker.setLatLng(latlng);
+        userLocationRef.current.circle.setLatLng(latlng);
+        userLocationRef.current.circle.setRadius(accuracy);
+      } else {
+        const userIcon = L.divIcon({
+          className: 'user-location-wrapper',
+          html: `<div class="user-location-marker">
+            <span class="user-location-dot"></span>
+            <span class="user-location-pulse"></span>
+          </div>`,
+          iconSize: [20, 20],
+          iconAnchor: [10, 10],
+        });
+
+        const marker = L.marker(latlng, { icon: userIcon, zIndexOffset: 1000 }).addTo(map);
+        marker.bindPopup('<div class="tower-popup"><div class="tower-popup__header"><span class="tower-popup__title">📍 Your Location</span></div></div>');
+
+        const circle = L.circle(latlng, {
+          radius: accuracy,
+          color: '#3b82f6',
+          fillColor: '#3b82f6',
+          fillOpacity: 0.1,
+          weight: 1,
+        }).addTo(map);
+
+        userLocationRef.current = { marker, circle };
+      }
+
+      setLocationError(null);
+    };
+
+    const handleError = (error: GeolocationPositionError) => {
+      setLocationError(error.message);
+    };
+
+    if ('geolocation' in navigator) {
+      watchId = navigator.geolocation.watchPosition(updateUserLocation, handleError, {
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 5000,
+      });
+    } else {
+      setLocationError('Geolocation not supported');
+    }
+
+    return () => {
+      if (watchId) navigator.geolocation.clearWatch(watchId);
+      if (userLocationRef.current) {
+        userLocationRef.current.marker.remove();
+        userLocationRef.current.circle.remove();
+        userLocationRef.current = null;
+      }
+    };
+  }, [trackLocation]);
 
   // update towers
   useEffect(() => {
@@ -147,8 +218,13 @@ export const TowerMap = ({
   }, [towers, showRangeCircles, onTowerClick, colors]);
 
   return (
-    <div className="w-full h-full rounded-xl overflow-hidden border border-border">
+    <div className="w-full h-full rounded-xl overflow-hidden border border-border relative">
       <div ref={containerRef} className="w-full h-full" aria-label="Cell tower triangulation map" />
+      {locationError && (
+        <div className="absolute bottom-4 left-4 bg-destructive/90 text-destructive-foreground px-3 py-2 rounded-md text-sm">
+          {locationError}
+        </div>
+      )}
     </div>
   );
 };
