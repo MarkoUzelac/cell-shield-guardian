@@ -1,91 +1,12 @@
 import { CellTower, IMSIRecord, Alert, MetadataResult, ScanStatus } from '@/types/signal';
 
-// Regional operators by country code
-const operatorsByRegion: Record<string, { mcc: string; mnc: string; name: string }[]> = {
-  US: [
-    { mcc: '310', mnc: '410', name: 'AT&T' },
-    { mcc: '310', mnc: '260', name: 'T-Mobile' },
-    { mcc: '311', mnc: '480', name: 'Verizon' },
-    { mcc: '312', mnc: '530', name: 'US Cellular' },
-  ],
-  UK: [
-    { mcc: '234', mnc: '10', name: 'O2' },
-    { mcc: '234', mnc: '15', name: 'Vodafone' },
-    { mcc: '234', mnc: '20', name: 'Three' },
-    { mcc: '234', mnc: '30', name: 'EE' },
-  ],
-  DE: [
-    { mcc: '262', mnc: '01', name: 'Telekom' },
-    { mcc: '262', mnc: '02', name: 'Vodafone' },
-    { mcc: '262', mnc: '03', name: 'O2' },
-    { mcc: '262', mnc: '07', name: '1&1' },
-  ],
-  FR: [
-    { mcc: '208', mnc: '01', name: 'Orange' },
-    { mcc: '208', mnc: '10', name: 'SFR' },
-    { mcc: '208', mnc: '15', name: 'Free' },
-    { mcc: '208', mnc: '20', name: 'Bouygues' },
-  ],
-  IN: [
-    { mcc: '404', mnc: '10', name: 'Airtel' },
-    { mcc: '404', mnc: '86', name: 'Vodafone Idea' },
-    { mcc: '405', mnc: '854', name: 'Jio' },
-    { mcc: '404', mnc: '04', name: 'BSNL' },
-  ],
-  AU: [
-    { mcc: '505', mnc: '01', name: 'Telstra' },
-    { mcc: '505', mnc: '02', name: 'Optus' },
-    { mcc: '505', mnc: '03', name: 'Vodafone' },
-    { mcc: '505', mnc: '06', name: 'TPG' },
-  ],
-  BR: [
-    { mcc: '724', mnc: '10', name: 'Vivo' },
-    { mcc: '724', mnc: '02', name: 'TIM' },
-    { mcc: '724', mnc: '05', name: 'Claro' },
-    { mcc: '724', mnc: '31', name: 'Oi' },
-  ],
-  JP: [
-    { mcc: '440', mnc: '10', name: 'NTT Docomo' },
-    { mcc: '440', mnc: '20', name: 'SoftBank' },
-    { mcc: '440', mnc: '50', name: 'KDDI au' },
-    { mcc: '440', mnc: '51', name: 'Rakuten' },
-  ],
-  CA: [
-    { mcc: '302', mnc: '220', name: 'Telus' },
-    { mcc: '302', mnc: '720', name: 'Rogers' },
-    { mcc: '302', mnc: '610', name: 'Bell' },
-    { mcc: '302', mnc: '490', name: 'Freedom' },
-  ],
-  DEFAULT: [
-    { mcc: '001', mnc: '01', name: 'Carrier Alpha' },
-    { mcc: '001', mnc: '02', name: 'Carrier Beta' },
-    { mcc: '001', mnc: '03', name: 'Carrier Gamma' },
-    { mcc: '001', mnc: '04', name: 'Carrier Delta' },
-  ],
-};
-
-// Get country code from coordinates (approximate)
-export const getCountryFromCoords = (lat: number, lng: number): string => {
-  // Simplified geo-detection based on bounding boxes
-  if (lat >= 24 && lat <= 50 && lng >= -125 && lng <= -66) return 'US';
-  if (lat >= 49 && lat <= 60 && lng >= -141 && lng <= -52) return 'CA';
-  if (lat >= 49 && lat <= 61 && lng >= -11 && lng <= 2) return 'UK';
-  if (lat >= 47 && lat <= 55 && lng >= 6 && lng <= 15) return 'DE';
-  if (lat >= 41 && lat <= 51 && lng >= -5 && lng <= 10) return 'FR';
-  if (lat >= 6 && lat <= 36 && lng >= 68 && lng <= 98) return 'IN';
-  if (lat >= -44 && lat <= -10 && lng >= 112 && lng <= 154) return 'AU';
-  if (lat >= -34 && lat <= 6 && lng >= -74 && lng <= -34) return 'BR';
-  if (lat >= 24 && lat <= 46 && lng >= 122 && lng <= 154) return 'JP';
-  return 'DEFAULT';
-};
-
-export const getOperatorsForLocation = (lat: number, lng: number) => {
-  const country = getCountryFromCoords(lat, lng);
-  return operatorsByRegion[country] || operatorsByRegion.DEFAULT;
-};
-
-// Legacy operators for backward compatibility
-const operators = operatorsByRegion.US;
+// Generate realistic-looking mock data
+const operators = [
+  { mcc: '310', mnc: '410', name: 'AT&T' },
+  { mcc: '310', mnc: '260', name: 'T-Mobile' },
+  { mcc: '311', mnc: '480', name: 'Verizon' },
+  { mcc: '310', mnc: '120', name: 'Sprint' },
+];
 
 const generateRandomIMSI = () => {
   const op = operators[Math.floor(Math.random() * operators.length)];
@@ -100,15 +21,12 @@ const generateRandomCellId = () => {
   return Math.floor(Math.random() * 65535).toString();
 };
 
-export const generateMockCellTowers = (
-  count: number = 10,
-  baseLat: number = 40.7128,
-  baseLng: number = -74.006
-): CellTower[] => {
-  const regionOperators = getOperatorsForLocation(baseLat, baseLng);
+export const generateMockCellTowers = (count: number = 10): CellTower[] => {
+  const baseLat = 40.7128;
+  const baseLng = -74.0060;
   
   return Array.from({ length: count }, (_, i) => {
-    const op = regionOperators[Math.floor(Math.random() * regionOperators.length)];
+    const op = operators[Math.floor(Math.random() * operators.length)];
     const isSuspicious = Math.random() > 0.85;
     
     return {
@@ -117,8 +35,8 @@ export const generateMockCellTowers = (
       mnc: op.mnc,
       lac: Math.floor(Math.random() * 65535).toString(),
       cellId: generateRandomCellId(),
-      lat: baseLat + (Math.random() - 0.5) * 0.08,
-      lng: baseLng + (Math.random() - 0.5) * 0.08,
+      lat: baseLat + (Math.random() - 0.5) * 0.1,
+      lng: baseLng + (Math.random() - 0.5) * 0.1,
       signalStrength: -50 - Math.floor(Math.random() * 60),
       operator: op.name,
       technology: ['2G', '3G', '4G', '5G'][Math.floor(Math.random() * 4)] as CellTower['technology'],
