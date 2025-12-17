@@ -1,8 +1,7 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { CellTower } from '@/types/signal';
-import { cn } from '@/lib/utils';
 import 'leaflet/dist/leaflet.css';
 
 // Fix for default marker icons in React-Leaflet
@@ -15,14 +14,12 @@ L.Icon.Default.mergeOptions({
 
 // Custom tower icon
 const createTowerIcon = (isSuspicious: boolean) => {
+  const color = isSuspicious ? '#ef4444' : '#14b8a6';
   return L.divIcon({
     className: 'custom-tower-icon',
     html: `
-      <div class="relative">
-        <div class="${cn(
-          'w-6 h-6 rounded-full flex items-center justify-center',
-          isSuspicious ? 'bg-destructive' : 'bg-primary'
-        )}" style="box-shadow: 0 0 10px ${isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)'}">
+      <div style="position: relative;">
+        <div style="width: 24px; height: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: ${color}; box-shadow: 0 0 10px ${color};">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2">
             <path d="M4.9 19.1C1 15.2 1 8.8 4.9 4.9"/>
             <path d="M7.8 16.2c-2.3-2.3-2.3-6.1 0-8.5"/>
@@ -31,7 +28,7 @@ const createTowerIcon = (isSuspicious: boolean) => {
             <path d="M19.1 4.9C23 8.8 23 15.1 19.1 19"/>
           </svg>
         </div>
-        ${isSuspicious ? '<div class="absolute -top-1 -right-1 w-3 h-3 bg-destructive rounded-full animate-pulse"></div>' : ''}
+        ${isSuspicious ? '<div style="position: absolute; top: -4px; right: -4px; width: 12px; height: 12px; background: #ef4444; border-radius: 50%; animation: pulse 2s infinite;"></div>' : ''}
       </div>
     `,
     iconSize: [24, 24],
@@ -47,13 +44,93 @@ interface TowerMapProps {
   showRangeCircles?: boolean;
 }
 
-const MapUpdater = ({ center, zoom }: { center: [number, number]; zoom: number }) => {
+function MapUpdater({ center, zoom }: { center: [number, number]; zoom: number }) {
   const map = useMap();
   useEffect(() => {
     map.setView(center, zoom);
   }, [center, zoom, map]);
   return null;
-};
+}
+
+function TowerMarker({ tower, onTowerClick }: { tower: CellTower; onTowerClick?: (tower: CellTower) => void }) {
+  return (
+    <Marker
+      position={[tower.lat, tower.lng]}
+      icon={createTowerIcon(tower.isSuspicious)}
+      eventHandlers={{
+        click: () => onTowerClick?.(tower),
+      }}
+    >
+      <Popup>
+        <div style={{ padding: '8px', minWidth: '200px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px' }}>
+            <span
+              style={{
+                width: '8px',
+                height: '8px',
+                borderRadius: '50%',
+                background: tower.isSuspicious ? '#ef4444' : '#22c55e',
+              }}
+            />
+            <span style={{ fontWeight: 600 }}>
+              {tower.isSuspicious ? 'Suspicious Tower' : 'Verified Tower'}
+            </span>
+          </div>
+          <div style={{ fontSize: '14px' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ color: '#666' }}>Operator:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.operator}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ color: '#666' }}>Cell ID:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.cellId}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ color: '#666' }}>MCC/MNC:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.mcc}/{tower.mnc}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ color: '#666' }}>LAC:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.lac}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '4px' }}>
+              <span style={{ color: '#666' }}>Technology:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.technology}</span>
+            </div>
+            <div style={{ display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ color: '#666' }}>Signal:</span>
+              <span style={{ fontFamily: 'monospace' }}>{tower.signalStrength} dBm</span>
+            </div>
+          </div>
+          {tower.isSuspicious && tower.suspiciousReason && (
+            <div style={{ marginTop: '8px', padding: '8px', background: 'rgba(239, 68, 68, 0.1)', borderRadius: '4px', fontSize: '12px', color: '#ef4444' }}>
+              ⚠️ {tower.suspiciousReason}
+            </div>
+          )}
+        </div>
+      </Popup>
+    </Marker>
+  );
+}
+
+function TowerCircle({ tower, showRangeCircles }: { tower: CellTower; showRangeCircles: boolean }) {
+  if (!showRangeCircles) return null;
+  
+  const color = tower.isSuspicious ? '#ef4444' : '#14b8a6';
+  
+  return (
+    <Circle
+      center={[tower.lat, tower.lng]}
+      radius={500}
+      pathOptions={{
+        color: color,
+        fillColor: color,
+        fillOpacity: 0.1,
+        weight: 1,
+      }}
+    />
+  );
+}
 
 export const TowerMap = ({
   towers,
@@ -62,90 +139,38 @@ export const TowerMap = ({
   onTowerClick,
   showRangeCircles = true,
 }: TowerMapProps) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return (
+      <div className="w-full h-full rounded-xl overflow-hidden border border-border bg-muted flex items-center justify-center">
+        <span className="text-muted-foreground">Loading map...</span>
+      </div>
+    );
+  }
+
   return (
     <div className="w-full h-full rounded-xl overflow-hidden border border-border">
       <MapContainer
         center={center}
         zoom={zoom}
         className="w-full h-full"
-        style={{ background: 'hsl(var(--background))' }}
+        style={{ background: 'hsl(222.2 84% 4.9%)' }}
       >
         <MapUpdater center={center} zoom={zoom} />
         <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
-
         {towers.map((tower) => (
-          <Circle
-            key={`circle-${tower.id}`}
-            center={[tower.lat, tower.lng]}
-            radius={showRangeCircles ? 500 : 0}
-            pathOptions={{
-              color: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
-              fillColor: tower.isSuspicious ? 'hsl(0 72% 51%)' : 'hsl(172 66% 50%)',
-              fillOpacity: showRangeCircles ? 0.1 : 0,
-              weight: showRangeCircles ? 1 : 0,
-            }}
-          />
+          <TowerCircle key={`circle-${tower.id}`} tower={tower} showRangeCircles={showRangeCircles} />
         ))}
-
         {towers.map((tower) => (
-          <Marker
-            key={`marker-${tower.id}`}
-            position={[tower.lat, tower.lng]}
-            icon={createTowerIcon(tower.isSuspicious)}
-            eventHandlers={{
-              click: () => onTowerClick?.(tower),
-            }}
-          >
-            <Popup className="tower-popup">
-              <div className="p-2 min-w-[200px]">
-                <div className="flex items-center gap-2 mb-2">
-                  <span
-                    className={cn(
-                      'w-2 h-2 rounded-full',
-                      tower.isSuspicious ? 'bg-destructive' : 'bg-success'
-                    )}
-                  />
-                  <span className="font-semibold">
-                    {tower.isSuspicious ? 'Suspicious Tower' : 'Verified Tower'}
-                  </span>
-                </div>
-                <div className="space-y-1 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Operator:</span>
-                    <span className="font-mono">{tower.operator}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Cell ID:</span>
-                    <span className="font-mono">{tower.cellId}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">MCC/MNC:</span>
-                    <span className="font-mono">{tower.mcc}/{tower.mnc}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">LAC:</span>
-                    <span className="font-mono">{tower.lac}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Technology:</span>
-                    <span className="font-mono">{tower.technology}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span className="text-muted-foreground">Signal:</span>
-                    <span className="font-mono">{tower.signalStrength} dBm</span>
-                  </div>
-                </div>
-                {tower.isSuspicious && tower.suspiciousReason && (
-                  <div className="mt-2 p-2 bg-destructive/10 rounded text-xs text-destructive">
-                    ⚠️ {tower.suspiciousReason}
-                  </div>
-                )}
-              </div>
-            </Popup>
-          </Marker>
+          <TowerMarker key={`marker-${tower.id}`} tower={tower} onTowerClick={onTowerClick} />
         ))}
       </MapContainer>
     </div>
