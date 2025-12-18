@@ -6,6 +6,7 @@ import { TowerMap } from '@/components/map/TowerMap';
 import { TriangulationForm } from '@/components/triangulation/TriangulationForm';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { CellTower } from '@/types/signal';
 import { generateMockCellTowers } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
@@ -64,11 +65,13 @@ const MapPage = () => {
         <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
           {/* Map */}
           <div className="lg:col-span-3 h-[600px]">
-            <TowerMap
-              towers={towers}
-              onTowerClick={setSelectedTower}
-              showRangeCircles
-            />
+            <ErrorBoundary>
+              <TowerMap
+                towers={towers}
+                onTowerClick={setSelectedTower}
+                showRangeCircles
+              />
+            </ErrorBoundary>
           </div>
 
           {/* Sidebar */}
