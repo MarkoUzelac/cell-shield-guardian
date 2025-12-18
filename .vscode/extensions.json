@@ -1,0 +1,7 @@
+{
+    "recommendations": [
+        "codespaces-contrib.codeswing",
+        "hediet.vscode-drawio",
+        "ms-vscode.vscode-github-issue-notebooks"
+    ]
+}
