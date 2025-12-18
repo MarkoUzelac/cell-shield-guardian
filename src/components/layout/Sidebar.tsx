@@ -12,12 +12,14 @@ import {
   Activity,
   ChevronLeft,
   ChevronRight,
+  Wifi,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', icon: Activity, label: 'Live Scan' },
   { to: '/map', icon: Map, label: 'Triangulation Map' },
+  { to: '/network', icon: Wifi, label: 'Network Intelligence' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer' },
   { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs' },
   { to: '/settings', icon: Settings, label: 'Settings' },
