@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, Fragment } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from 'react-leaflet';
 import L from 'leaflet';
 import { CellTower } from '@/types/signal';
@@ -77,7 +77,7 @@ export const TowerMap = ({
         />
 
         {towers.map((tower) => (
-          <div key={tower.id}>
+          <Fragment key={tower.id}>
             {/* Range circle */}
             {showRangeCircles && (
               <Circle
@@ -147,7 +147,7 @@ export const TowerMap = ({
                 </div>
               </Popup>
             </Marker>
-          </div>
+          </Fragment>
         ))}
       </MapContainer>
     </div>
