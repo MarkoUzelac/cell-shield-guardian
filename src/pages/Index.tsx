@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Radio, Wifi, AlertTriangle, Activity, Shield, Power } from 'lucide-react';
+import { Radio, Wifi, AlertTriangle, Activity, Shield, Power, Volume2, VolumeX, Crown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { StatsCard } from '@/components/dashboard/StatsCard';
@@ -9,7 +9,11 @@ import { RadarDisplay } from '@/components/dashboard/RadarDisplay';
 import { AlertsList } from '@/components/dashboard/AlertsList';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { IMSIRecord, Alert } from '@/types/signal';
+import { useAlertSound } from '@/hooks/useAlertSound';
+import { useGeolocation } from '@/hooks/useGeolocation';
+import { CROATIAN_FREQUENCY_BANDS } from '@/lib/croatianOperators';
 import {
   generateMockIMSIRecords,
   generateMockAlerts,
@@ -22,6 +26,8 @@ const Index = () => {
   const [imsiRecords, setImsiRecords] = useState<IMSIRecord[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
   const [frequency, setFrequency] = useState('935.2 MHz');
+  const { playSound, isMuted, toggleMute } = useAlertSound();
+  const { hasRealLocation, latitude, longitude } = useGeolocation();
 
   // Initialize with mock data
   useEffect(() => {
@@ -29,23 +35,37 @@ const Index = () => {
     setAlerts(generateMockAlerts());
   }, []);
 
-  // Simulate real-time data
+  // Simulate real-time data with sound alerts
   useEffect(() => {
     if (!isScanning) return;
 
-    const unsubIMSI = simulateRealtimeIMSI((record) => {
-      setImsiRecords(prev => [record, ...prev].slice(0, 50));
-    });
+    const unsubIMSI = simulateRealtimeIMSI(
+      (record) => {
+        setImsiRecords(prev => [record, ...prev].slice(0, 50));
+      },
+      (record) => {
+        // Sound is now handled in IMSITable component
+      }
+    );
 
-    const unsubAlert = simulateRealtimeAlert((alert) => {
-      setAlerts(prev => [alert, ...prev]);
-    });
+    const unsubAlert = simulateRealtimeAlert(
+      (alert) => {
+        setAlerts(prev => [alert, ...prev]);
+      },
+      (type) => {
+        if (type === 'critical') {
+          playSound('critical');
+        } else if (type === 'warning') {
+          playSound('warning');
+        }
+      }
+    );
 
     return () => {
       unsubIMSI();
       unsubAlert();
     };
-  }, [isScanning]);
+  }, [isScanning, playSound]);
 
   const handleAcknowledgeAlert = (id: string) => {
     setAlerts(prev =>
@@ -67,9 +87,33 @@ const Index = () => {
         subtitle="Real-time GSM/LTE signal analysis and IMSI catcher detection"
       />
 
-      <div className="p-6 space-y-6">
-        {/* Stats Row */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="p-3 md:p-6 space-y-4 md:space-y-6">
+        {/* Premium Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 border border-primary/30 p-4"
+        >
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-3">
+              <div className="p-2 bg-primary/20 rounded-lg">
+                <Crown className="w-5 h-5 text-primary" />
+              </div>
+              <div>
+                <p className="font-semibold text-foreground">Upgrade to Pro</p>
+                <p className="text-xs text-muted-foreground">Get real-time tower data, advanced detection & alerts</p>
+              </div>
+            </div>
+            <Button size="sm" className="bg-primary hover:bg-primary/90 w-full sm:w-auto">
+              <Crown className="w-4 h-4 mr-2" />
+              Go Pro - €9.99/mo
+            </Button>
+          </div>
+          <div className="absolute -right-8 -top-8 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+        </motion.div>
+
+        {/* Stats Row - Responsive grid */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
           <StatsCard
             title="Signals Detected"
             value={imsiRecords.length}
@@ -79,9 +123,9 @@ const Index = () => {
             variant="primary"
           />
           <StatsCard
-            title="Suspicious Activity"
+            title="Suspicious"
             value={suspiciousCount}
-            subtitle="Requires attention"
+            subtitle="Attention needed"
             icon={AlertTriangle}
             variant={suspiciousCount > 0 ? 'warning' : 'default'}
           />
@@ -93,53 +137,72 @@ const Index = () => {
             variant={criticalAlerts > 0 ? 'danger' : 'default'}
           />
           <StatsCard
-            title="Protection Status"
+            title="Protection"
             value="Active"
-            subtitle="All monitors running"
+            subtitle="All systems online"
             icon={Shield}
             variant="success"
           />
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Left: IMSI Table */}
-          <div className="lg:col-span-2">
+        {/* Main Content - Stack on mobile */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 md:gap-6">
+          {/* IMSI Table */}
+          <div className="lg:col-span-2 order-2 lg:order-1">
             <IMSITable records={imsiRecords} maxRows={12} />
           </div>
 
-          {/* Right: Radar and Controls */}
-          <div className="space-y-6">
+          {/* Right Sidebar */}
+          <div className="space-y-4 md:space-y-6 order-1 lg:order-2">
             {/* Scan Control */}
             <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
-                  <Radio className="w-5 h-5 text-primary" />
-                  Scan Control
-                </CardTitle>
+              <CardHeader className="pb-2 md:pb-4">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-base md:text-lg flex items-center gap-2">
+                    <Radio className="w-5 h-5 text-primary" />
+                    Scan Control
+                  </CardTitle>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={toggleMute}
+                    className="h-8 w-8 p-0"
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-4 h-4 text-muted-foreground" />
+                    ) : (
+                      <Volume2 className="w-4 h-4 text-primary" />
+                    )}
+                  </Button>
+                </div>
               </CardHeader>
               <CardContent className="space-y-4">
+                {/* Radar - Smaller on mobile */}
                 <div className="flex items-center justify-center">
-                  <RadarDisplay
-                    isScanning={isScanning}
-                    detectedCount={imsiRecords.length}
-                  />
+                  <div className="scale-75 md:scale-100 origin-center">
+                    <RadarDisplay
+                      isScanning={isScanning}
+                      detectedCount={imsiRecords.length}
+                    />
+                  </div>
                 </div>
 
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between text-sm">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Frequency:</span>
                     <span className="font-mono text-foreground">{frequency}</span>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
+                  <div className="flex items-center justify-between">
                     <span className="text-muted-foreground">Status:</span>
-                    <span className={isScanning ? 'text-success' : 'text-muted-foreground'}>
+                    <Badge variant={isScanning ? 'default' : 'secondary'} className="text-xs">
                       {isScanning ? 'Scanning' : 'Idle'}
-                    </span>
+                    </Badge>
                   </div>
-                  <div className="flex items-center justify-between text-sm">
-                    <span className="text-muted-foreground">Device:</span>
-                    <span className="text-foreground">RTL-SDR v3</span>
+                  <div className="flex items-center justify-between">
+                    <span className="text-muted-foreground">Location:</span>
+                    <span className="text-foreground text-xs font-mono">
+                      {hasRealLocation ? `${latitude?.toFixed(2)}°, ${longitude?.toFixed(2)}°` : 'Croatia'}
+                    </span>
                   </div>
                 </div>
 
@@ -147,6 +210,7 @@ const Index = () => {
                   onClick={() => setIsScanning(!isScanning)}
                   variant={isScanning ? 'destructive' : 'default'}
                   className="w-full"
+                  size="sm"
                 >
                   <Power className="w-4 h-4 mr-2" />
                   {isScanning ? 'Stop Scanning' : 'Start Scanning'}
@@ -156,8 +220,8 @@ const Index = () => {
 
             {/* Recent Alerts */}
             <Card className="bg-card border-border">
-              <CardHeader>
-                <CardTitle className="text-lg flex items-center gap-2">
+              <CardHeader className="pb-2">
+                <CardTitle className="text-base md:text-lg flex items-center gap-2">
                   <AlertTriangle className="w-5 h-5 text-warning" />
                   Recent Alerts
                 </CardTitle>
@@ -174,37 +238,30 @@ const Index = () => {
           </div>
         </div>
 
-        {/* Frequency Band Info */}
+        {/* Frequency Bands - Croatian LTE/5G */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-4"
         >
-          {[
-            { band: 'GSM 900', freq: '935-960 MHz', active: true },
-            { band: 'GSM 1800', freq: '1805-1880 MHz', active: false },
-            { band: 'LTE B7', freq: '2620-2690 MHz', active: false },
-            { band: 'LTE B20', freq: '791-821 MHz', active: true },
-          ].map((band) => (
+          {CROATIAN_FREQUENCY_BANDS.slice(0, 4).map((band, idx) => (
             <div
               key={band.band}
-              className={`p-4 rounded-lg border ${
-                band.active
+              className={`p-3 md:p-4 rounded-lg border ${
+                idx < 2
                   ? 'bg-primary/10 border-primary/30'
                   : 'bg-muted/30 border-border'
               }`}
             >
-              <div className="flex items-center justify-between mb-2">
-                <span className="font-medium text-foreground">{band.band}</span>
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    band.active ? 'status-active' : 'bg-muted'
-                  }`}
-                />
+              <div className="flex items-center justify-between mb-1 md:mb-2">
+                <span className="font-medium text-foreground text-xs md:text-sm">{band.band}</span>
+                <Badge variant={band.technology === '5G' ? 'default' : 'secondary'} className="text-xs">
+                  {band.technology}
+                </Badge>
               </div>
               <span className="text-xs font-mono text-muted-foreground">
-                {band.freq}
+                {band.frequency}
               </span>
             </div>
           ))}
