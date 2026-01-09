@@ -239,6 +239,32 @@
   }
 }
 
+/* Mobile safe area support */
+.safe-area-bottom {
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+/* User location marker pulse animation */
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.5);
+    opacity: 0.2;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+}
+
+.user-location-marker {
+  background: transparent !important;
+  border: none !important;
+}
+
 /* Leaflet map dark theme overrides */
 .leaflet-container {
   background: hsl(var(--background)) !important;
@@ -256,5 +282,19 @@
 
 .leaflet-control-attribution {
   background: hsl(var(--card) / 0.8) !important;
+  color: hsl(var(--muted-foreground)) !important;
+}
+
+.leaflet-popup-content-wrapper {
+  background: hsl(var(--card)) !important;
+  color: hsl(var(--foreground)) !important;
+  border-radius: 0.5rem !important;
+}
+
+.leaflet-popup-tip {
+  background: hsl(var(--card)) !important;
+}
+
+.leaflet-popup-close-button {
   color: hsl(var(--muted-foreground)) !important;
 }
