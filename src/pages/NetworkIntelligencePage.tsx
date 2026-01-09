@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -28,6 +28,29 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { z } from 'zod';
+
+// Zod schema for IP API response validation
+const IpApiSchema = z.object({
+  org: z.string().max(200).optional().nullable(),
+  country_code: z.string().max(10).optional().nullable(),
+  country_name: z.string().max(100).optional().nullable(),
+  city: z.string().max(100).optional().nullable(),
+  ip: z.string().max(45).optional().nullable(),
+  region: z.string().max(100).optional().nullable(),
+  timezone: z.string().max(50).optional().nullable(),
+  asn: z.string().max(50).optional().nullable(),
+});
+
+type ValidatedIpInfo = z.infer<typeof IpApiSchema>;
+
+// Sanitization helper for display text
+const sanitizeDisplayText = (input?: string | null): string => {
+  if (!input) return '';
+  return input
+    .replace(/[<>]/g, '') // Remove potential HTML tags
+    .slice(0, 100); // Limit length
+};
 
 interface NetworkInfo {
   effectiveType?: string;
@@ -69,6 +92,8 @@ const FREQUENCY_BANDS = [
   { band: '5G (NR)', frequencies: ['n78 (3500 MHz)', 'n41 (2500 MHz)', 'n28 (700 MHz)', 'n258 (26 GHz mmWave)'], risk: 'low', note: 'Latest encryption standards, enhanced security' },
 ];
 
+const NETWORK_CONSENT_KEY = 'network-diagnostics-consent';
+
 const NetworkIntelligencePage = () => {
   const { toast } = useToast();
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
@@ -77,17 +102,50 @@ const NetworkIntelligencePage = () => {
   const [isTestingSpeed, setIsTestingSpeed] = useState(false);
   const [speedProgress, setSpeedProgress] = useState(0);
   const [securityIndicators, setSecurityIndicators] = useState<SecurityIndicator[]>([]);
-  const [ipInfo, setIpInfo] = useState<any>(null);
+  const [ipInfo, setIpInfo] = useState<ValidatedIpInfo | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasConsent, setHasConsent] = useState<boolean | null>(null);
+
+  // Check for existing consent on mount
+  useEffect(() => {
+    const storedConsent = localStorage.getItem(NETWORK_CONSENT_KEY);
+    setHasConsent(storedConsent === 'true');
+  }, []);
 
   useEffect(() => {
     fetchNetworkInfo();
-    fetchIpInfo();
     analyzeSecurityIndicators();
-  }, []);
+    
+    // Only fetch IP info if user has consented
+    if (hasConsent === true) {
+      fetchIpInfo();
+    } else if (hasConsent === false) {
+      setIsLoading(false);
+    }
+  }, [hasConsent]);
+
+  const handleConsentGiven = () => {
+    localStorage.setItem(NETWORK_CONSENT_KEY, 'true');
+    setHasConsent(true);
+    toast({
+      title: "Network Diagnostics Enabled",
+      description: "Fetching network information...",
+    });
+  };
+
+  const handleConsentRevoked = () => {
+    localStorage.removeItem(NETWORK_CONSENT_KEY);
+    setHasConsent(false);
+    setIpInfo(null);
+    setCarrierInfo(null);
+    toast({
+      title: "Network Diagnostics Disabled",
+      description: "External API calls have been disabled.",
+    });
+  };
 
   const fetchNetworkInfo = () => {
-    // Use Network Information API if available
+    // Use Network Information API if available (browser-native, no external calls)
     const connection = (navigator as any).connection || 
                        (navigator as any).mozConnection || 
                        (navigator as any).webkitConnection;
@@ -116,30 +174,60 @@ const NetworkIntelligencePage = () => {
   };
 
   const fetchIpInfo = async () => {
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 5000); // 5 second timeout
+
     try {
-      // Using a free IP geolocation service
-      const response = await fetch('https://ipapi.co/json/');
+      const response = await fetch('https://ipapi.co/json/', {
+        signal: controller.signal
+      });
+      clearTimeout(timeoutId);
+
       if (response.ok) {
-        const data = await response.json();
+        const rawData = await response.json();
+        
+        // Validate response with Zod schema
+        const validationResult = IpApiSchema.safeParse(rawData);
+        
+        if (!validationResult.success) {
+          console.warn('IP API response validation failed');
+          toast({
+            title: "Invalid data received",
+            description: "Network information may be incomplete.",
+            variant: "destructive"
+          });
+          setIsLoading(false);
+          return;
+        }
+        
+        const data = validationResult.data;
         setIpInfo(data);
         
-        // Set carrier info based on IP data
+        // Set carrier info with sanitized data
         setCarrierInfo({
-          name: data.org || 'Unknown Carrier',
-          mcc: data.country_code || 'N/A',
+          name: sanitizeDisplayText(data.org) || 'Unknown Carrier',
+          mcc: sanitizeDisplayText(data.country_code) || 'N/A',
           mnc: 'N/A',
-          country: data.country_name || 'Unknown',
+          country: sanitizeDisplayText(data.country_name) || 'Unknown',
           technology: networkInfo?.effectiveType?.toUpperCase() || '4G',
           isRoaming: false
         });
       }
     } catch (error) {
-      console.error('Failed to fetch IP info:', error);
+      if (error instanceof Error && error.name === 'AbortError') {
+        toast({
+          title: "Request timeout",
+          description: "Network information request timed out.",
+          variant: "destructive"
+        });
+      } else {
+        console.warn('Failed to fetch IP info');
+      }
     } finally {
       setIsLoading(false);
     }
   };
-
   const analyzeSecurityIndicators = () => {
     const indicators: SecurityIndicator[] = [
       {
@@ -221,6 +309,16 @@ const NetworkIntelligencePage = () => {
   };
 
   const runSpeedTest = async () => {
+    // Require consent for external API calls
+    if (!hasConsent) {
+      toast({
+        title: "Enable Network Diagnostics",
+        description: "Please enable network diagnostics to run speed tests.",
+        variant: "destructive"
+      });
+      return;
+    }
+
     setIsTestingSpeed(true);
     setSpeedProgress(0);
 
@@ -234,15 +332,20 @@ const NetworkIntelligencePage = () => {
       setSpeedProgress(progress);
     }, 100);
 
-    // Perform actual download test
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout for speed test
+
     try {
       const downloadStart = performance.now();
       
       // Download a sample file to measure speed
       const response = await fetch('https://httpbin.org/bytes/500000', { 
         cache: 'no-store',
-        mode: 'cors'
+        mode: 'cors',
+        signal: controller.signal
       });
+      clearTimeout(timeoutId);
       
       if (response.ok) {
         await response.blob();
@@ -271,20 +374,30 @@ const NetworkIntelligencePage = () => {
         });
       }
     } catch (error) {
-      // Fallback to simulated results
-      setSpeedTest({
-        download: Math.random() * 50 + 10,
-        upload: Math.random() * 20 + 5,
-        latency: networkInfo?.rtt || Math.random() * 50 + 10,
-        jitter: Math.random() * 10 + 2,
-        timestamp: new Date()
-      });
+      clearTimeout(timeoutId);
       
-      toast({
-        title: "Speed Test Complete",
-        description: "Results based on network estimation",
-        variant: "default"
-      });
+      if (error instanceof Error && error.name === 'AbortError') {
+        toast({
+          title: "Speed Test Timeout",
+          description: "The speed test took too long. Please try again.",
+          variant: "destructive"
+        });
+      } else {
+        // Fallback to simulated results based on Network API
+        setSpeedTest({
+          download: networkInfo?.downlink || Math.random() * 50 + 10,
+          upload: (networkInfo?.downlink || Math.random() * 50 + 10) * 0.3,
+          latency: networkInfo?.rtt || Math.random() * 50 + 10,
+          jitter: Math.random() * 10 + 2,
+          timestamp: new Date()
+        });
+        
+        toast({
+          title: "Speed Test Complete",
+          description: "Results based on browser network estimation",
+          variant: "default"
+        });
+      }
     }
 
     clearInterval(progressInterval);
@@ -345,6 +458,44 @@ const NetworkIntelligencePage = () => {
           </CardContent>
         </Card>
 
+        {/* Privacy Consent Banner */}
+        {hasConsent === false && (
+          <Card className="border-primary/30 bg-primary/5">
+            <CardContent className="p-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 justify-between">
+                <div className="flex items-start gap-3">
+                  <Shield className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
+                  <div className="text-sm">
+                    <p className="font-medium text-primary">Enable Network Diagnostics?</p>
+                    <p className="text-muted-foreground mt-1">
+                      This will share your IP address with ipapi.co for location/carrier information. 
+                      Speed tests use httpbin.org. No personal data is stored.
+                    </p>
+                  </div>
+                </div>
+                <Button onClick={handleConsentGiven} size="sm" className="whitespace-nowrap">
+                  Enable Diagnostics
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Consent Toggle (when already consented) */}
+        {hasConsent === true && (
+          <div className="flex justify-end">
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              onClick={handleConsentRevoked}
+              className="text-muted-foreground hover:text-foreground"
+            >
+              <EyeOff className="h-4 w-4 mr-2" />
+              Disable External Diagnostics
+            </Button>
+          </div>
+        )}
+
         {/* Network Status Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <motion.div
@@ -383,7 +534,11 @@ const NetworkIntelligencePage = () => {
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">ISP/Carrier</p>
-                      <p className="text-lg font-bold truncate max-w-[150px]">{ipInfo?.org?.split(' ')[0] || 'Loading...'}</p>
+                      <p className="text-lg font-bold truncate max-w-[150px]">
+                        {hasConsent 
+                          ? (sanitizeDisplayText(ipInfo?.org)?.split(' ')[0] || 'Loading...') 
+                          : 'Enable to view'}
+                      </p>
                     </div>
                   </div>
                 </div>
