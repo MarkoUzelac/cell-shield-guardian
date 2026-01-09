@@ -1,10 +1,16 @@
 import { NavLink, useLocation } from 'react-router-dom';
-import { Activity, Map, Wifi, AlertTriangle, Settings, Menu } from 'lucide-react';
+import { 
+  Activity, Map, Wifi, AlertTriangle, Settings, Menu, 
+  Shield, FileSearch, Info, Radio, X, ChevronRight,
+  Bell, Volume2, VolumeX, Power, Crown
+} from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { useState } from 'react';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { useState, useEffect } from 'react';
+import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Shield, FileSearch, Info } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Separator } from '@/components/ui/separator';
+import { motion, AnimatePresence } from 'framer-motion';
 
 const mainNavItems = [
   { to: '/', icon: Activity, label: 'Scan' },
@@ -14,24 +20,40 @@ const mainNavItems = [
 ];
 
 const allNavItems = [
-  { to: '/', icon: Activity, label: 'Live Scan' },
-  { to: '/map', icon: Map, label: 'Triangulation Map' },
-  { to: '/network', icon: Wifi, label: 'Network Intelligence' },
-  { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer' },
-  { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
-  { to: '/about', icon: Info, label: 'About' },
+  { to: '/', icon: Activity, label: 'Live Scan', description: 'Real-time signal monitoring' },
+  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Cell tower mapping' },
+  { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
+  { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer', description: 'Analyze file metadata' },
+  { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs', description: 'View all alerts' },
+  { to: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' },
+  { to: '/about', icon: Info, label: 'About', description: 'App information' },
+];
+
+const quickActions = [
+  { icon: Bell, label: 'Notifications', badge: 3 },
+  { icon: Volume2, label: 'Sound Alerts' },
 ];
 
 export const MobileNav = () => {
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [currentTime, setCurrentTime] = useState(new Date());
+
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Close sheet when route changes
+  useEffect(() => {
+    setOpen(false);
+  }, [location.pathname]);
 
   return (
     <>
       {/* Bottom Navigation Bar */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border safe-area-bottom lg:hidden">
-        <div className="flex items-center justify-around h-16 px-2">
+        <div className="flex items-center justify-around h-16 px-1">
           {mainNavItems.map((item) => {
             const isActive = location.pathname === item.to;
             return (
@@ -39,54 +61,195 @@ export const MobileNav = () => {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg transition-all min-w-[60px]',
+                  'flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] active:scale-95',
                   isActive 
                     ? 'text-primary bg-primary/10' 
-                    : 'text-muted-foreground hover:text-foreground'
+                    : 'text-muted-foreground hover:text-foreground active:bg-muted/50'
                 )}
               >
                 <item.icon className={cn('w-5 h-5', isActive && 'text-primary')} />
-                <span className="text-[10px] font-medium">{item.label}</span>
+                <span className="text-[10px] font-medium leading-tight">{item.label}</span>
+                {isActive && (
+                  <motion.div 
+                    layoutId="activeTab"
+                    className="absolute bottom-1 w-1 h-1 rounded-full bg-primary"
+                  />
+                )}
               </NavLink>
             );
           })}
           
-          {/* More Menu */}
+          {/* More Menu Trigger */}
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button className="flex flex-col items-center justify-center gap-1 px-3 py-2 rounded-lg text-muted-foreground hover:text-foreground min-w-[60px]">
+              <button 
+                className={cn(
+                  "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] active:scale-95",
+                  "text-muted-foreground hover:text-foreground active:bg-muted/50"
+                )}
+              >
                 <Menu className="w-5 h-5" />
-                <span className="text-[10px] font-medium">More</span>
+                <span className="text-[10px] font-medium leading-tight">More</span>
               </button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-auto max-h-[80vh] rounded-t-xl">
-              <SheetHeader className="pb-4">
-                <SheetTitle className="flex items-center gap-2">
-                  <Shield className="w-5 h-5 text-primary" />
-                  Privacy Signal Monitor
-                </SheetTitle>
-              </SheetHeader>
-              <nav className="grid grid-cols-2 gap-2 pb-6">
-                {allNavItems.map((item) => {
-                  const isActive = location.pathname === item.to;
-                  return (
-                    <NavLink
-                      key={item.to}
-                      to={item.to}
-                      onClick={() => setOpen(false)}
-                      className={cn(
-                        'flex items-center gap-3 p-3 rounded-lg transition-all',
-                        isActive 
-                          ? 'bg-primary/10 text-primary border border-primary/30' 
-                          : 'bg-muted/50 text-foreground hover:bg-muted'
-                      )}
+            
+            <SheetContent 
+              side="bottom" 
+              className="h-[85vh] rounded-t-2xl p-0 bg-background border-t border-border"
+            >
+              {/* Header */}
+              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
+                <SheetHeader className="p-4 pb-3">
+                  <div className="flex items-center justify-between">
+                    <SheetTitle className="flex items-center gap-2 text-base">
+                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <Shield className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="font-semibold">Privacy Signal Monitor</span>
+                        <span className="text-[10px] text-muted-foreground font-normal">v1.0</span>
+                      </div>
+                    </SheetTitle>
+                    <SheetClose asChild>
+                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
+                        <X className="w-4 h-4" />
+                      </Button>
+                    </SheetClose>
+                  </div>
+                </SheetHeader>
+                
+                {/* Status Bar */}
+                <div className="px-4 pb-3 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/30">
+                      <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
+                      <span className="text-[10px] font-medium text-success">Protected</span>
+                    </div>
+                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30">
+                      <Radio className="w-3 h-3 text-primary" />
+                      <span className="text-[10px] font-mono text-primary">935.2 MHz</span>
+                    </div>
+                  </div>
+                  <span className="text-[10px] font-mono text-muted-foreground">
+                    {currentTime.toLocaleTimeString()}
+                  </span>
+                </div>
+              </div>
+
+              {/* Scrollable Content */}
+              <div className="overflow-y-auto h-[calc(85vh-120px)] pb-safe">
+                {/* Quick Actions */}
+                <div className="p-4 pb-2">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">
+                    Quick Actions
+                  </p>
+                  <div className="grid grid-cols-2 gap-2">
+                    <Button 
+                      variant="outline" 
+                      className="h-auto py-3 px-3 justify-start gap-2 bg-card hover:bg-muted/50"
                     >
-                      <item.icon className="w-5 h-5" />
-                      <span className="text-sm font-medium">{item.label}</span>
-                    </NavLink>
-                  );
-                })}
-              </nav>
+                      <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center">
+                        <Bell className="w-4 h-4 text-warning" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-xs font-medium">Alerts</span>
+                        <span className="text-[10px] text-muted-foreground">3 unread</span>
+                      </div>
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      className="h-auto py-3 px-3 justify-start gap-2 bg-card hover:bg-muted/50"
+                    >
+                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
+                        <Volume2 className="w-4 h-4 text-primary" />
+                      </div>
+                      <div className="flex flex-col items-start">
+                        <span className="text-xs font-medium">Sound</span>
+                        <span className="text-[10px] text-muted-foreground">Enabled</span>
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+
+                {/* Pro Upgrade Banner */}
+                <div className="px-4 py-2">
+                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 border border-primary/30 p-3">
+                    <div className="flex items-center justify-between gap-3">
+                      <div className="flex items-center gap-2 min-w-0">
+                        <Crown className="w-5 h-5 text-primary shrink-0" />
+                        <div className="min-w-0">
+                          <p className="font-semibold text-foreground text-sm">Upgrade to Pro</p>
+                          <p className="text-[10px] text-muted-foreground">Real-time tower data & advanced alerts</p>
+                        </div>
+                      </div>
+                      <Button size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-8 text-xs">
+                        €9.99/mo
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+
+                <Separator className="my-2" />
+
+                {/* Navigation */}
+                <div className="p-4 pt-2">
+                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">
+                    Navigation
+                  </p>
+                  <nav className="space-y-1">
+                    {allNavItems.map((item) => {
+                      const isActive = location.pathname === item.to;
+                      return (
+                        <NavLink
+                          key={item.to}
+                          to={item.to}
+                          onClick={() => setOpen(false)}
+                          className={cn(
+                            'flex items-center gap-3 p-3 rounded-xl transition-all active:scale-[0.98]',
+                            isActive 
+                              ? 'bg-primary/10 text-primary border border-primary/30' 
+                              : 'bg-card text-foreground hover:bg-muted/50 active:bg-muted border border-transparent'
+                          )}
+                        >
+                          <div className={cn(
+                            "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
+                            isActive ? "bg-primary/20" : "bg-muted/50"
+                          )}>
+                            <item.icon className={cn(
+                              "w-5 h-5",
+                              isActive ? "text-primary" : "text-muted-foreground"
+                            )} />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <span className={cn(
+                              "text-sm font-medium block",
+                              isActive && "text-primary"
+                            )}>
+                              {item.label}
+                            </span>
+                            <span className="text-[10px] text-muted-foreground block">
+                              {item.description}
+                            </span>
+                          </div>
+                          <ChevronRight className={cn(
+                            "w-4 h-4 shrink-0",
+                            isActive ? "text-primary" : "text-muted-foreground"
+                          )} />
+                        </NavLink>
+                      );
+                    })}
+                  </nav>
+                </div>
+
+                {/* Footer */}
+                <div className="p-4 pt-2">
+                  <Separator className="mb-4" />
+                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
+                    <span>Privacy Signal Monitor</span>
+                    <span>Educational Use Only</span>
+                  </div>
+                </div>
+              </div>
             </SheetContent>
           </Sheet>
         </div>

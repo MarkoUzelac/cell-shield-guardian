@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { Bell, AlertTriangle, Shield, Clock } from 'lucide-react';
+import { Bell, AlertTriangle, Shield, Clock, Menu, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import {
@@ -10,6 +10,7 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { cn } from '@/lib/utils';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 interface HeaderProps {
   title: string;
@@ -19,6 +20,7 @@ interface HeaderProps {
 export const Header = ({ title, subtitle }: HeaderProps) => {
   const [currentTime, setCurrentTime] = useState(new Date());
   const [alertCount, setAlertCount] = useState(3);
+  const isMobile = useIsMobile();
 
   useEffect(() => {
     const timer = setInterval(() => setCurrentTime(new Date()), 1000);
@@ -27,45 +29,47 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
 
   return (
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg">
-      <div className="flex items-center justify-between px-6 py-4">
-        <div>
+      <div className="flex items-center justify-between px-3 sm:px-6 py-3 sm:py-4">
+        <div className="min-w-0 flex-1">
           <motion.h1
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-2xl font-bold text-foreground"
+            className="text-lg sm:text-2xl font-bold text-foreground truncate"
           >
             {title}
           </motion.h1>
           {subtitle && (
-            <p className="text-sm text-muted-foreground mt-0.5">{subtitle}</p>
+            <p className="text-xs sm:text-sm text-muted-foreground mt-0.5 truncate">{subtitle}</p>
           )}
         </div>
 
-        <div className="flex items-center gap-4">
-          {/* Time Display */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
-            <Clock className="w-4 h-4 text-muted-foreground" />
-            <span className="font-mono text-sm text-foreground">
-              {currentTime.toLocaleTimeString()}
-            </span>
-          </div>
+        <div className="flex items-center gap-2 sm:gap-4 shrink-0">
+          {/* Time Display - Hidden on mobile */}
+          {!isMobile && (
+            <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-muted/50">
+              <Clock className="w-4 h-4 text-muted-foreground" />
+              <span className="font-mono text-sm text-foreground">
+                {currentTime.toLocaleTimeString()}
+              </span>
+            </div>
+          )}
 
-          {/* Security Status */}
-          <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-success/10 border border-success/30">
-            <Shield className="w-4 h-4 text-success" />
-            <span className="text-sm font-medium text-success">Protected</span>
+          {/* Security Status - Compact on mobile */}
+          <div className="flex items-center gap-1.5 sm:gap-2 px-2 sm:px-3 py-1.5 rounded-lg bg-success/10 border border-success/30">
+            <Shield className="w-3.5 sm:w-4 h-3.5 sm:h-4 text-success" />
+            <span className="text-xs sm:text-sm font-medium text-success hidden xs:inline">Protected</span>
           </div>
 
           {/* Alerts Dropdown */}
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="ghost" size="icon" className="relative">
-                <Bell className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="relative h-9 w-9 sm:h-10 sm:w-10">
+                <Bell className="w-4 sm:w-5 h-4 sm:h-5" />
                 {alertCount > 0 && (
                   <Badge
                     className={cn(
-                      'absolute -top-1 -right-1 w-5 h-5 p-0 flex items-center justify-center',
-                      'bg-destructive text-destructive-foreground text-xs'
+                      'absolute -top-1 -right-1 w-4 sm:w-5 h-4 sm:h-5 p-0 flex items-center justify-center',
+                      'bg-destructive text-destructive-foreground text-[10px] sm:text-xs'
                     )}
                   >
                     {alertCount}
@@ -73,11 +77,11 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
                 )}
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-80">
+            <DropdownMenuContent align="end" className="w-72 sm:w-80 bg-popover border border-border z-50">
               <div className="p-3 border-b border-border">
-                <span className="font-semibold">Recent Alerts</span>
+                <span className="font-semibold text-sm">Recent Alerts</span>
               </div>
-              <DropdownMenuItem className="p-3 cursor-pointer">
+              <DropdownMenuItem className="p-3 cursor-pointer focus:bg-muted">
                 <div className="flex gap-3">
                   <AlertTriangle className="w-5 h-5 text-destructive shrink-0 mt-0.5" />
                   <div>
@@ -86,7 +90,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
                   </div>
                 </div>
               </DropdownMenuItem>
-              <DropdownMenuItem className="p-3 cursor-pointer">
+              <DropdownMenuItem className="p-3 cursor-pointer focus:bg-muted">
                 <div className="flex gap-3">
                   <AlertTriangle className="w-5 h-5 text-warning shrink-0 mt-0.5" />
                   <div>
@@ -100,12 +104,13 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
         </div>
       </div>
 
-      {/* Disclaimer Banner */}
-      <div className="px-6 py-2 bg-warning/10 border-t border-warning/30">
-        <p className="text-xs text-warning flex items-center gap-2">
-          <AlertTriangle className="w-3.5 h-3.5" />
-          <span>
-            <strong>Educational & Defensive Use Only:</strong> Active signal interception may be regulated. Use passively on your own networks/devices only.
+      {/* Disclaimer Banner - Collapsible on mobile */}
+      <div className="px-3 sm:px-6 py-1.5 sm:py-2 bg-warning/10 border-t border-warning/30">
+        <p className="text-[10px] sm:text-xs text-warning flex items-center gap-1.5 sm:gap-2">
+          <AlertTriangle className="w-3 sm:w-3.5 h-3 sm:h-3.5 shrink-0" />
+          <span className="line-clamp-1 sm:line-clamp-none">
+            <strong>Educational Only:</strong>
+            <span className="hidden sm:inline"> Active signal interception may be regulated.</span> Use passively on your own networks.
           </span>
         </p>
       </div>
