@@ -13,11 +13,13 @@ import {
   ChevronLeft,
   ChevronRight,
   Wifi,
+  Crosshair,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', icon: Activity, label: 'Live Scan' },
+  { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard' },
   { to: '/map', icon: Map, label: 'Triangulation Map' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer' },
