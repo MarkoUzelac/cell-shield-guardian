@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, Map, Wifi, AlertTriangle, Settings, Menu, 
   Shield, FileSearch, Info, Radio, X, ChevronRight,
-  Bell, Volume2, VolumeX, Power, Crown
+  Bell, Volume2, VolumeX, Power, Crown, Crosshair
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -21,6 +21,7 @@ const mainNavItems = [
 
 const allNavItems = [
   { to: '/', icon: Activity, label: 'Live Scan', description: 'Real-time signal monitoring' },
+  { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard', description: 'Anomaly detection & scoring' },
   { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Cell tower mapping' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer', description: 'Analyze file metadata' },
