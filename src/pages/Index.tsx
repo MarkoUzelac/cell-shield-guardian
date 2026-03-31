@@ -177,10 +177,11 @@ const Index = () => {
               <CardContent className="space-y-3">
                 {/* Radar */}
                 <div className="flex items-center justify-center">
-                  <div className="scale-75 origin-center">
+                <div className="scale-75 origin-center">
                     <RadarDisplay
                       isScanning={isScanning}
                       detectedCount={imsiRecords.length}
+                      suspiciousCount={suspiciousCount}
                     />
                   </div>
                 </div>
