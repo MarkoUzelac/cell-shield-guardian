@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { TowerMap } from '@/components/map/TowerMap';
 import { TriangulationForm } from '@/components/triangulation/TriangulationForm';
+import { FakeStationDetector } from '@/components/map/FakeStationDetector';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
