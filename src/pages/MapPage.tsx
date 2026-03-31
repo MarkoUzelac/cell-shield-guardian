@@ -145,17 +145,19 @@ const MapPage = () => {
           </CardContent>
         </Card>
 
-        {/* Map - Full width, priority on mobile */}
-        <div className="h-[300px] sm:h-[400px] lg:h-[500px]">
+        {/* Map - Full width, taller for better zoom exploration */}
+        <div className="h-[350px] sm:h-[450px] lg:h-[550px]">
           <ErrorBoundary>
             <TowerMap
               towers={towers}
               center={mapCenter}
-              zoom={hasRealLocation ? 15 : 12}
+              zoom={hasRealLocation ? 14 : 11}
               onTowerClick={setSelectedTower}
               showRangeCircles
               userLocation={userLocation}
               showUserLocation={hasRealLocation}
+              minZoom={3}
+              maxZoom={19}
             />
           </ErrorBoundary>
         </div>
