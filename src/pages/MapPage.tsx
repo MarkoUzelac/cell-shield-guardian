@@ -165,6 +165,12 @@ const MapPage = () => {
 
         {/* Info Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Fake Station Detector */}
+          <FakeStationDetector
+            towers={towers}
+            onTowerSelect={setSelectedTower}
+            onRefresh={handleRefreshTowers}
+          />
           {/* Tower Stats */}
           <Card className="bg-card border-border">
             <CardHeader className="pb-2">
