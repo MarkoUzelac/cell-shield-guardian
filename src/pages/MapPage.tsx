@@ -4,6 +4,7 @@ import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { TowerMap } from '@/components/map/TowerMap';
 import { TriangulationForm } from '@/components/triangulation/TriangulationForm';
+import { FakeStationDetector } from '@/components/map/FakeStationDetector';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -164,6 +165,12 @@ const MapPage = () => {
 
         {/* Info Cards Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
+          {/* Fake Station Detector */}
+          <FakeStationDetector
+            towers={towers}
+            onTowerSelect={setSelectedTower}
+            onRefresh={handleRefreshTowers}
+          />
           {/* Tower Stats */}
           <Card className="bg-card border-border">
             <CardHeader className="pb-2">

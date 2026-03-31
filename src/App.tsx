@@ -11,6 +11,7 @@ import SettingsPage from "./pages/SettingsPage";
 import AboutPage from "./pages/AboutPage";
 import NetworkIntelligencePage from "./pages/NetworkIntelligencePage";
 import TacticalDashboard from "./pages/TacticalDashboard";
+import ProtectionGuidePage from "./pages/ProtectionGuidePage";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -30,6 +31,7 @@ const App = () => (
           <Route path="/about" element={<AboutPage />} />
           <Route path="/network" element={<NetworkIntelligencePage />} />
           <Route path="/tactical" element={<TacticalDashboard />} />
+          <Route path="/protection" element={<ProtectionGuidePage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
