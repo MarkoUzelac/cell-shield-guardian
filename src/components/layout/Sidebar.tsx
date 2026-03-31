@@ -14,6 +14,7 @@ import {
   ChevronRight,
   Wifi,
   Crosshair,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -22,6 +23,7 @@ const navItems = [
   { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard' },
   { to: '/map', icon: Map, label: 'Triangulation Map' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence' },
+  { to: '/protection', icon: ShieldCheck, label: 'Protection Guide' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer' },
   { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs' },
   { to: '/settings', icon: Settings, label: 'Settings' },
