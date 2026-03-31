@@ -29,7 +29,7 @@ export const FakeStationDetector = ({ towers, onTowerSelect, onRefresh }: FakeSt
 
   const analyzedTowers = useMemo(() => {
     return towers.map(tower => {
-      const analysis = analyzeTower(tower);
+      const analysis = analyzeTower(tower, towers);
       const level = getThreatLevel(analysis.score);
       return { tower, analysis, level };
     }).sort((a, b) => b.analysis.score - a.analysis.score);
