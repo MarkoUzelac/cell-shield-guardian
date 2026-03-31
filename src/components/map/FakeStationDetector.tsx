@@ -103,10 +103,10 @@ export const FakeStationDetector = ({ towers, onTowerSelect, onRefresh }: FakeSt
                     <span>•</span>
                     <span className="text-destructive font-mono">{(analysis.score * 100).toFixed(0)}% risk</span>
                   </div>
-                  {analysis.findings.length > 0 && (
+                  {analysis.details.length > 0 && (
                     <div className="mt-1 text-[10px] text-destructive">
-                      {analysis.findings.slice(0, 2).map((f, i) => (
-                        <span key={i}>⚠ {f}{i < 1 && analysis.findings.length > 1 ? ' • ' : ''}</span>
+                      {analysis.details.slice(0, 2).map((f, i) => (
+                        <span key={i}>⚠ {f}{i < 1 && analysis.details.length > 1 ? ' • ' : ''}</span>
                       ))}
                     </div>
                   )}
