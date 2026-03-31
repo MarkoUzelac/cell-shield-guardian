@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, Map, Wifi, AlertTriangle, Settings, Menu, 
   Shield, FileSearch, Info, Radio, X, ChevronRight,
-  Bell, Volume2, VolumeX, Power, Crown, Crosshair
+  Bell, Volume2, VolumeX, Power, Crown, Crosshair, ShieldCheck
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
