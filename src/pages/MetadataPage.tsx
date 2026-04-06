@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { MetadataAnalyzer } from '@/components/metadata/MetadataAnalyzer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSearch, Image, FileText, File } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const MetadataPage = () => {
   return (
