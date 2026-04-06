@@ -114,16 +114,17 @@ const NetworkIntelligencePage = () => {
   }, []);
 
   useEffect(() => {
-    fetchNetworkInfo();
+    const cleanup = fetchNetworkInfo();
     analyzeSecurityIndicators();
     
-    // Only fetch IP info if user has consented
     if (hasConsent === true) {
       fetchIpInfo();
     } else if (hasConsent === false) {
       setIsLoading(false);
     }
-  }, [hasConsent]);
+
+    return () => cleanup?.();
+  }, [hasConsent, fetchNetworkInfo]);
 
   const handleConsentGiven = () => {
     localStorage.setItem(NETWORK_CONSENT_KEY, 'true');
@@ -145,23 +146,13 @@ const NetworkIntelligencePage = () => {
     });
   };
 
-  const fetchNetworkInfo = () => {
-    // Use Network Information API if available (browser-native, no external calls)
+  const fetchNetworkInfo = useCallback(() => {
     const connection = (navigator as any).connection || 
                        (navigator as any).mozConnection || 
                        (navigator as any).webkitConnection;
     
     if (connection) {
-      setNetworkInfo({
-        effectiveType: connection.effectiveType,
-        downlink: connection.downlink,
-        rtt: connection.rtt,
-        saveData: connection.saveData,
-        type: connection.type
-      });
-
-      // Listen for changes
-      connection.addEventListener('change', () => {
+      const update = () => {
         setNetworkInfo({
           effectiveType: connection.effectiveType,
           downlink: connection.downlink,
@@ -169,10 +160,13 @@ const NetworkIntelligencePage = () => {
           saveData: connection.saveData,
           type: connection.type
         });
-        analyzeSecurityIndicators();
-      });
+      };
+      update();
+      connection.addEventListener('change', update);
+      return () => connection.removeEventListener('change', update);
     }
-  };
+    return undefined;
+  }, []);
 
   const fetchIpInfo = async () => {
     // Create abort controller for timeout
@@ -408,27 +402,27 @@ const NetworkIntelligencePage = () => {
 
   const getStatusColor = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return 'text-green-500';
-      case 'warning': return 'text-yellow-500';
-      case 'danger': return 'text-red-500';
+      case 'safe': return 'text-success';
+      case 'warning': return 'text-warning';
+      case 'danger': return 'text-destructive';
       default: return 'text-muted-foreground';
     }
   };
 
   const getStatusBadge = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">SECURE</Badge>;
-      case 'warning': return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">CAUTION</Badge>;
-      case 'danger': return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">RISK</Badge>;
+      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">SECURE</Badge>;
+      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">CAUTION</Badge>;
+      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">RISK</Badge>;
       default: return <Badge variant="outline">UNKNOWN</Badge>;
     }
   };
 
   const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'high': return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">HIGH RISK</Badge>;
-      case 'medium': return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">MEDIUM</Badge>;
-      case 'low': return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">LOW RISK</Badge>;
+      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">HIGH RISK</Badge>;
+      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">MEDIUM</Badge>;
+      case 'low': return <Badge className="bg-success/20 text-success border-success/30">LOW RISK</Badge>;
       default: return <Badge variant="outline">UNKNOWN</Badge>;
     }
   };
