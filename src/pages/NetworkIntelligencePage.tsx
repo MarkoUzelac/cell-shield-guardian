@@ -673,7 +673,7 @@ const NetworkIntelligencePage = () => {
             {/* Potential Threats Info */}
             <Card className="bg-card/50 backdrop-blur border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-yellow-500">
+                <CardTitle className="flex items-center gap-2 text-warning">
                   <AlertTriangle className="h-5 w-5" />
                   What to Watch For
                 </CardTitle>
