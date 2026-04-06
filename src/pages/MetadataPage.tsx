@@ -122,13 +122,12 @@ const MetadataPage = () => {
                       {item.title}
                     </h4>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded ${
-                        item.risk === 'high'
-                          ? 'bg-destructive/20 text-destructive'
-                          : item.risk === 'medium'
-                          ? 'bg-warning/20 text-warning'
-                          : 'bg-muted text-muted-foreground'
-                      }`}
+                      className={cn(
+                        'text-xs px-2 py-0.5 rounded',
+                        item.risk === 'high' && 'bg-destructive/20 text-destructive',
+                        item.risk === 'medium' && 'bg-warning/20 text-warning',
+                        item.risk === 'low' && 'bg-muted text-muted-foreground',
+                      )}
                     >
                       {item.risk} risk
                     </span>

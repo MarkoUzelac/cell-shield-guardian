@@ -100,22 +100,36 @@ const AlertsPage = () => {
       <div className="p-6 space-y-6">
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
-          {[
-            { label: 'Total', value: stats.total, color: 'text-foreground' },
-            { label: 'Critical', value: stats.critical, color: 'text-destructive' },
-            { label: 'Warnings', value: stats.warning, color: 'text-warning' },
-            { label: 'Info', value: stats.info, color: 'text-primary' },
-            { label: 'Unread', value: stats.unacknowledged, color: 'text-foreground' },
-          ].map((stat) => (
-            <Card key={stat.label} className="bg-card border-border">
-              <CardContent className="p-4 text-center">
-                <p className={`text-2xl font-bold font-mono ${stat.color}`}>
-                  {stat.value}
-                </p>
-                <p className="text-xs text-muted-foreground">{stat.label}</p>
-              </CardContent>
-            </Card>
-          ))}
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold font-mono text-foreground">{stats.total}</p>
+              <p className="text-xs text-muted-foreground">Total</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold font-mono text-destructive">{stats.critical}</p>
+              <p className="text-xs text-muted-foreground">Critical</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold font-mono text-warning">{stats.warning}</p>
+              <p className="text-xs text-muted-foreground">Warnings</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold font-mono text-primary">{stats.info}</p>
+              <p className="text-xs text-muted-foreground">Info</p>
+            </CardContent>
+          </Card>
+          <Card className="bg-card border-border">
+            <CardContent className="p-4 text-center">
+              <p className="text-2xl font-bold font-mono text-foreground">{stats.unacknowledged}</p>
+              <p className="text-xs text-muted-foreground">Unread</p>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Filters and Actions */}
