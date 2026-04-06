@@ -437,12 +437,12 @@ const NetworkIntelligencePage = () => {
         </div>
 
         {/* Disclaimer Banner */}
-        <Card className="border-yellow-500/30 bg-yellow-500/5">
+        <Card className="border-warning/30 bg-warning/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-yellow-500">Educational Information Only</p>
+                <p className="font-medium text-warning">Educational Information Only</p>
                 <p className="text-muted-foreground mt-1">
                   This page provides network diagnostics and educational information about potential security risks. 
                   The indicators shown are informational and NOT definitive proof of surveillance or attacks. 
@@ -524,8 +524,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-cyan-500/10 rounded-lg">
-                      <Globe className="h-5 w-5 text-cyan-500" />
+                    <div className="p-2 bg-accent/10 rounded-lg">
+                      <Globe className="h-5 w-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">ISP/Carrier</p>
@@ -550,8 +550,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <Clock className="h-5 w-5 text-green-500" />
+                    <div className="p-2 bg-success/10 rounded-lg">
+                      <Clock className="h-5 w-5 text-success" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Latency</p>
@@ -572,8 +572,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/10 rounded-lg">
-                      <Zap className="h-5 w-5 text-purple-500" />
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Zap className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Est. Bandwidth</p>
@@ -680,8 +680,8 @@ const NetworkIntelligencePage = () => {
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-                    <h4 className="font-medium text-red-400 mb-2">IMSI Catcher Signs</h4>
+                  <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
+                    <h4 className="font-medium text-destructive mb-2">IMSI Catcher Signs</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Sudden downgrade to 2G in strong signal area</li>
                       <li>• Unusual cell tower ID changes</li>
@@ -689,8 +689,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Call quality degradation</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-                    <h4 className="font-medium text-yellow-400 mb-2">Silent SMS Indicators</h4>
+                  <div className="p-4 rounded-lg bg-warning/5 border border-warning/20">
+                    <h4 className="font-medium text-warning mb-2">Silent SMS Indicators</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Unexplained network activity</li>
                       <li>• Brief signal interruptions</li>
@@ -698,8 +698,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Phone waking without notifications</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
-                    <h4 className="font-medium text-purple-400 mb-2">Man-in-the-Middle</h4>
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <h4 className="font-medium text-primary mb-2">Man-in-the-Middle</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Certificate warnings on trusted sites</li>
                       <li>• Abnormally high latency</li>
@@ -707,8 +707,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Unexpected redirects</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
-                    <h4 className="font-medium text-cyan-400 mb-2">Location Tracking</h4>
+                  <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
+                    <h4 className="font-medium text-accent mb-2">Location Tracking</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Frequent cell tower handoffs while stationary</li>
                       <li>• GPS requests from unknown apps</li>
