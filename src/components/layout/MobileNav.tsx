@@ -63,7 +63,7 @@ export const MobileNav = () => {
                 key={item.to}
                 to={item.to}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] active:scale-95',
+                  'flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 focus:ring-2 focus:ring-primary',
                   isActive 
                     ? 'text-primary bg-primary/10' 
                     : 'text-muted-foreground hover:text-foreground active:bg-muted/50'
@@ -86,9 +86,10 @@ export const MobileNav = () => {
             <SheetTrigger asChild>
               <button 
                 className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] active:scale-95",
+                  "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 focus:ring-2 focus:ring-primary",
                   "text-muted-foreground hover:text-foreground active:bg-muted/50"
                 )}
+                aria-label="More navigation options"
               >
                 <Menu className="w-5 h-5" />
                 <span className="text-[10px] font-medium leading-tight">More</span>

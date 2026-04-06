@@ -87,20 +87,22 @@ export const AlertsList = ({
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-11 w-11 focus:ring-2 focus:ring-primary"
                             onClick={() => onAcknowledge(alert.id)}
+                            aria-label={`Acknowledge alert: ${alert.title}`}
                           >
-                            <Check className="w-4 h-4" />
+                            <Check className="w-5 h-5" />
                           </Button>
                         )}
                         {onDismiss && (
                           <Button
                             variant="ghost"
                             size="icon"
-                            className="h-6 w-6"
+                            className="h-11 w-11 focus:ring-2 focus:ring-primary"
                             onClick={() => onDismiss(alert.id)}
+                            aria-label={`Dismiss alert: ${alert.title}`}
                           >
-                            <X className="w-4 h-4" />
+                            <X className="w-5 h-5" />
                           </Button>
                         )}
                       </div>
