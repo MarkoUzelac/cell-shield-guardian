@@ -113,6 +113,28 @@ const NetworkIntelligencePage = () => {
     setHasConsent(storedConsent === 'true');
   }, []);
 
+  const fetchNetworkInfo = useCallback(() => {
+    const connection = (navigator as any).connection || 
+                       (navigator as any).mozConnection || 
+                       (navigator as any).webkitConnection;
+    
+    if (connection) {
+      const update = () => {
+        setNetworkInfo({
+          effectiveType: connection.effectiveType,
+          downlink: connection.downlink,
+          rtt: connection.rtt,
+          saveData: connection.saveData,
+          type: connection.type
+        });
+      };
+      update();
+      connection.addEventListener('change', update);
+      return () => connection.removeEventListener('change', update);
+    }
+    return undefined;
+  }, []);
+
   useEffect(() => {
     const cleanup = fetchNetworkInfo();
     analyzeSecurityIndicators();
@@ -145,28 +167,6 @@ const NetworkIntelligencePage = () => {
       description: "External API calls have been disabled.",
     });
   };
-
-  const fetchNetworkInfo = useCallback(() => {
-    const connection = (navigator as any).connection || 
-                       (navigator as any).mozConnection || 
-                       (navigator as any).webkitConnection;
-    
-    if (connection) {
-      const update = () => {
-        setNetworkInfo({
-          effectiveType: connection.effectiveType,
-          downlink: connection.downlink,
-          rtt: connection.rtt,
-          saveData: connection.saveData,
-          type: connection.type
-        });
-      };
-      update();
-      connection.addEventListener('change', update);
-      return () => connection.removeEventListener('change', update);
-    }
-    return undefined;
-  }, []);
 
   const fetchIpInfo = async () => {
     // Create abort controller for timeout
