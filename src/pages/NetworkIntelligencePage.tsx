@@ -113,17 +113,40 @@ const NetworkIntelligencePage = () => {
     setHasConsent(storedConsent === 'true');
   }, []);
 
+  const fetchNetworkInfo = useCallback(() => {
+    const connection = (navigator as any).connection || 
+                       (navigator as any).mozConnection || 
+                       (navigator as any).webkitConnection;
+    
+    if (connection) {
+      const update = () => {
+        setNetworkInfo({
+          effectiveType: connection.effectiveType,
+          downlink: connection.downlink,
+          rtt: connection.rtt,
+          saveData: connection.saveData,
+          type: connection.type
+        });
+      };
+      update();
+      connection.addEventListener('change', update);
+      return () => connection.removeEventListener('change', update);
+    }
+    return undefined;
+  }, []);
+
   useEffect(() => {
-    fetchNetworkInfo();
+    const cleanup = fetchNetworkInfo();
     analyzeSecurityIndicators();
     
-    // Only fetch IP info if user has consented
     if (hasConsent === true) {
       fetchIpInfo();
     } else if (hasConsent === false) {
       setIsLoading(false);
     }
-  }, [hasConsent]);
+
+    return () => cleanup?.();
+  }, [hasConsent, fetchNetworkInfo]);
 
   const handleConsentGiven = () => {
     localStorage.setItem(NETWORK_CONSENT_KEY, 'true');
@@ -143,35 +166,6 @@ const NetworkIntelligencePage = () => {
       title: "Network Diagnostics Disabled",
       description: "External API calls have been disabled.",
     });
-  };
-
-  const fetchNetworkInfo = () => {
-    // Use Network Information API if available (browser-native, no external calls)
-    const connection = (navigator as any).connection || 
-                       (navigator as any).mozConnection || 
-                       (navigator as any).webkitConnection;
-    
-    if (connection) {
-      setNetworkInfo({
-        effectiveType: connection.effectiveType,
-        downlink: connection.downlink,
-        rtt: connection.rtt,
-        saveData: connection.saveData,
-        type: connection.type
-      });
-
-      // Listen for changes
-      connection.addEventListener('change', () => {
-        setNetworkInfo({
-          effectiveType: connection.effectiveType,
-          downlink: connection.downlink,
-          rtt: connection.rtt,
-          saveData: connection.saveData,
-          type: connection.type
-        });
-        analyzeSecurityIndicators();
-      });
-    }
   };
 
   const fetchIpInfo = async () => {
@@ -408,27 +402,27 @@ const NetworkIntelligencePage = () => {
 
   const getStatusColor = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return 'text-green-500';
-      case 'warning': return 'text-yellow-500';
-      case 'danger': return 'text-red-500';
+      case 'safe': return 'text-success';
+      case 'warning': return 'text-warning';
+      case 'danger': return 'text-destructive';
       default: return 'text-muted-foreground';
     }
   };
 
   const getStatusBadge = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">SECURE</Badge>;
-      case 'warning': return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">CAUTION</Badge>;
-      case 'danger': return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">RISK</Badge>;
+      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">SECURE</Badge>;
+      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">CAUTION</Badge>;
+      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">RISK</Badge>;
       default: return <Badge variant="outline">UNKNOWN</Badge>;
     }
   };
 
   const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'high': return <Badge className="bg-red-500/20 text-red-400 border-red-500/30">HIGH RISK</Badge>;
-      case 'medium': return <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">MEDIUM</Badge>;
-      case 'low': return <Badge className="bg-green-500/20 text-green-400 border-green-500/30">LOW RISK</Badge>;
+      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">HIGH RISK</Badge>;
+      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">MEDIUM</Badge>;
+      case 'low': return <Badge className="bg-success/20 text-success border-success/30">LOW RISK</Badge>;
       default: return <Badge variant="outline">UNKNOWN</Badge>;
     }
   };
@@ -443,12 +437,12 @@ const NetworkIntelligencePage = () => {
         </div>
 
         {/* Disclaimer Banner */}
-        <Card className="border-yellow-500/30 bg-yellow-500/5">
+        <Card className="border-warning/30 bg-warning/5">
           <CardContent className="p-4">
             <div className="flex items-start gap-3">
-              <AlertTriangle className="h-5 w-5 text-yellow-500 mt-0.5 flex-shrink-0" />
+              <AlertTriangle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-yellow-500">Educational Information Only</p>
+                <p className="font-medium text-warning">Educational Information Only</p>
                 <p className="text-muted-foreground mt-1">
                   This page provides network diagnostics and educational information about potential security risks. 
                   The indicators shown are informational and NOT definitive proof of surveillance or attacks. 
@@ -530,8 +524,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-cyan-500/10 rounded-lg">
-                      <Globe className="h-5 w-5 text-cyan-500" />
+                    <div className="p-2 bg-accent/10 rounded-lg">
+                      <Globe className="h-5 w-5 text-accent" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">ISP/Carrier</p>
@@ -556,8 +550,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-green-500/10 rounded-lg">
-                      <Clock className="h-5 w-5 text-green-500" />
+                    <div className="p-2 bg-success/10 rounded-lg">
+                      <Clock className="h-5 w-5 text-success" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Latency</p>
@@ -578,8 +572,8 @@ const NetworkIntelligencePage = () => {
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="p-2 bg-purple-500/10 rounded-lg">
-                      <Zap className="h-5 w-5 text-purple-500" />
+                    <div className="p-2 bg-primary/10 rounded-lg">
+                      <Zap className="h-5 w-5 text-primary" />
                     </div>
                     <div>
                       <p className="text-sm text-muted-foreground">Est. Bandwidth</p>
@@ -679,15 +673,15 @@ const NetworkIntelligencePage = () => {
             {/* Potential Threats Info */}
             <Card className="bg-card/50 backdrop-blur border-border/50">
               <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-yellow-500">
+                <CardTitle className="flex items-center gap-2 text-warning">
                   <AlertTriangle className="h-5 w-5" />
                   What to Watch For
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 rounded-lg bg-red-500/5 border border-red-500/20">
-                    <h4 className="font-medium text-red-400 mb-2">IMSI Catcher Signs</h4>
+                  <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
+                    <h4 className="font-medium text-destructive mb-2">IMSI Catcher Signs</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Sudden downgrade to 2G in strong signal area</li>
                       <li>• Unusual cell tower ID changes</li>
@@ -695,8 +689,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Call quality degradation</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-yellow-500/5 border border-yellow-500/20">
-                    <h4 className="font-medium text-yellow-400 mb-2">Silent SMS Indicators</h4>
+                  <div className="p-4 rounded-lg bg-warning/5 border border-warning/20">
+                    <h4 className="font-medium text-warning mb-2">Silent SMS Indicators</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Unexplained network activity</li>
                       <li>• Brief signal interruptions</li>
@@ -704,8 +698,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Phone waking without notifications</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-purple-500/5 border border-purple-500/20">
-                    <h4 className="font-medium text-purple-400 mb-2">Man-in-the-Middle</h4>
+                  <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
+                    <h4 className="font-medium text-primary mb-2">Man-in-the-Middle</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Certificate warnings on trusted sites</li>
                       <li>• Abnormally high latency</li>
@@ -713,8 +707,8 @@ const NetworkIntelligencePage = () => {
                       <li>• Unexpected redirects</li>
                     </ul>
                   </div>
-                  <div className="p-4 rounded-lg bg-cyan-500/5 border border-cyan-500/20">
-                    <h4 className="font-medium text-cyan-400 mb-2">Location Tracking</h4>
+                  <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
+                    <h4 className="font-medium text-accent mb-2">Location Tracking</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
                       <li>• Frequent cell tower handoffs while stationary</li>
                       <li>• GPS requests from unknown apps</li>

@@ -3,6 +3,7 @@ import { Header } from '@/components/layout/Header';
 import { MetadataAnalyzer } from '@/components/metadata/MetadataAnalyzer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSearch, Image, FileText, File } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 const MetadataPage = () => {
   return (
@@ -122,13 +123,12 @@ const MetadataPage = () => {
                       {item.title}
                     </h4>
                     <span
-                      className={`text-xs px-2 py-0.5 rounded ${
-                        item.risk === 'high'
-                          ? 'bg-destructive/20 text-destructive'
-                          : item.risk === 'medium'
-                          ? 'bg-warning/20 text-warning'
-                          : 'bg-muted text-muted-foreground'
-                      }`}
+                      className={cn(
+                        'text-xs px-2 py-0.5 rounded',
+                        item.risk === 'high' && 'bg-destructive/20 text-destructive',
+                        item.risk === 'medium' && 'bg-warning/20 text-warning',
+                        item.risk === 'low' && 'bg-muted text-muted-foreground',
+                      )}
                     >
                       {item.risk} risk
                     </span>
