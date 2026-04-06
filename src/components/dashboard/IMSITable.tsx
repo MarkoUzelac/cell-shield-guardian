@@ -21,6 +21,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
   const [lastAlertedId, setLastAlertedId] = useState<string | null>(null);
   const { playSound, isMuted, toggleMute } = useAlertSound();
 
+  const isLoading = records.length === 0;
   const displayedRecords = records.slice(0, maxRows);
 
   // Play sound when new suspicious record appears
@@ -82,19 +83,21 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
             size="sm"
             onClick={toggleMute}
             className={cn(
-              "text-muted-foreground h-8 px-2",
+              "text-muted-foreground h-11 w-11 p-0 focus:ring-2 focus:ring-primary",
               !isMuted && "text-primary"
             )}
+            aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
           >
-            {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+            {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setMaskedIMSI(!maskedIMSI)}
-            className="text-muted-foreground h-8"
+            className="text-muted-foreground h-11 px-3 focus:ring-2 focus:ring-primary"
+            aria-label={maskedIMSI ? 'Show IMSI values' : 'Hide IMSI values'}
           >
-            {maskedIMSI ? <Eye className="w-4 h-4 mr-1" /> : <EyeOff className="w-4 h-4 mr-1" />}
+            {maskedIMSI ? <Eye className="w-5 h-5 mr-1" /> : <EyeOff className="w-5 h-5 mr-1" />}
             <span className="hidden sm:inline">{maskedIMSI ? 'Show' : 'Hide'}</span>
           </Button>
         </div>
@@ -102,6 +105,25 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
 
       {/* Mobile Card View */}
       <div className="md:hidden divide-y divide-border/50">
+        {isLoading ? (
+          <div className="space-y-0">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="p-3 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2.5 h-2.5 rounded-full animate-pulse bg-muted" />
+                    <div className="h-4 w-32 animate-pulse bg-muted rounded" />
+                  </div>
+                  <div className="h-4 w-12 animate-pulse bg-muted rounded" />
+                </div>
+                <div className="flex items-center justify-between">
+                  <div className="h-3 w-20 animate-pulse bg-muted rounded" />
+                  <div className="h-3 w-16 animate-pulse bg-muted rounded" />
+                </div>
+              </div>
+            ))}
+          </div>
+        ) : (
         <AnimatePresence mode="popLayout">
           {displayedRecords.map((record, index) => (
             <motion.div
@@ -128,12 +150,13 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
                   </span>
                   <button
                     onClick={() => copyToClipboard(record.imsi, record.id)}
-                    className="text-muted-foreground"
+                    className="text-muted-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label={`Copy IMSI ${record.imsi}`}
                   >
                     {copiedId === record.id ? (
-                      <Check className="w-3.5 h-3.5 text-success" />
+                      <Check className="w-4 h-4 text-success" />
                     ) : (
-                      <Copy className="w-3.5 h-3.5" />
+                      <Copy className="w-4 h-4" />
                     )}
                   </button>
                 </div>
@@ -152,6 +175,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
             </motion.div>
           ))}
         </AnimatePresence>
+        )}
       </div>
 
       {/* Desktop Table View */}
