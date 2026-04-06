@@ -738,8 +738,23 @@ const NetworkIntelligencePage = () => {
               </CardHeader>
               <CardContent>
                 {isLoading ? (
-                  <div className="flex items-center justify-center py-8">
-                    <RefreshCw className="h-8 w-8 animate-spin text-muted-foreground" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-3">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="flex justify-between p-3 rounded-lg bg-background/50">
+                          <div className="h-4 w-24 animate-pulse bg-muted rounded" />
+                          <div className="h-4 w-32 animate-pulse bg-muted rounded" />
+                        </div>
+                      ))}
+                    </div>
+                    <div className="space-y-3">
+                      {Array.from({ length: 4 }).map((_, i) => (
+                        <div key={i} className="flex justify-between p-3 rounded-lg bg-background/50">
+                          <div className="h-4 w-20 animate-pulse bg-muted rounded" />
+                          <div className="h-4 w-28 animate-pulse bg-muted rounded" />
+                        </div>
+                      ))}
+                    </div>
                   </div>
                 ) : (
                   <div className="space-y-6">
