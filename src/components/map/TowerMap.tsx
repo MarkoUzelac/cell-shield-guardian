@@ -117,6 +117,7 @@ export const TowerMap = ({
         doubleClickZoom={true}
         touchZoom={true}
         dragging={true}
+        keyboard={true}
       >
         <MapUpdater center={center} zoom={zoom} />
 
@@ -140,7 +141,7 @@ export const TowerMap = ({
             />
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
               <Popup>
-                <div className="p-2 min-w-[180px]">
+                <div className="p-2 min-w-[180px]" tabIndex={0} role="region" aria-label="Your location details">
                   <div className="font-semibold text-primary mb-1">📍 Your Location</div>
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
@@ -183,7 +184,7 @@ export const TowerMap = ({
               }}
             >
               <Popup>
-                <div className="p-2 min-w-[220px]">
+                <div className="p-2 min-w-[220px]" tabIndex={0} role="region" aria-label={`Tower ${tower.cellId} details`}>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="font-semibold">{tower.operator}</span>
                     <span className={tower.isSuspicious ? "text-destructive font-bold" : "text-success"}>
