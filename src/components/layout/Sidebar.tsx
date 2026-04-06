@@ -72,8 +72,8 @@ export const Sidebar = () => {
               key={item.to}
               to={item.to}
               className={cn(
-                'flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200',
-                'hover:bg-sidebar-accent group',
+                'flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 min-h-[44px]',
+                'hover:bg-sidebar-accent focus:ring-2 focus:ring-primary group',
                 isActive && 'bg-sidebar-accent text-primary'
               )}
             >
@@ -132,12 +132,13 @@ export const Sidebar = () => {
       {/* Collapse Button */}
       <button
         onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-3 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-sidebar-accent border border-sidebar-border flex items-center justify-center hover:bg-primary/20 transition-colors"
+        className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sidebar-accent border border-sidebar-border flex items-center justify-center hover:bg-primary/20 focus:ring-2 focus:ring-primary transition-colors"
+        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
       >
         {collapsed ? (
-          <ChevronRight className="w-4 h-4 text-muted-foreground" />
+          <ChevronRight className="w-5 h-5 text-muted-foreground" />
         ) : (
-          <ChevronLeft className="w-4 h-4 text-muted-foreground" />
+          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
         )}
       </button>
     </motion.aside>
