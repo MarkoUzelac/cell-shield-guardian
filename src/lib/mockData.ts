@@ -1,16 +1,10 @@
 import { CellTower, IMSIRecord, Alert, MetadataResult, ScanStatus } from '@/types/signal';
-import { CROATIAN_OPERATORS, generateCroatianIMSI, getRandomCroatianOperator } from './croatianOperators';
-
-// Use Croatian operators for realistic local data
-const operators = CROATIAN_OPERATORS.map(op => ({
-  mcc: op.mcc,
-  mnc: op.mnc,
-  name: op.name,
-}));
-
-const generateRandomIMSI = () => {
-  return generateCroatianIMSI();
-};
+import {
+  DEFAULT_COUNTRY,
+  getRandomOperator,
+  generateIMSIForCountry,
+  type CountryOperators,
+} from './worldOperators';
 
 const generateRandomTMSI = () => {
   return Math.random().toString(16).slice(2, 10).toUpperCase();
