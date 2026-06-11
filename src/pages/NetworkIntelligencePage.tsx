@@ -825,6 +825,7 @@ const NetworkIntelligencePage = () => {
                           <p className="font-medium">{networkInfo?.saveData ? 'Enabled' : 'Disabled'}</p>
                         </div>
                     </div>
+                    </div>
 
                     {/* Mobile operators for the user's detected country */}
                     {ipInfo?.country_code && (() => {
