@@ -52,8 +52,16 @@ const WEIGHTS = {
   rapidSwitch: 0.15,
 } as const;
 
-const KNOWN_MCC = ['219']; // Croatia
-const KNOWN_MNCS = CROATIAN_OPERATORS.map(op => op.mnc);
+// Known MCC/MNCs for the user's current country. Updated at runtime via
+// setKnownCountry() so anomaly detection adapts to wherever the user is.
+let KNOWN_MCC: string[] = [DEFAULT_COUNTRY.mcc];
+let KNOWN_MNCS: string[] = DEFAULT_COUNTRY.operators.map(op => op.mnc);
+
+/** Update the anomaly engine's expected operators based on the user's country. */
+export function setKnownCountry(country: CountryOperators) {
+  KNOWN_MCC = [country.mcc];
+  KNOWN_MNCS = country.operators.map(op => op.mnc);
+}
 
 // Expected signal range for legitimate towers (dBm)
 const NORMAL_SIGNAL_MIN = -110;
