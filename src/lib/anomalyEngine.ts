@@ -6,7 +6,7 @@
  */
 
 import type { CellTower } from '@/types/signal';
-import { CROATIAN_OPERATORS, getRandomCroatianOperator } from './croatianOperators';
+import { DEFAULT_COUNTRY, getRandomOperator, type CountryOperators } from './worldOperators';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
