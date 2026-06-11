@@ -23,6 +23,7 @@ const MapPage = () => {
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [operatorsOpen, setOperatorsOpen] = useState(false);
   const { latitude, longitude, loading: geoLoading, error: geoError, requestLocation, accuracy, hasRealLocation } = useGeolocation();
+  const { country, countryName, loading: countryLoading } = useCountry(latitude, longitude);
 
   // Get map center based on user location
   const mapCenter: [number, number] = [
@@ -33,12 +34,13 @@ const MapPage = () => {
   // User location for marker
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
-  // Generate towers around user location when location is available
+  // Generate towers around user location using the operators of that country
   useEffect(() => {
     if (latitude && longitude) {
-      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15));
+      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15, country));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, country]);
+
 
   const handleTriangulation = async (data: {
     mcc: string;
