@@ -14,14 +14,15 @@ const generateRandomCellId = () => {
   return Math.floor(Math.random() * 65535).toString();
 };
 
-// Generate towers around user's actual location
+// Generate towers around user's actual location using that country's operators
 export const generateCellTowersAroundLocation = (
   baseLat: number,
   baseLng: number,
-  count: number = 10
+  count: number = 10,
+  country: CountryOperators = DEFAULT_COUNTRY
 ): CellTower[] => {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.85;
     // Spread towers within ~5km radius
     const latOffset = (Math.random() - 0.5) * 0.09;
