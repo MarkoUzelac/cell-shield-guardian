@@ -6,7 +6,7 @@
  */
 
 import type { CellTower } from '@/types/signal';
-import { CROATIAN_OPERATORS, getRandomCroatianOperator } from './croatianOperators';
+import { DEFAULT_COUNTRY, getRandomOperator, type CountryOperators } from './worldOperators';
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -52,8 +52,16 @@ const WEIGHTS = {
   rapidSwitch: 0.15,
 } as const;
 
-const KNOWN_MCC = ['219']; // Croatia
-const KNOWN_MNCS = CROATIAN_OPERATORS.map(op => op.mnc);
+// Known MCC/MNCs for the user's current country. Updated at runtime via
+// setKnownCountry() so anomaly detection adapts to wherever the user is.
+let KNOWN_MCC: string[] = [DEFAULT_COUNTRY.mcc];
+let KNOWN_MNCS: string[] = DEFAULT_COUNTRY.operators.map(op => op.mnc);
+
+/** Update the anomaly engine's expected operators based on the user's country. */
+export function setKnownCountry(country: CountryOperators) {
+  KNOWN_MCC = [country.mcc];
+  KNOWN_MNCS = country.operators.map(op => op.mnc);
+}
 
 // Expected signal range for legitimate towers (dBm)
 const NORMAL_SIGNAL_MIN = -110;
@@ -221,9 +229,9 @@ export const THREAT_BG_CLASSES: Record<ThreatLevel, string> = {
 
 // ─── Helper: Create Base Towers ──────────────────────────────────────────────
 
-function createBaseTowers(baseLat: number, baseLng: number, count: number): CellTower[] {
+function createBaseTowers(baseLat: number, baseLng: number, count: number, country: CountryOperators = DEFAULT_COUNTRY): CellTower[] {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.85;
     return {
       id: `tower-${i}-${Date.now()}`,
@@ -249,12 +257,16 @@ export function generateTacticalTowers(
   baseLat: number,
   baseLng: number,
   count: number = 50,
-  generateBaseTowers?: (lat: number, lng: number, count: number) => CellTower[]
+  generateBaseTowers?: (lat: number, lng: number, count: number) => CellTower[],
+  country: CountryOperators = DEFAULT_COUNTRY
 ): TacticalTower[] {
+  // Keep anomaly detection aligned with the user's current country.
+  setKnownCountry(country);
+
   // Use provided generator or create simple towers inline
   const baseTowers: CellTower[] = generateBaseTowers
     ? generateBaseTowers(baseLat, baseLng, count)
-    : createBaseTowers(baseLat, baseLng, count);
+    : createBaseTowers(baseLat, baseLng, count, country);
 
   // Inject some deliberately suspicious towers
   const tacticalTowers: TacticalTower[] = baseTowers.map((tower, i) => {

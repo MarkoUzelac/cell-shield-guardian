@@ -20,6 +20,7 @@ import {
   type ThreatLevel,
 } from '@/lib/anomalyEngine';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { useCountry } from '@/hooks/useCountry';
 import {
   Shield,
   AlertTriangle,
@@ -56,13 +57,14 @@ const TacticalDashboard = () => {
   const [selectedTower, setSelectedTower] = useState<TacticalTower | null>(null);
   const [isScanning, setIsScanning] = useState(true);
   const { latitude, longitude } = useGeolocation();
+  const { country } = useCountry(latitude, longitude);
 
   const lat = latitude || 45.815;
   const lng = longitude || 15.9819;
 
   useEffect(() => {
-    setTowers(generateTacticalTowers(lat, lng, 60));
-  }, [lat, lng]);
+    setTowers(generateTacticalTowers(lat, lng, 60, undefined, country));
+  }, [lat, lng, country]);
 
   const stats = useMemo(() => computeTacticalStats(towers), [towers]);
 
@@ -77,7 +79,7 @@ const TacticalDashboard = () => {
   );
 
   const handleRefresh = () => {
-    setTowers(generateTacticalTowers(lat, lng, 60));
+    setTowers(generateTacticalTowers(lat, lng, 60, undefined, country));
     setSelectedTower(null);
   };
 

@@ -14,6 +14,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { IMSIRecord, Alert } from '@/types/signal';
 import { useAlertSound } from '@/hooks/useAlertSound';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { useCountry } from '@/hooks/useCountry';
 import { CROATIAN_FREQUENCY_BANDS } from '@/lib/croatianOperators';
 import { cn } from '@/lib/utils';
 import {
@@ -31,12 +32,13 @@ const Index = () => {
   const [bandsOpen, setBandsOpen] = useState(false);
   const { playSound, isMuted, toggleMute } = useAlertSound();
   const { hasRealLocation, latitude, longitude } = useGeolocation();
+  const { country } = useCountry(latitude, longitude);
 
-  // Initialize with mock data
+  // Initialize with mock data based on the user's country operators
   useEffect(() => {
-    setImsiRecords(generateMockIMSIRecords(15));
+    setImsiRecords(generateMockIMSIRecords(15, country));
     setAlerts(generateMockAlerts());
-  }, []);
+  }, [country]);
 
   // Simulate real-time data with sound alerts
   useEffect(() => {
@@ -46,7 +48,8 @@ const Index = () => {
       (record) => {
         setImsiRecords(prev => [record, ...prev].slice(0, 50));
       },
-      () => {}
+      () => {},
+      country
     );
 
     const unsubAlert = simulateRealtimeAlert(
@@ -66,7 +69,7 @@ const Index = () => {
       unsubIMSI();
       unsubAlert();
     };
-  }, [isScanning, playSound]);
+  }, [isScanning, playSound, country]);
 
   const handleAcknowledgeAlert = (id: string) => {
     setAlerts(prev =>

@@ -12,8 +12,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CellTower } from '@/types/signal';
 import { generateCellTowersAroundLocation } from '@/lib/mockData';
-import { CROATIAN_OPERATORS } from '@/lib/croatianOperators';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { useCountry } from '@/hooks/useCountry';
 import { cn } from '@/lib/utils';
 import { MapPin, Navigation, RefreshCw, Loader2, ChevronDown, Target } from 'lucide-react';
 
@@ -23,6 +23,7 @@ const MapPage = () => {
   const [isLookingUp, setIsLookingUp] = useState(false);
   const [operatorsOpen, setOperatorsOpen] = useState(false);
   const { latitude, longitude, loading: geoLoading, error: geoError, requestLocation, accuracy, hasRealLocation } = useGeolocation();
+  const { country, countryName, loading: countryLoading } = useCountry(latitude, longitude);
 
   // Get map center based on user location
   const mapCenter: [number, number] = [
@@ -33,12 +34,13 @@ const MapPage = () => {
   // User location for marker
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
-  // Generate towers around user location when location is available
+  // Generate towers around user location using the operators of that country
   useEffect(() => {
     if (latitude && longitude) {
-      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15));
+      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15, country));
     }
-  }, [latitude, longitude]);
+  }, [latitude, longitude, country]);
+
 
   const handleTriangulation = async (data: {
     mcc: string;
@@ -49,12 +51,12 @@ const MapPage = () => {
     setIsLookingUp(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const operator = CROATIAN_OPERATORS.find(op => op.mnc === data.mnc) || CROATIAN_OPERATORS[0];
+    const operator = country.operators.find(op => op.mnc === data.mnc) || country.operators[0];
     
     const newTower: CellTower = {
       id: `tower-lookup-${Date.now()}`,
-      mcc: data.mcc || '219',
-      mnc: data.mnc || '01',
+      mcc: data.mcc || country.mcc,
+      mnc: data.mnc || operator.mnc,
       lac: data.lac || '12345',
       cellId: data.cellId || '67890',
       lat: (latitude || 45.8150) + (Math.random() - 0.5) * 0.02,
@@ -73,7 +75,7 @@ const MapPage = () => {
 
   const handleRefreshTowers = () => {
     if (latitude && longitude) {
-      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15));
+      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15, country));
       setSelectedTower(null);
     }
   };
@@ -194,13 +196,15 @@ const MapPage = () => {
             </CardContent>
           </Card>
 
-          {/* Croatian Operators - Collapsible */}
+          {/* Local Operators (based on user's country) - Collapsible */}
           <Collapsible open={operatorsOpen} onOpenChange={setOperatorsOpen}>
             <Card className="bg-card border-border">
               <CollapsibleTrigger asChild>
                 <CardHeader className="pb-2 cursor-pointer hover:bg-muted/50 rounded-t-lg transition-colors">
                   <CardTitle className="text-sm font-medium flex items-center justify-between">
-                    Croatian Operators
+                    <span className="flex items-center gap-2">
+                      {countryLoading ? 'Detecting Operators…' : `${country.country} Operators`}
+                    </span>
                     <ChevronDown className={cn(
                       "w-4 h-4 text-muted-foreground transition-transform",
                       operatorsOpen && "rotate-180"
@@ -210,7 +214,10 @@ const MapPage = () => {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <CardContent className="pt-0 space-y-2">
-                  {CROATIAN_OPERATORS.map(op => (
+                  <p className="text-xs text-muted-foreground pb-1">
+                    MCC {country.mcc}{countryName ? ` · ${countryName}` : ''}
+                  </p>
+                  {country.operators.map(op => (
                     <div key={op.mnc} className="flex items-center gap-2 text-xs p-2 rounded bg-muted/30">
                       <div 
                         className="w-3 h-3 rounded-full shrink-0" 

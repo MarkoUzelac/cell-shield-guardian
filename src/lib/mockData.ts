@@ -1,16 +1,10 @@
 import { CellTower, IMSIRecord, Alert, MetadataResult, ScanStatus } from '@/types/signal';
-import { CROATIAN_OPERATORS, generateCroatianIMSI, getRandomCroatianOperator } from './croatianOperators';
-
-// Use Croatian operators for realistic local data
-const operators = CROATIAN_OPERATORS.map(op => ({
-  mcc: op.mcc,
-  mnc: op.mnc,
-  name: op.name,
-}));
-
-const generateRandomIMSI = () => {
-  return generateCroatianIMSI();
-};
+import {
+  DEFAULT_COUNTRY,
+  getRandomOperator,
+  generateIMSIForCountry,
+  type CountryOperators,
+} from './worldOperators';
 
 const generateRandomTMSI = () => {
   return Math.random().toString(16).slice(2, 10).toUpperCase();
@@ -20,14 +14,15 @@ const generateRandomCellId = () => {
   return Math.floor(Math.random() * 65535).toString();
 };
 
-// Generate towers around user's actual location
+// Generate towers around user's actual location using that country's operators
 export const generateCellTowersAroundLocation = (
   baseLat: number,
   baseLng: number,
-  count: number = 10
+  count: number = 10,
+  country: CountryOperators = DEFAULT_COUNTRY
 ): CellTower[] => {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.85;
     // Spread towers within ~5km radius
     const latOffset = (Math.random() - 0.5) * 0.09;
@@ -59,15 +54,18 @@ export const generateMockCellTowers = (count: number = 10): CellTower[] => {
   return generateCellTowersAroundLocation(45.8150, 15.9819, count);
 };
 
-export const generateMockIMSIRecords = (count: number = 20): IMSIRecord[] => {
+export const generateMockIMSIRecords = (
+  count: number = 20,
+  country: CountryOperators = DEFAULT_COUNTRY
+): IMSIRecord[] => {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.9;
     const alertTypes: IMSIRecord['alertType'][] = ['IMSI_CATCHER', 'RAPID_HANDOVER', 'SILENT_SMS', 'DOWNGRADE_ATTACK'];
     
     return {
       id: `imsi-${i}-${Date.now()}`,
-      imsi: generateRandomIMSI(),
+      imsi: generateIMSIForCountry(country),
       tmsi: generateRandomTMSI(),
       mcc: op.mcc,
       mnc: op.mnc,
@@ -170,11 +168,12 @@ export const generateMockScanStatus = (): ScanStatus => {
 // Real-time data simulation with alert callback for sounds
 export const simulateRealtimeIMSI = (
   callback: (record: IMSIRecord) => void,
-  onAlert?: (record: IMSIRecord) => void
+  onAlert?: (record: IMSIRecord) => void,
+  country: CountryOperators = DEFAULT_COUNTRY
 ) => {
   const interval = setInterval(() => {
     if (Math.random() > 0.7) {
-      const records = generateMockIMSIRecords(1);
+      const records = generateMockIMSIRecords(1, country);
       const record = records[0];
       callback(record);
       
