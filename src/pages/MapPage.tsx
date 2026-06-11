@@ -75,7 +75,7 @@ const MapPage = () => {
 
   const handleRefreshTowers = () => {
     if (latitude && longitude) {
-      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15));
+      setTowers(generateCellTowersAroundLocation(latitude, longitude, 15, country));
       setSelectedTower(null);
     }
   };
