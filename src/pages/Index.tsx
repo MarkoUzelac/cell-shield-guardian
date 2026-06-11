@@ -32,12 +32,13 @@ const Index = () => {
   const [bandsOpen, setBandsOpen] = useState(false);
   const { playSound, isMuted, toggleMute } = useAlertSound();
   const { hasRealLocation, latitude, longitude } = useGeolocation();
+  const { country } = useCountry(latitude, longitude);
 
-  // Initialize with mock data
+  // Initialize with mock data based on the user's country operators
   useEffect(() => {
-    setImsiRecords(generateMockIMSIRecords(15));
+    setImsiRecords(generateMockIMSIRecords(15, country));
     setAlerts(generateMockAlerts());
-  }, []);
+  }, [country]);
 
   // Simulate real-time data with sound alerts
   useEffect(() => {
