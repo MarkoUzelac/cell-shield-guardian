@@ -196,13 +196,15 @@ const MapPage = () => {
             </CardContent>
           </Card>
 
-          {/* Croatian Operators - Collapsible */}
+          {/* Local Operators (based on user's country) - Collapsible */}
           <Collapsible open={operatorsOpen} onOpenChange={setOperatorsOpen}>
             <Card className="bg-card border-border">
               <CollapsibleTrigger asChild>
                 <CardHeader className="pb-2 cursor-pointer hover:bg-muted/50 rounded-t-lg transition-colors">
                   <CardTitle className="text-sm font-medium flex items-center justify-between">
-                    Croatian Operators
+                    <span className="flex items-center gap-2">
+                      {countryLoading ? 'Detecting Operators…' : `${country.country} Operators`}
+                    </span>
                     <ChevronDown className={cn(
                       "w-4 h-4 text-muted-foreground transition-transform",
                       operatorsOpen && "rotate-180"
@@ -212,7 +214,10 @@ const MapPage = () => {
               </CollapsibleTrigger>
               <CollapsibleContent>
                 <CardContent className="pt-0 space-y-2">
-                  {CROATIAN_OPERATORS.map(op => (
+                  <p className="text-xs text-muted-foreground pb-1">
+                    MCC {country.mcc}{countryName ? ` · ${countryName}` : ''}
+                  </p>
+                  {country.operators.map(op => (
                     <div key={op.mnc} className="flex items-center gap-2 text-xs p-2 rounded bg-muted/30">
                       <div 
                         className="w-3 h-3 rounded-full shrink-0" 
