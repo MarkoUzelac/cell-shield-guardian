@@ -257,12 +257,16 @@ export function generateTacticalTowers(
   baseLat: number,
   baseLng: number,
   count: number = 50,
-  generateBaseTowers?: (lat: number, lng: number, count: number) => CellTower[]
+  generateBaseTowers?: (lat: number, lng: number, count: number) => CellTower[],
+  country: CountryOperators = DEFAULT_COUNTRY
 ): TacticalTower[] {
+  // Keep anomaly detection aligned with the user's current country.
+  setKnownCountry(country);
+
   // Use provided generator or create simple towers inline
   const baseTowers: CellTower[] = generateBaseTowers
     ? generateBaseTowers(baseLat, baseLng, count)
-    : createBaseTowers(baseLat, baseLng, count);
+    : createBaseTowers(baseLat, baseLng, count, country);
 
   // Inject some deliberately suspicious towers
   const tacticalTowers: TacticalTower[] = baseTowers.map((tower, i) => {
