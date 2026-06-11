@@ -54,15 +54,18 @@ export const generateMockCellTowers = (count: number = 10): CellTower[] => {
   return generateCellTowersAroundLocation(45.8150, 15.9819, count);
 };
 
-export const generateMockIMSIRecords = (count: number = 20): IMSIRecord[] => {
+export const generateMockIMSIRecords = (
+  count: number = 20,
+  country: CountryOperators = DEFAULT_COUNTRY
+): IMSIRecord[] => {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.9;
     const alertTypes: IMSIRecord['alertType'][] = ['IMSI_CATCHER', 'RAPID_HANDOVER', 'SILENT_SMS', 'DOWNGRADE_ATTACK'];
     
     return {
       id: `imsi-${i}-${Date.now()}`,
-      imsi: generateRandomIMSI(),
+      imsi: generateIMSIForCountry(country),
       tmsi: generateRandomTMSI(),
       mcc: op.mcc,
       mnc: op.mnc,
