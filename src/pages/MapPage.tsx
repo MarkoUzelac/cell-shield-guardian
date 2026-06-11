@@ -51,12 +51,12 @@ const MapPage = () => {
     setIsLookingUp(true);
     await new Promise(resolve => setTimeout(resolve, 1500));
     
-    const operator = CROATIAN_OPERATORS.find(op => op.mnc === data.mnc) || CROATIAN_OPERATORS[0];
+    const operator = country.operators.find(op => op.mnc === data.mnc) || country.operators[0];
     
     const newTower: CellTower = {
       id: `tower-lookup-${Date.now()}`,
-      mcc: data.mcc || '219',
-      mnc: data.mnc || '01',
+      mcc: data.mcc || country.mcc,
+      mnc: data.mnc || operator.mnc,
       lac: data.lac || '12345',
       cellId: data.cellId || '67890',
       lat: (latitude || 45.8150) + (Math.random() - 0.5) * 0.02,
