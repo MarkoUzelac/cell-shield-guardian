@@ -168,11 +168,12 @@ export const generateMockScanStatus = (): ScanStatus => {
 // Real-time data simulation with alert callback for sounds
 export const simulateRealtimeIMSI = (
   callback: (record: IMSIRecord) => void,
-  onAlert?: (record: IMSIRecord) => void
+  onAlert?: (record: IMSIRecord) => void,
+  country: CountryOperators = DEFAULT_COUNTRY
 ) => {
   const interval = setInterval(() => {
     if (Math.random() > 0.7) {
-      const records = generateMockIMSIRecords(1);
+      const records = generateMockIMSIRecords(1, country);
       const record = records[0];
       callback(record);
       
