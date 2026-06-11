@@ -824,8 +824,41 @@ const NetworkIntelligencePage = () => {
                           <p className="text-muted-foreground">Data Saver</p>
                           <p className="font-medium">{networkInfo?.saveData ? 'Enabled' : 'Disabled'}</p>
                         </div>
-                      </div>
                     </div>
+
+                    {/* Mobile operators for the user's detected country */}
+                    {ipInfo?.country_code && (() => {
+                      const local = getOperatorsByIso(ipInfo.country_code);
+                      return (
+                        <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                          <h4 className="font-medium mb-1 flex items-center gap-2">
+                            <Smartphone className="h-4 w-4" />
+                            Mobile Operators in {local.country}
+                          </h4>
+                          <p className="text-xs text-muted-foreground mb-3">
+                            MCC {local.mcc} · the carriers operating where you are located
+                          </p>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            {local.operators.map((op) => (
+                              <div
+                                key={op.mnc}
+                                className="flex items-center gap-2 p-2 rounded bg-card/50 border border-border/50"
+                              >
+                                <span
+                                  className="w-3 h-3 rounded-full shrink-0"
+                                  style={{ backgroundColor: op.color }}
+                                />
+                                <span className="text-sm font-medium flex-1 truncate">{op.name}</span>
+                                <span className="text-xs text-muted-foreground font-mono">
+                                  {op.mcc}/{op.mnc}
+                                </span>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      );
+                    })()}
+
 
                     <Button 
                       onClick={() => {
