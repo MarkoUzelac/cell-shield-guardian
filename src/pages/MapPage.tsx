@@ -12,8 +12,8 @@ import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { CellTower } from '@/types/signal';
 import { generateCellTowersAroundLocation } from '@/lib/mockData';
-import { CROATIAN_OPERATORS } from '@/lib/croatianOperators';
 import { useGeolocation } from '@/hooks/useGeolocation';
+import { useCountry } from '@/hooks/useCountry';
 import { cn } from '@/lib/utils';
 import { MapPin, Navigation, RefreshCw, Loader2, ChevronDown, Target } from 'lucide-react';
 
