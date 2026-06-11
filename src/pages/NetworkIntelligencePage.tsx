@@ -29,6 +29,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
 import { SpeedTestPanel } from '@/components/network/SpeedTestPanel';
+import { getOperatorsByIso } from '@/lib/worldOperators';
 import { z } from 'zod';
 
 // Zod schema for IP API response validation
