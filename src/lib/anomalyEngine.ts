@@ -229,9 +229,9 @@ export const THREAT_BG_CLASSES: Record<ThreatLevel, string> = {
 
 // ─── Helper: Create Base Towers ──────────────────────────────────────────────
 
-function createBaseTowers(baseLat: number, baseLng: number, count: number): CellTower[] {
+function createBaseTowers(baseLat: number, baseLng: number, count: number, country: CountryOperators = DEFAULT_COUNTRY): CellTower[] {
   return Array.from({ length: count }, (_, i) => {
-    const op = getRandomCroatianOperator();
+    const op = getRandomOperator(country);
     const isSuspicious = Math.random() > 0.85;
     return {
       id: `tower-${i}-${Date.now()}`,
