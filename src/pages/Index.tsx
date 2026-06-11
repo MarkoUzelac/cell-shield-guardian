@@ -69,7 +69,7 @@ const Index = () => {
       unsubIMSI();
       unsubAlert();
     };
-  }, [isScanning, playSound]);
+  }, [isScanning, playSound, country]);
 
   const handleAcknowledgeAlert = (id: string) => {
     setAlerts(prev =>
