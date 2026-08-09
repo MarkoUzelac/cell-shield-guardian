@@ -310,8 +310,8 @@ const NetworkIntelligencePage = () => {
     // Require consent for external API calls
     if (!hasConsent) {
       toast({
-        title: "Enable Network Diagnostics",
-        description: "Please enable network diagnostics to run speed tests.",
+        title: t('pages.network.consent.requiredToastTitle'),
+        description: t('pages.network.consent.requiredToastDescription'),
         variant: "destructive"
       });
       return;
@@ -367,8 +367,8 @@ const NetworkIntelligencePage = () => {
         });
 
         toast({
-          title: "Speed Test Complete",
-          description: `Download: ${downloadSpeed.toFixed(2)} Mbps`,
+          title: t('pages.network.speedTest.completeTitle'),
+          description: t('pages.network.speedTest.completeDescription', { speed: downloadSpeed.toFixed(2) }),
         });
       }
     } catch (error) {
@@ -376,8 +376,8 @@ const NetworkIntelligencePage = () => {
       
       if (error instanceof Error && error.name === 'AbortError') {
         toast({
-          title: "Speed Test Timeout",
-          description: "The speed test took too long. Please try again.",
+          title: t('pages.network.errors.speedTestTimeoutTitle'),
+          description: t('pages.network.errors.speedTestTimeoutDescription'),
           variant: "destructive"
         });
       } else {
@@ -391,8 +391,8 @@ const NetworkIntelligencePage = () => {
         });
         
         toast({
-          title: "Speed Test Complete",
-          description: "Results based on browser network estimation",
+          title: t('pages.network.speedTest.completeTitle'),
+          description: t('pages.network.speedTest.estimationDescription'),
           variant: "default"
         });
       }
