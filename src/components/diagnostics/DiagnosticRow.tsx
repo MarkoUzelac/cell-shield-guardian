@@ -3,6 +3,7 @@ import { ChevronDown } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { StatusBadge } from './StatusBadge';
+import { useDiagnosticText } from '@/hooks/useDiagnosticText';
 import type { DiagnosticResult } from '@/lib/diagnostics/types';
 
 interface DiagnosticRowProps {
@@ -15,17 +16,11 @@ export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => 
   const [open, setOpen] = useState(false);
   const panelId = `diag-${result.id.replace(/\./g, '-')}`;
 
-  // Check copy is authored in the engine; a locale may override it per check id
-  // without any change to the engine itself.
-  const label = t(`diagnostics.checks.${result.id}.label`, { defaultValue: result.label });
-  const explanation = t(`diagnostics.checks.${result.id}.explanation`, {
-    defaultValue: result.explanation,
-  });
-  const recommendation = result.recommendation
-    ? t(`diagnostics.checks.${result.id}.recommendation`, {
-        defaultValue: result.recommendation,
-      })
-    : undefined;
+  // Copy is authored in the engine and interpolated per locale, so numbers,
+  // counts and names sit inside the translated sentence rather than being
+  // concatenated onto it.
+  const { label, value, explanation, recommendation } = useDiagnosticText(result);
+
 
   return (
     <li className="border-b border-border/60 last:border-b-0">
