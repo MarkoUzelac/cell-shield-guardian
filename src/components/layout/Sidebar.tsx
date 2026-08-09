@@ -121,8 +121,9 @@ export const Sidebar = () => {
                 exit={{ opacity: 0 }}
                 className="flex flex-col"
               >
-                <span className="text-xs font-medium text-primary">RTL-SDR Active</span>
-                <span className="text-xs text-muted-foreground">935.2 MHz</span>
+                <span className="text-xs font-medium text-primary">Local analysis</span>
+                <span className="text-xs text-muted-foreground">Runs in your browser</span>
+
               </motion.div>
             )}
           </AnimatePresence>
