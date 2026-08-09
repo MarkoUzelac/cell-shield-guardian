@@ -590,19 +590,19 @@ const NetworkIntelligencePage = () => {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="security" className="data-[state=active]:bg-primary/20">
               <Shield className="h-4 w-4 mr-2" />
-              Security Analysis
+              {t('pages.network.tabs.security')}
             </TabsTrigger>
             <TabsTrigger value="speed" className="data-[state=active]:bg-primary/20">
               <Activity className="h-4 w-4 mr-2" />
-              Speed Test
+              {t('pages.network.tabs.speed')}
             </TabsTrigger>
             <TabsTrigger value="carrier" className="data-[state=active]:bg-primary/20">
               <Smartphone className="h-4 w-4 mr-2" />
-              Carrier Info
+              {t('pages.network.tabs.carrier')}
             </TabsTrigger>
             <TabsTrigger value="frequencies" className="data-[state=active]:bg-primary/20">
               <Radio className="h-4 w-4 mr-2" />
-              Frequencies
+              {t('pages.network.tabs.frequencies')}
             </TabsTrigger>
           </TabsList>
 
@@ -611,10 +611,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
-                  Security Indicators
+                  {t('pages.network.security.indicatorsTitle')}
                 </CardTitle>
                 <CardDescription>
-                  Real-time analysis of potential network security risks
+                  {t('pages.network.security.indicatorsDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -658,13 +658,13 @@ const NetworkIntelligencePage = () => {
                     onClick={() => {
                       fetchNetworkInfo();
                       analyzeSecurityIndicators();
-                      toast({ title: "Security analysis refreshed" });
+                      toast({ title: t('pages.network.security.refreshedToastTitle') });
                     }}
                     variant="outline"
                     className="gap-2"
                   >
                     <RefreshCw className="h-4 w-4" />
-                    Refresh Analysis
+                    {t('pages.network.security.refreshButton')}
                   </Button>
                 </div>
               </CardContent>
@@ -675,7 +675,7 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-warning">
                   <AlertTriangle className="h-5 w-5" />
-                  What to Watch For
+                  {t('pages.network.security.watchFor.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -909,7 +909,10 @@ const NetworkIntelligencePage = () => {
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground">{band.note}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(`pages.network.bands.bands.${band.band}.note`)}
+                      </p>
+
                     </motion.div>
                   ))}
                 </div>
