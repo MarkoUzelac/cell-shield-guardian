@@ -15,11 +15,13 @@ import {
   Wifi,
   Crosshair,
   ShieldCheck,
+  ListChecks,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
   { to: '/', icon: Activity, label: 'Privacy & Connection' },
+  { to: '/capabilities', icon: ListChecks, label: 'Capability Matrix' },
   { to: '/demo', icon: Crosshair, label: 'Cellular Simulation' },
   { to: '/map', icon: Map, label: 'Triangulation Map' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence' },

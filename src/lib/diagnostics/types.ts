@@ -130,3 +130,33 @@ export const STATUS_LABEL: Record<DiagnosticStatus, string> = {
   pending: 'Checking',
   error: 'Check failed',
 };
+
+export const CAPABILITY_ORDER: CapabilitySupport[] = [
+  'SUPPORTED',
+  'PARTIALLY_SUPPORTED',
+  'PERMISSION_REQUIRED',
+  'UNSUPPORTED',
+  'NOT_APPLICABLE',
+];
+
+export const CAPABILITY_LABEL: Record<CapabilitySupport, string> = {
+  SUPPORTED: 'Supported',
+  PARTIALLY_SUPPORTED: 'Partially supported',
+  PERMISSION_REQUIRED: 'Permission required',
+  UNSUPPORTED: 'Unsupported',
+  NOT_APPLICABLE: 'Not applicable',
+};
+
+/** Plain-language explanation of what each capability state means for the user. */
+export const CAPABILITY_HELP: Record<CapabilitySupport, string> = {
+  SUPPORTED:
+    'Your browser fully exposes what this check needs, so the result is reliable.',
+  PARTIALLY_SUPPORTED:
+    'Your browser exposes only part of what this check needs. The result is indicative rather than exact.',
+  PERMISSION_REQUIRED:
+    'This check needs your explicit permission before the browser will share the data. Until you grant it, nothing is measured.',
+  UNSUPPORTED:
+    'Your browser does not offer the API this check needs, so no value can be produced. Unsupported is not the same as safe.',
+  NOT_APPLICABLE:
+    'This information lives outside the browser sandbox (for example in the phone radio or operating system) and no web page can ever read it.',
+};

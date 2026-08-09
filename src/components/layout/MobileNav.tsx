@@ -2,7 +2,7 @@ import { NavLink, useLocation } from 'react-router-dom';
 import { 
   Activity, Map, Wifi, AlertTriangle, Settings, Menu, 
   Shield, FileSearch, Info, Radio, X, ChevronRight,
-  Bell, Volume2, VolumeX, Power, Crown, Crosshair, ShieldCheck
+  Bell, Volume2, VolumeX, Power, Crown, Crosshair, ShieldCheck, ListChecks
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
@@ -21,6 +21,7 @@ const mainNavItems = [
 
 const allNavItems = [
   { to: '/', icon: Activity, label: 'Privacy & Connection Check', description: 'Live browser measurements' },
+  { to: '/capabilities', icon: ListChecks, label: 'Capability Matrix', description: 'What your browser can measure' },
   { to: '/demo', icon: Crosshair, label: 'Cellular Simulation', description: 'Demo data — not from your device' },
   { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Simulated cell tower mapping' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
