@@ -21,6 +21,9 @@ interface MakeArgs {
   recommendation?: string;
   durationMs?: number;
   raw?: Record<string, unknown>;
+  variant?: string;
+  params?: DiagnosticParams;
+
 }
 
 export function make(args: MakeArgs): DiagnosticResult {
