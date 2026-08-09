@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import { SpeedTestPanel } from '@/components/network/SpeedTestPanel';
 import { getOperatorsByIso } from '@/lib/worldOperators';
 import { z } from 'zod';
@@ -88,16 +89,17 @@ interface SecurityIndicator {
 }
 
 const FREQUENCY_BANDS = [
-  { band: '2G (GSM)', frequencies: ['850 MHz', '900 MHz', '1800 MHz', '1900 MHz'], risk: 'high', note: 'Weak encryption, vulnerable to interception' },
-  { band: '3G (UMTS)', frequencies: ['850 MHz', '900 MHz', '2100 MHz'], risk: 'medium', note: 'Better encryption, still some vulnerabilities' },
-  { band: '4G (LTE)', frequencies: ['Band 1 (2100 MHz)', 'Band 3 (1800 MHz)', 'Band 7 (2600 MHz)', 'Band 8 (900 MHz)', 'Band 20 (800 MHz)', 'Band 28 (700 MHz)'], risk: 'low', note: 'Strong encryption, most secure legacy network' },
-  { band: '5G (NR)', frequencies: ['n78 (3500 MHz)', 'n41 (2500 MHz)', 'n28 (700 MHz)', 'n258 (26 GHz mmWave)'], risk: 'low', note: 'Latest encryption standards, enhanced security' },
+  { band: '2G (GSM)', frequencies: ['850 MHz', '900 MHz', '1800 MHz', '1900 MHz'], risk: 'high' },
+  { band: '3G (UMTS)', frequencies: ['850 MHz', '900 MHz', '2100 MHz'], risk: 'medium' },
+  { band: '4G (LTE)', frequencies: ['Band 1 (2100 MHz)', 'Band 3 (1800 MHz)', 'Band 7 (2600 MHz)', 'Band 8 (900 MHz)', 'Band 20 (800 MHz)', 'Band 28 (700 MHz)'], risk: 'low' },
+  { band: '5G (NR)', frequencies: ['n78 (3500 MHz)', 'n41 (2500 MHz)', 'n28 (700 MHz)', 'n258 (26 GHz mmWave)'], risk: 'low' },
 ];
 
 const NETWORK_CONSENT_KEY = 'network-diagnostics-consent';
 
 const NetworkIntelligencePage = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
   const [carrierInfo, setCarrierInfo] = useState<CarrierInfo | null>(null);
   const [speedTest, setSpeedTest] = useState<SpeedTestResult | null>(null);
