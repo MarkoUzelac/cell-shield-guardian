@@ -1,291 +1,106 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Radio, Wifi, AlertTriangle, Activity, Shield, Power, Volume2, VolumeX, Crown, ChevronDown } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Link } from 'react-router-dom';
+import { Download, Info, SlidersHorizontal } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
-import { StatsCard } from '@/components/dashboard/StatsCard';
-import { IMSITable } from '@/components/dashboard/IMSITable';
-import { RadarDisplay } from '@/components/dashboard/RadarDisplay';
-import { AlertsList } from '@/components/dashboard/AlertsList';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
-import { IMSIRecord, Alert } from '@/types/signal';
-import { useAlertSound } from '@/hooks/useAlertSound';
-import { useGeolocation } from '@/hooks/useGeolocation';
-import { useCountry } from '@/hooks/useCountry';
-import { CROATIAN_FREQUENCY_BANDS } from '@/lib/croatianOperators';
-import { cn } from '@/lib/utils';
-import {
-  generateMockIMSIRecords,
-  generateMockAlerts,
-  simulateRealtimeIMSI,
-  simulateRealtimeAlert,
-} from '@/lib/mockData';
+import { Card, CardContent } from '@/components/ui/card';
+import { Label } from '@/components/ui/label';
+import { Switch } from '@/components/ui/switch';
+import { OverallStatusCard } from '@/components/diagnostics/OverallStatusCard';
+import { CategoryCard } from '@/components/diagnostics/CategoryCard';
+import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { groupByCategory } from '@/lib/diagnostics/engine';
+import { downloadReport } from '@/lib/diagnostics/report';
+import { CATEGORY_META, type DiagnosticCategory } from '@/lib/diagnostics/types';
+
+const ORDER: DiagnosticCategory[] = ['security', 'connection', 'network', 'privacy', 'browser'];
 
 const Index = () => {
-  const [isScanning, setIsScanning] = useState(true);
-  const [imsiRecords, setImsiRecords] = useState<IMSIRecord[]>([]);
-  const [alerts, setAlerts] = useState<Alert[]>([]);
-  const [frequency, setFrequency] = useState('935.2 MHz');
-  const [bandsOpen, setBandsOpen] = useState(false);
-  const { playSound, isMuted, toggleMute } = useAlertSound();
-  const { hasRealLocation, latitude, longitude } = useGeolocation();
-  const { country } = useCountry(latitude, longitude);
+  const [showTechnical, setShowTechnical] = useState(false);
+  const { results, summary, phase, progress, startedAt, durationMs, scan } = useDiagnostics();
 
-  // Initialize with mock data based on the user's country operators
-  useEffect(() => {
-    setImsiRecords(generateMockIMSIRecords(15, country));
-    setAlerts(generateMockAlerts());
-  }, [country]);
-
-  // Simulate real-time data with sound alerts
-  useEffect(() => {
-    if (!isScanning) return;
-
-    const unsubIMSI = simulateRealtimeIMSI(
-      (record) => {
-        setImsiRecords(prev => [record, ...prev].slice(0, 50));
-      },
-      () => {},
-      country
-    );
-
-    const unsubAlert = simulateRealtimeAlert(
-      (alert) => {
-        setAlerts(prev => [alert, ...prev]);
-      },
-      (type) => {
-        if (type === 'critical') {
-          playSound('critical');
-        } else if (type === 'warning') {
-          playSound('warning');
-        }
-      }
-    );
-
-    return () => {
-      unsubIMSI();
-      unsubAlert();
-    };
-  }, [isScanning, playSound, country]);
-
-  const handleAcknowledgeAlert = (id: string) => {
-    setAlerts(prev =>
-      prev.map(a => (a.id === id ? { ...a, acknowledged: true } : a))
-    );
-  };
-
-  const handleDismissAlert = (id: string) => {
-    setAlerts(prev => prev.filter(a => a.id !== id));
-  };
-
-  const suspiciousCount = imsiRecords.filter(r => r.isSuspicious).length;
-  const criticalAlerts = alerts.filter(a => a.type === 'critical' && !a.acknowledged).length;
+  const grouped = useMemo(() => groupByCategory(results), [results]);
 
   return (
     <MainLayout>
       <Header
-        title="Live Signal Monitor"
-        subtitle="Real-time GSM/LTE signal analysis"
+        title="Privacy & Connection Check"
+        subtitle="Live measurements from your browser"
       />
 
-      <div className="p-3 md:p-6 space-y-4">
-        {/* Premium Banner - Compact */}
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 border border-primary/30 p-3"
-        >
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-2 min-w-0">
-              <Crown className="w-5 h-5 text-primary shrink-0" />
-              <div className="min-w-0">
-                <p className="font-semibold text-foreground text-sm truncate">Upgrade to Pro</p>
-                <p className="text-xs text-muted-foreground hidden sm:block">Real-time tower data & advanced alerts</p>
-              </div>
-            </div>
-            <Button size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-8 text-xs">
-              <Crown className="w-3 h-3 mr-1" />
-              €9.99/mo
-            </Button>
-          </div>
-        </motion.div>
+      <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
+        <OverallStatusCard
+          status={summary.overall}
+          phase={phase}
+          progress={progress}
+          startedAt={startedAt}
+          durationMs={durationMs}
+          counts={summary.counts}
+          onRescan={() => void scan()}
+        />
 
-        {/* Stats Row */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
-          <StatsCard
-            title="Signals"
-            value={imsiRecords.length}
-            subtitle="Last hour"
-            icon={Wifi}
-            trend={{ value: 12, isPositive: true }}
-            variant="primary"
-          />
-          <StatsCard
-            title="Suspicious"
-            value={suspiciousCount}
-            subtitle="Attention"
-            icon={AlertTriangle}
-            variant={suspiciousCount > 0 ? 'warning' : 'default'}
-          />
-          <StatsCard
-            title="Critical"
-            value={criticalAlerts}
-            subtitle="Unacked"
-            icon={Activity}
-            variant={criticalAlerts > 0 ? 'danger' : 'default'}
-          />
-          <StatsCard
-            title="Status"
-            value="Active"
-            subtitle="Protected"
-            icon={Shield}
-            variant="success"
-          />
+        <div className="flex flex-wrap items-center justify-between gap-3 rounded-lg border border-border bg-card px-3 py-2.5">
+          <div className="flex items-center gap-2">
+            <SlidersHorizontal className="h-4 w-4 text-muted-foreground" aria-hidden />
+            <Label htmlFor="technical-details" className="cursor-pointer text-sm">
+              Technical details
+            </Label>
+            <Switch
+              id="technical-details"
+              checked={showTechnical}
+              onCheckedChange={setShowTechnical}
+            />
+          </div>
+          <Button
+            variant="outline"
+            size="sm"
+            className="min-h-11"
+            disabled={results.length === 0}
+            onClick={() =>
+              downloadReport(results, {
+                startedAt,
+                durationMs,
+                overall: summary.overall,
+              })
+            }
+          >
+            <Download className="mr-2 h-4 w-4" aria-hidden />
+            Export report
+          </Button>
         </div>
 
-        {/* Main Content */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-          {/* IMSI Table - Full width on mobile, takes 2 cols on desktop */}
-          <div className="lg:col-span-2 order-2 lg:order-1">
-            <IMSITable records={imsiRecords} maxRows={10} />
-          </div>
+        {ORDER.map((category) => (
+          <CategoryCard
+            key={category}
+            category={category}
+            results={grouped.get(category) ?? []}
+            showTechnical={showTechnical}
+          />
+        ))}
 
-          {/* Right Sidebar */}
-          <div className="space-y-4 order-1 lg:order-2">
-            {/* Scan Control - Compact */}
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <div className="flex items-center justify-between">
-                  <CardTitle className="text-sm flex items-center gap-2">
-                    <Radio className="w-4 h-4 text-primary" />
-                    Scan Control
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={toggleMute}
-                    className="h-7 w-7 p-0"
-                  >
-                    {isMuted ? (
-                      <VolumeX className="w-4 h-4 text-muted-foreground" />
-                    ) : (
-                      <Volume2 className="w-4 h-4 text-primary" />
-                    )}
-                  </Button>
-                </div>
-              </CardHeader>
-              <CardContent className="space-y-3">
-                {/* Radar */}
-                <div className="flex items-center justify-center">
-                <div className="scale-75 origin-center">
-                    <RadarDisplay
-                      isScanning={isScanning}
-                      detectedCount={imsiRecords.length}
-                      suspiciousCount={suspiciousCount}
-                    />
-                  </div>
-                </div>
-
-                <div className="space-y-1.5 text-xs">
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Frequency:</span>
-                    <span className="font-mono text-foreground">{frequency}</span>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Status:</span>
-                    <Badge variant={isScanning ? 'default' : 'secondary'} className="text-xs h-5">
-                      {isScanning ? 'Scanning' : 'Idle'}
-                    </Badge>
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Location:</span>
-                    <span className="text-foreground text-xs font-mono">
-                      {hasRealLocation ? `${latitude?.toFixed(2)}°, ${longitude?.toFixed(2)}°` : 'Croatia'}
-                    </span>
-                  </div>
-                </div>
-
-                <Button
-                  onClick={() => setIsScanning(!isScanning)}
-                  variant={isScanning ? 'destructive' : 'default'}
-                  className="w-full h-9"
-                  size="sm"
-                >
-                  <Power className="w-4 h-4 mr-2" />
-                  {isScanning ? 'Stop' : 'Start'}
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* Recent Alerts */}
-            <Card className="bg-card border-border">
-              <CardHeader className="pb-2">
-                <CardTitle className="text-sm flex items-center gap-2">
-                  <AlertTriangle className="w-4 h-4 text-warning" />
-                  Recent Alerts
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <AlertsList
-                  alerts={alerts.slice(0, 3)}
-                  onAcknowledge={handleAcknowledgeAlert}
-                  onDismiss={handleDismissAlert}
-                  compact
-                />
-              </CardContent>
-            </Card>
-          </div>
-        </div>
-
-        {/* Frequency Bands - Collapsible */}
-        <Collapsible open={bandsOpen} onOpenChange={setBandsOpen}>
-          <Card className="bg-card border-border">
-            <CollapsibleTrigger asChild>
-              <CardHeader className="pb-2 cursor-pointer hover:bg-muted/50 transition-colors">
-                <CardTitle className="text-sm flex items-center justify-between">
-                  <span className="flex items-center gap-2">
-                    <Activity className="w-4 h-4 text-primary" />
-                    Croatian LTE/5G Bands
-                  </span>
-                  <ChevronDown className={cn(
-                    "w-4 h-4 text-muted-foreground transition-transform",
-                    bandsOpen && "rotate-180"
-                  )} />
-                </CardTitle>
-              </CardHeader>
-            </CollapsibleTrigger>
-            <CollapsibleContent>
-              <CardContent className="pt-0">
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {CROATIAN_FREQUENCY_BANDS.slice(0, 8).map((band, idx) => (
-                    <div
-                      key={band.band}
-                      className={cn(
-                        "p-2 rounded-lg border text-center",
-                        idx < 2
-                          ? 'bg-primary/10 border-primary/30'
-                          : 'bg-muted/30 border-border'
-                      )}
-                    >
-                      <div className="flex items-center justify-center gap-1 mb-1">
-                        <span className="font-medium text-foreground text-xs">{band.band}</span>
-                      </div>
-                      <Badge variant={band.technology === '5G' ? 'default' : 'secondary'} className="text-[10px] h-4">
-                        {band.technology}
-                      </Badge>
-                      <p className="text-[10px] font-mono text-muted-foreground mt-1">
-                        {band.frequency}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </CardContent>
-            </CollapsibleContent>
-          </Card>
-        </Collapsible>
+        <Card>
+          <CardContent className="space-y-2 p-4">
+            <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Info className="h-4 w-4 text-primary" aria-hidden />
+              What this tool cannot tell you
+            </h2>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              A web page has no access to your mobile network. IMSI catchers, cell tower identity,
+              SIM details, encryption downgrades, baseband state and VPN usage cannot be detected
+              from a browser, and this dashboard will never guess at them. Checks that cannot be
+              performed are reported as <span className="font-medium text-foreground">Not available</span>,
+              which is not the same as safe.
+            </p>
+            <p className="text-sm leading-relaxed text-muted-foreground">
+              A simulation of what a privileged native Android app could show is available on the{' '}
+              <Link to="/demo" className="font-medium text-primary underline underline-offset-2">
+                demo dashboard
+              </Link>{' '}
+              — its data is generated locally and clearly labelled as synthetic.
+            </p>
+          </CardContent>
+        </Card>
       </div>
     </MainLayout>
   );

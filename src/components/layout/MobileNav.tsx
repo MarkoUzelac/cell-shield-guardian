@@ -13,16 +13,16 @@ import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const mainNavItems = [
-  { to: '/', icon: Activity, label: 'Scan' },
+  { to: '/', icon: Activity, label: 'Check' },
   { to: '/map', icon: Map, label: 'Map' },
   { to: '/network', icon: Wifi, label: 'Network' },
   { to: '/alerts', icon: AlertTriangle, label: 'Alerts' },
 ];
 
 const allNavItems = [
-  { to: '/', icon: Activity, label: 'Live Scan', description: 'Real-time signal monitoring' },
-  { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard', description: 'Anomaly detection & scoring' },
-  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Cell tower mapping' },
+  { to: '/', icon: Activity, label: 'Privacy & Connection Check', description: 'Live browser measurements' },
+  { to: '/demo', icon: Crosshair, label: 'Cellular Simulation', description: 'Demo data — not from your device' },
+  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Simulated cell tower mapping' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
   { to: '/protection', icon: ShieldCheck, label: 'Protection Guide', description: 'Threats & countermeasures' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer', description: 'Analyze file metadata' },
@@ -121,18 +121,8 @@ export const MobileNav = () => {
                   </div>
                 </SheetHeader>
                 
-                {/* Status Bar */}
-                <div className="px-4 pb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/30">
-                      <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                      <span className="text-[10px] font-medium text-success">Protected</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30">
-                      <Radio className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-mono text-primary">935.2 MHz</span>
-                    </div>
-                  </div>
+                {/* Status Bar — only verifiable state */}
+                <div className="px-4 pb-3 flex items-center justify-end">
                   <span className="text-[10px] font-mono text-muted-foreground">
                     {currentTime.toLocaleTimeString()}
                   </span>
