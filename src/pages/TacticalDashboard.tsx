@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion, AnimatePresence } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
@@ -52,6 +53,7 @@ import {
 } from 'recharts';
 
 const TacticalDashboard = () => {
+  const { t } = useTranslation();
   const [towers, setTowers] = useState<TacticalTower[]>([]);
   const [selectedThreatLevel, setSelectedThreatLevel] = useState<string>('all');
   const [selectedTower, setSelectedTower] = useState<TacticalTower | null>(null);
@@ -130,46 +132,46 @@ const TacticalDashboard = () => {
   return (
     <MainLayout>
       <Header
-        title="Tactical Dashboard"
-        subtitle="Signal anomaly detection & threat analysis"
+        title={t('pages.tactical.header.title')}
+        subtitle={t('pages.tactical.header.subtitle')}
       />
 
       <div className="p-3 md:p-6 space-y-4">
         {/* ─── Threat Level Overview ────────────────────────────── */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
           <ThreatStatCard
-            label="Total Towers"
+            label={t('pages.tactical.stats.totalTowers')}
             value={stats.total}
             icon={<Radio className="w-4 h-4" />}
             variant="default"
           />
           <ThreatStatCard
-            label="Critical"
+            label={t('pages.tactical.stats.critical')}
             value={stats.critical}
             icon={<Zap className="w-4 h-4" />}
             variant="critical"
             pulse={stats.critical > 0}
           />
           <ThreatStatCard
-            label="High Risk"
+            label={t('pages.tactical.stats.highRisk')}
             value={stats.high}
             icon={<AlertTriangle className="w-4 h-4" />}
             variant="high"
           />
           <ThreatStatCard
-            label="Medium"
+            label={t('pages.tactical.stats.medium')}
             value={stats.medium}
             icon={<Target className="w-4 h-4" />}
             variant="medium"
           />
           <ThreatStatCard
-            label="Low"
+            label={t('pages.tactical.stats.low')}
             value={stats.low}
             icon={<Shield className="w-4 h-4" />}
             variant="low"
           />
           <ThreatStatCard
-            label="Clean"
+            label={t('pages.tactical.stats.clean')}
             value={stats.clean}
             icon={<Activity className="w-4 h-4" />}
             variant="clean"
@@ -182,7 +184,7 @@ const TacticalDashboard = () => {
             <div className="flex items-center justify-between mb-2">
               <div className="flex items-center gap-2">
                 <Radar className="w-4 h-4 text-primary" />
-                <span className="text-sm font-medium">Overall Threat Index</span>
+                <span className="text-sm font-medium">{t('pages.tactical.threatIndex.title')}</span>
               </div>
               <span className="text-sm font-mono font-bold">{(stats.avgScore * 100).toFixed(1)}%</span>
             </div>
@@ -191,8 +193,8 @@ const TacticalDashboard = () => {
               className="h-2"
             />
             <div className="flex justify-between mt-1">
-              <span className="text-xs text-muted-foreground">0% Clean</span>
-              <span className="text-xs text-muted-foreground">100% Critical</span>
+              <span className="text-xs text-muted-foreground">{t('pages.tactical.threatIndex.cleanLabel')}</span>
+              <span className="text-xs text-muted-foreground">{t('pages.tactical.threatIndex.criticalLabel')}</span>
             </div>
           </CardContent>
         </Card>
@@ -201,29 +203,29 @@ const TacticalDashboard = () => {
         <div className="flex flex-wrap items-center gap-3">
           <Select value={selectedThreatLevel} onValueChange={setSelectedThreatLevel}>
             <SelectTrigger className="w-[160px]">
-              <SelectValue placeholder="Filter level" />
+              <SelectValue placeholder={t('pages.tactical.controls.filterPlaceholder')} />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="all">All Levels</SelectItem>
-              <SelectItem value="CRITICAL">🔴 Critical</SelectItem>
-              <SelectItem value="HIGH">🟠 High</SelectItem>
-              <SelectItem value="MEDIUM">🟡 Medium</SelectItem>
-              <SelectItem value="LOW">🟢 Low</SelectItem>
-              <SelectItem value="CLEAN">✅ Clean</SelectItem>
+              <SelectItem value="all">{t('pages.tactical.controls.allLevels')}</SelectItem>
+              <SelectItem value="CRITICAL">{t('pages.tactical.controls.critical')}</SelectItem>
+              <SelectItem value="HIGH">{t('pages.tactical.controls.high')}</SelectItem>
+              <SelectItem value="MEDIUM">{t('pages.tactical.controls.medium')}</SelectItem>
+              <SelectItem value="LOW">{t('pages.tactical.controls.low')}</SelectItem>
+              <SelectItem value="CLEAN">{t('pages.tactical.controls.clean')}</SelectItem>
             </SelectContent>
           </Select>
           <Button variant="outline" size="sm" onClick={handleRefresh}>
             <RefreshCw className="w-4 h-4 mr-2" />
-            Re-scan
+            {t('pages.tactical.controls.rescan')}
           </Button>
           <Button variant="outline" size="sm" onClick={handleExport}>
             <Download className="w-4 h-4 mr-2" />
-            Export CSV
+            {t('pages.tactical.controls.exportCsv')}
           </Button>
           <div className="ml-auto flex items-center gap-2">
             <span className={cn("w-2 h-2 rounded-full", isScanning ? "bg-success status-active" : "bg-muted")} />
             <span className="text-xs text-muted-foreground">
-              {isScanning ? 'Live Monitoring' : 'Paused'}
+              {isScanning ? t('pages.tactical.controls.liveMonitoring') : t('pages.tactical.controls.paused')}
             </span>
           </div>
         </div>
@@ -236,7 +238,7 @@ const TacticalDashboard = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm font-medium flex items-center gap-2">
                   <Crosshair className="w-4 h-4 text-primary" />
-                  Anomaly Feed ({sortedByScore.length})
+                  {t('pages.tactical.anomalyFeed.title', { count: sortedByScore.length })}
                 </CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -268,7 +270,7 @@ const TacticalDashboard = () => {
               <Card className="bg-card border-border">
                 <CardContent className="p-8 text-center">
                   <Eye className="w-8 h-8 mx-auto mb-2 text-muted-foreground opacity-50" />
-                  <p className="text-sm text-muted-foreground">Select a tower to inspect</p>
+                  <p className="text-sm text-muted-foreground">{t('pages.tactical.detail.selectPrompt')}</p>
                 </CardContent>
               </Card>
             )}
@@ -276,7 +278,7 @@ const TacticalDashboard = () => {
             {/* Threat Distribution Pie */}
             <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Threat Distribution</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('pages.tactical.charts.threatDistribution')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={200}>
@@ -308,7 +310,7 @@ const TacticalDashboard = () => {
                   {threatDistribution.map(d => (
                     <div key={d.name} className="flex items-center gap-1.5 text-xs">
                       <span className="w-2.5 h-2.5 rounded-full" style={{ background: d.color }} />
-                      {d.name} ({d.value})
+                      {t('pages.tactical.charts.legendItem', { name: d.name, value: d.value })}
                     </div>
                   ))}
                 </div>
@@ -318,7 +320,7 @@ const TacticalDashboard = () => {
             {/* Technology Breakdown */}
             <Card className="bg-card border-border">
               <CardHeader className="pb-2">
-                <CardTitle className="text-sm font-medium">Technology Analysis</CardTitle>
+                <CardTitle className="text-sm font-medium">{t('pages.tactical.charts.technologyAnalysis')}</CardTitle>
               </CardHeader>
               <CardContent>
                 <ResponsiveContainer width="100%" height={180}>
@@ -334,8 +336,8 @@ const TacticalDashboard = () => {
                         color: 'hsl(var(--foreground))',
                       }}
                     />
-                    <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name="Total" />
-                    <Bar dataKey="suspicious" fill="hsl(0 72% 51%)" radius={[4, 4, 0, 0]} name="Suspicious" />
+                    <Bar dataKey="total" fill="hsl(var(--primary))" radius={[4, 4, 0, 0]} name={t('pages.tactical.charts.total')} />
+                    <Bar dataKey="suspicious" fill="hsl(0 72% 51%)" radius={[4, 4, 0, 0]} name={t('pages.tactical.charts.suspicious')} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

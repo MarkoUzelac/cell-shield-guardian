@@ -4,6 +4,12 @@
  * Adding a language means copying this file, translating the values and
  * registering it in `src/i18n/index.ts`. Keys must never be translated.
  */
+import { dashboard as dashboardComponents } from '../components/en-dashboard';
+import { map as mapComponents } from '../components/en-map';
+import { metadata as metadataComponents } from '../components/en-metadata';
+import { network as networkComponents } from '../components/en-network';
+import { triangulation as triangulationComponents } from '../components/en-triangulation';
+import { misc as miscComponents } from '../components/en-misc';
 import { about } from '../pages/en/about';
 import { alerts } from '../pages/en/alerts';
 import { demo } from '../pages/en/demo';
@@ -323,6 +329,17 @@ export const en = {
         error: 'Individual checks failed. Everything else on this page is still valid.',
       },
     },
+  },
+
+  // Copy for shared feature components, kept separate from page copy because
+  // the same component can appear on several screens.
+  components: {
+    dashboard: dashboardComponents,
+    map: mapComponents,
+    metadata: metadataComponents,
+    network: networkComponents,
+    triangulation: triangulationComponents,
+    misc: miscComponents,
   },
 
   pages: {

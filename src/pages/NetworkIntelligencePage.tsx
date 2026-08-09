@@ -155,8 +155,8 @@ const NetworkIntelligencePage = () => {
     localStorage.setItem(NETWORK_CONSENT_KEY, 'true');
     setHasConsent(true);
     toast({
-      title: "Network Diagnostics Enabled",
-      description: "Fetching network information...",
+      title: t('pages.network.consent.enabledToastTitle'),
+      description: t('pages.network.consent.enabledToastDescription'),
     });
   };
 
@@ -166,8 +166,8 @@ const NetworkIntelligencePage = () => {
     setIpInfo(null);
     setCarrierInfo(null);
     toast({
-      title: "Network Diagnostics Disabled",
-      description: "External API calls have been disabled.",
+      title: t('pages.network.consent.disabledToastTitle'),
+      description: t('pages.network.consent.disabledToastDescription'),
     });
   };
 
@@ -191,8 +191,8 @@ const NetworkIntelligencePage = () => {
         if (!validationResult.success) {
           console.warn('IP API response validation failed');
           toast({
-            title: "Invalid data received",
-            description: "Network information may be incomplete.",
+            title: t('pages.network.errors.invalidDataTitle'),
+            description: t('pages.network.errors.invalidDataDescription'),
             variant: "destructive"
           });
           setIsLoading(false);
@@ -215,8 +215,8 @@ const NetworkIntelligencePage = () => {
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         toast({
-          title: "Request timeout",
-          description: "Network information request timed out.",
+          title: t('pages.network.errors.requestTimeoutTitle'),
+          description: t('pages.network.errors.requestTimeoutDescription'),
           variant: "destructive"
         });
       } else {
