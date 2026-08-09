@@ -24,7 +24,7 @@ import {
   simulateRealtimeAlert,
 } from '@/lib/mockData';
 
-const Index = () => {
+const DemoDashboard = () => {
   const [isScanning, setIsScanning] = useState(true);
   const [imsiRecords, setImsiRecords] = useState<IMSIRecord[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -291,4 +291,4 @@ const Index = () => {
   );
 };
 
-export default Index;
+export default DemoDashboard;
