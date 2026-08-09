@@ -42,7 +42,11 @@ export type CapabilitySupport =
   | 'PERMISSION_REQUIRED'
   | 'NOT_APPLICABLE';
 
+/** Values interpolated into translated diagnostic copy. */
+export type DiagnosticParams = Record<string, string | number | boolean>;
+
 export interface DiagnosticResult {
+
   id: string;
   label: string;
   category: DiagnosticCategory;
