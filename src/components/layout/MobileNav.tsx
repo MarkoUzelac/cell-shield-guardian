@@ -121,18 +121,8 @@ export const MobileNav = () => {
                   </div>
                 </SheetHeader>
                 
-                {/* Status Bar */}
-                <div className="px-4 pb-3 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-success/10 border border-success/30">
-                      <div className="w-1.5 h-1.5 rounded-full bg-success animate-pulse" />
-                      <span className="text-[10px] font-medium text-success">Protected</span>
-                    </div>
-                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary/10 border border-primary/30">
-                      <Radio className="w-3 h-3 text-primary" />
-                      <span className="text-[10px] font-mono text-primary">935.2 MHz</span>
-                    </div>
-                  </div>
+                {/* Status Bar — only verifiable state */}
+                <div className="px-4 pb-3 flex items-center justify-end">
                   <span className="text-[10px] font-mono text-muted-foreground">
                     {currentTime.toLocaleTimeString()}
                   </span>
