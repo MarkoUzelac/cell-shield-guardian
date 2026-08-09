@@ -4,13 +4,51 @@ import { MetadataAnalyzer } from '@/components/metadata/MetadataAnalyzer';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { FileSearch, Image, FileText, File } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 const MetadataPage = () => {
+  const { t } = useTranslation();
+
+  const metadataItems = [
+    {
+      key: 'gpsCoordinates',
+      risk: 'high',
+    },
+    {
+      key: 'deviceSerialNumbers',
+      risk: 'high',
+    },
+    {
+      key: 'timestamps',
+      risk: 'medium',
+    },
+    {
+      key: 'authorInformation',
+      risk: 'medium',
+    },
+    {
+      key: 'softwareVersions',
+      risk: 'low',
+    },
+    {
+      key: 'cameraSettings',
+      risk: 'low',
+    },
+    {
+      key: 'networkInfo',
+      risk: 'high',
+    },
+    {
+      key: 'editingHistory',
+      risk: 'medium',
+    },
+  ] as const;
+
   return (
     <MainLayout>
       <Header
-        title="Metadata Analyzer"
-        subtitle="Extract and analyze hidden metadata from files using ExifTool"
+        title={t('pages.metadata.title')}
+        subtitle={t('pages.metadata.subtitle')}
       />
 
       <div className="p-6 space-y-6">
@@ -22,9 +60,9 @@ const MetadataPage = () => {
                 <Image className="w-6 h-6 text-primary" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground">Images</h3>
+                <h3 className="font-medium text-foreground">{t('pages.metadata.infoCards.images.title')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  JPEG, PNG, TIFF, RAW files
+                  {t('pages.metadata.infoCards.images.description')}
                 </p>
               </div>
             </CardContent>
@@ -36,9 +74,9 @@ const MetadataPage = () => {
                 <FileText className="w-6 h-6 text-warning" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground">Documents</h3>
+                <h3 className="font-medium text-foreground">{t('pages.metadata.infoCards.documents.title')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  PDF, DOC, XLS, PPT files
+                  {t('pages.metadata.infoCards.documents.description')}
                 </p>
               </div>
             </CardContent>
@@ -50,9 +88,9 @@ const MetadataPage = () => {
                 <File className="w-6 h-6 text-success" />
               </div>
               <div>
-                <h3 className="font-medium text-foreground">Media</h3>
+                <h3 className="font-medium text-foreground">{t('pages.metadata.infoCards.media.title')}</h3>
                 <p className="text-sm text-muted-foreground">
-                  Audio, video, and other formats
+                  {t('pages.metadata.infoCards.media.description')}
                 </p>
               </div>
             </CardContent>
@@ -67,60 +105,19 @@ const MetadataPage = () => {
           <CardHeader>
             <CardTitle className="text-lg flex items-center gap-2">
               <FileSearch className="w-5 h-5 text-primary" />
-              Common Privacy-Sensitive Metadata
+              {t('pages.metadata.commonMetadata.title')}
             </CardTitle>
           </CardHeader>
           <CardContent>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-              {[
-                {
-                  title: 'GPS Coordinates',
-                  description: 'Exact location where photo/document was created',
-                  risk: 'high',
-                },
-                {
-                  title: 'Device Serial Numbers',
-                  description: 'Unique identifiers linking to specific devices',
-                  risk: 'high',
-                },
-                {
-                  title: 'Timestamps',
-                  description: 'Creation, modification, and access times',
-                  risk: 'medium',
-                },
-                {
-                  title: 'Author Information',
-                  description: 'Names, usernames, or account details',
-                  risk: 'medium',
-                },
-                {
-                  title: 'Software Versions',
-                  description: 'Apps and OS versions used to create file',
-                  risk: 'low',
-                },
-                {
-                  title: 'Camera Settings',
-                  description: 'Lens, aperture, ISO, and focal length',
-                  risk: 'low',
-                },
-                {
-                  title: 'Network Info',
-                  description: 'WiFi names, IP addresses in some files',
-                  risk: 'high',
-                },
-                {
-                  title: 'Editing History',
-                  description: 'Track changes, revision history',
-                  risk: 'medium',
-                },
-              ].map((item) => (
+              {metadataItems.map((item) => (
                 <div
-                  key={item.title}
+                  key={item.key}
                   className="p-4 rounded-lg bg-muted/30 border border-border"
                 >
                   <div className="flex items-center justify-between mb-2">
                     <h4 className="font-medium text-foreground text-sm">
-                      {item.title}
+                      {t(`pages.metadata.commonMetadata.items.${item.key}.title`)}
                     </h4>
                     <span
                       className={cn(
@@ -130,11 +127,13 @@ const MetadataPage = () => {
                         item.risk === 'low' && 'bg-muted text-muted-foreground',
                       )}
                     >
-                      {item.risk} risk
+                      {t('pages.metadata.commonMetadata.riskLabel', {
+                        risk: t(`pages.metadata.commonMetadata.riskLevels.${item.risk}`),
+                      })}
                     </span>
                   </div>
                   <p className="text-xs text-muted-foreground">
-                    {item.description}
+                    {t(`pages.metadata.commonMetadata.items.${item.key}.description`)}
                   </p>
                 </div>
               ))}

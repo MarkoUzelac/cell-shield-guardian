@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { Save, Key, Radio, Bell, Database, Shield } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,7 @@ import {
 import { toast } from 'sonner';
 
 const SettingsPage = () => {
+  const { t } = useTranslation();
   const [settings, setSettings] = useState({
     openCellIdKey: '',
     scanFrequency: '935.2',
@@ -29,14 +31,14 @@ const SettingsPage = () => {
 
   const handleSave = () => {
     // In a real app, this would save to backend/localStorage
-    toast.success('Settings saved successfully');
+    toast.success(t('pages.settings.toast.saved'));
   };
 
   return (
     <MainLayout>
       <Header
-        title="Settings"
-        subtitle="Configure scanner, API keys, and application preferences"
+        title={t('pages.settings.header.title')}
+        subtitle={t('pages.settings.header.subtitle')}
       />
 
       <div className="p-6 space-y-6 max-w-4xl">
@@ -45,26 +47,26 @@ const SettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Key className="w-5 h-5 text-primary" />
-              API Configuration
+              {t('pages.settings.api.title')}
             </CardTitle>
             <CardDescription>
-              Configure external API keys for cell tower lookup services.
+              {t('pages.settings.api.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="opencellid">OpenCellID API Key</Label>
+              <Label htmlFor="opencellid">{t('pages.settings.api.keyLabel')}</Label>
               <Input
                 id="opencellid"
                 type="password"
-                placeholder="Enter your OpenCellID API key"
+                placeholder={t('pages.settings.api.keyPlaceholder')}
                 value={settings.openCellIdKey}
                 onChange={(e) =>
                   setSettings({ ...settings, openCellIdKey: e.target.value })
                 }
               />
               <p className="text-xs text-muted-foreground">
-                Get a free API key at{' '}
+                {t('pages.settings.api.getKeyPrefix')}{' '}
                 <a
                   href="https://opencellid.org"
                   target="_blank"
@@ -83,16 +85,16 @@ const SettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Radio className="w-5 h-5 text-primary" />
-              Scanner Configuration
+              {t('pages.settings.scanner.title')}
             </CardTitle>
             <CardDescription>
-              RTL-SDR device and frequency scanning settings.
+              {t('pages.settings.scanner.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="space-y-2">
-                <Label htmlFor="frequency">Default Frequency (MHz)</Label>
+                <Label htmlFor="frequency">{t('pages.settings.scanner.frequencyLabel')}</Label>
                 <Input
                   id="frequency"
                   type="number"
@@ -104,7 +106,7 @@ const SettingsPage = () => {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="gain">Device Gain (dB)</Label>
+                <Label htmlFor="gain">{t('pages.settings.scanner.gainLabel')}</Label>
                 <Input
                   id="gain"
                   type="number"
@@ -118,9 +120,9 @@ const SettingsPage = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="autoscan">Auto-start scanning</Label>
+                <Label htmlFor="autoscan">{t('pages.settings.scanner.autoScanLabel')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Automatically begin scanning when application starts
+                  {t('pages.settings.scanner.autoScanDescription')}
                 </p>
               </div>
               <Switch
@@ -139,18 +141,18 @@ const SettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Bell className="w-5 h-5 text-primary" />
-              Alert Preferences
+              {t('pages.settings.alertPreferences.title')}
             </CardTitle>
             <CardDescription>
-              Configure how and when you receive security alerts.
+              {t('pages.settings.alertPreferences.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="alerts">Enable alerts</Label>
+                <Label htmlFor="alerts">{t('pages.settings.alertPreferences.enableAlertsLabel')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Show notifications for suspicious activity
+                  {t('pages.settings.alertPreferences.enableAlertsDescription')}
                 </p>
               </div>
               <Switch
@@ -164,9 +166,9 @@ const SettingsPage = () => {
 
             <div className="flex items-center justify-between">
               <div>
-                <Label htmlFor="sound">Sound alerts</Label>
+                <Label htmlFor="sound">{t('pages.settings.alertPreferences.soundAlertsLabel')}</Label>
                 <p className="text-xs text-muted-foreground">
-                  Play audio notification for critical alerts
+                  {t('pages.settings.alertPreferences.soundAlertsDescription')}
                 </p>
               </div>
               <Switch
@@ -185,15 +187,15 @@ const SettingsPage = () => {
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Database className="w-5 h-5 text-primary" />
-              Data Management
+              {t('pages.settings.dataManagement.title')}
             </CardTitle>
             <CardDescription>
-              Configure data storage and retention policies.
+              {t('pages.settings.dataManagement.description')}
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-6">
             <div className="space-y-2">
-              <Label htmlFor="retention">Log retention period</Label>
+              <Label htmlFor="retention">{t('pages.settings.dataManagement.retentionLabel')}</Label>
               <Select
                 value={settings.logRetention}
                 onValueChange={(v) =>
@@ -204,18 +206,18 @@ const SettingsPage = () => {
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="7">7 days</SelectItem>
-                  <SelectItem value="30">30 days</SelectItem>
-                  <SelectItem value="90">90 days</SelectItem>
-                  <SelectItem value="365">1 year</SelectItem>
-                  <SelectItem value="0">Forever</SelectItem>
+                  <SelectItem value="7">{t('pages.settings.dataManagement.retentionOptions.d7')}</SelectItem>
+                  <SelectItem value="30">{t('pages.settings.dataManagement.retentionOptions.d30')}</SelectItem>
+                  <SelectItem value="90">{t('pages.settings.dataManagement.retentionOptions.d90')}</SelectItem>
+                  <SelectItem value="365">{t('pages.settings.dataManagement.retentionOptions.d365')}</SelectItem>
+                  <SelectItem value="0">{t('pages.settings.dataManagement.retentionOptions.forever')}</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             <div className="flex gap-4">
-              <Button variant="outline">Export All Data</Button>
-              <Button variant="destructive">Clear All Data</Button>
+              <Button variant="outline">{t('pages.settings.dataManagement.exportAllData')}</Button>
+              <Button variant="destructive">{t('pages.settings.dataManagement.clearAllData')}</Button>
             </div>
           </CardContent>
         </Card>
@@ -227,13 +229,10 @@ const SettingsPage = () => {
               <Shield className="w-5 h-5 text-warning shrink-0 mt-0.5" />
               <div>
                 <h4 className="font-medium text-foreground mb-1">
-                  Security & Privacy Notice
+                  {t('pages.settings.securityNotice.title')}
                 </h4>
                 <p className="text-sm text-muted-foreground">
-                  All captured data is stored locally on your device. No data is
-                  sent to external servers unless you explicitly configure API
-                  integrations. This tool is designed for passive, defensive
-                  monitoring of your own devices and networks only.
+                  {t('pages.settings.securityNotice.description')}
                 </p>
               </div>
             </div>
@@ -244,7 +243,7 @@ const SettingsPage = () => {
         <div className="flex justify-end">
           <Button onClick={handleSave}>
             <Save className="w-4 h-4 mr-2" />
-            Save Settings
+            {t('pages.settings.saveButton')}
           </Button>
         </div>
       </div>
