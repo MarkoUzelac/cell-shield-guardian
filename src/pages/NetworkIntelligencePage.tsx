@@ -681,39 +681,35 @@ const NetworkIntelligencePage = () => {
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
-                    <h4 className="font-medium text-destructive mb-2">IMSI Catcher Signs</h4>
+                    <h4 className="font-medium text-destructive mb-2">{t('pages.network.security.watchFor.imsiCatcher.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Sudden downgrade to 2G in strong signal area</li>
-                      <li>• Unusual cell tower ID changes</li>
-                      <li>• Rapid battery drain</li>
-                      <li>• Call quality degradation</li>
+                      {(t('pages.network.security.watchFor.imsiCatcher.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-warning/5 border border-warning/20">
-                    <h4 className="font-medium text-warning mb-2">Silent SMS Indicators</h4>
+                    <h4 className="font-medium text-warning mb-2">{t('pages.network.security.watchFor.silentSms.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Unexplained network activity</li>
-                      <li>• Brief signal interruptions</li>
-                      <li>• Unusual data usage patterns</li>
-                      <li>• Phone waking without notifications</li>
+                      {(t('pages.network.security.watchFor.silentSms.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                    <h4 className="font-medium text-primary mb-2">Man-in-the-Middle</h4>
+                    <h4 className="font-medium text-primary mb-2">{t('pages.network.security.watchFor.mitm.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Certificate warnings on trusted sites</li>
-                      <li>• Abnormally high latency</li>
-                      <li>• DNS resolution anomalies</li>
-                      <li>• Unexpected redirects</li>
+                      {(t('pages.network.security.watchFor.mitm.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
-                    <h4 className="font-medium text-accent mb-2">Location Tracking</h4>
+                    <h4 className="font-medium text-accent mb-2">{t('pages.network.security.watchFor.locationTracking.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Frequent cell tower handoffs while stationary</li>
-                      <li>• GPS requests from unknown apps</li>
-                      <li>• Wi-Fi probe requests</li>
-                      <li>• Bluetooth scanning activity</li>
+                      {(t('pages.network.security.watchFor.locationTracking.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -910,7 +906,7 @@ const NetworkIntelligencePage = () => {
                         ))}
                       </div>
                       <p className="text-sm text-muted-foreground">
-                        {t(`pages.network.bands.bands.${band.band}.note`)}
+                        {t(`pages.network.frequencies.bands.${band.band}.note`)}
                       </p>
 
                     </motion.div>
