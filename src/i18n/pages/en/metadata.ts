@@ -21,7 +21,12 @@ export const metadata = {
   },
   commonMetadata: {
     title: 'Common Privacy-Sensitive Metadata',
-    riskSuffix: 'risk',
+    riskLabel: '{{risk}} risk',
+    riskLevels: {
+      high: 'high',
+      medium: 'medium',
+      low: 'low',
+    },
     items: {
       gpsCoordinates: {
         title: 'GPS Coordinates',

@@ -506,8 +506,8 @@ const NetworkIntelligencePage = () => {
                       <Signal className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Network Type</p>
-                      <p className="text-xl font-bold">{networkInfo?.effectiveType?.toUpperCase() || 'Unknown'}</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.networkType')}</p>
+                      <p className="text-xl font-bold">{networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown')}</p>
                     </div>
                   </div>
                 </div>
@@ -528,11 +528,11 @@ const NetworkIntelligencePage = () => {
                       <Globe className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">ISP/Carrier</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.ispCarrier')}</p>
                       <p className="text-lg font-bold truncate max-w-[150px]">
                         {hasConsent 
-                          ? (sanitizeDisplayText(ipInfo?.org)?.split(' ')[0] || 'Loading...') 
-                          : 'Enable to view'}
+                          ? (sanitizeDisplayText(ipInfo?.org)?.split(' ')[0] || t('pages.network.statusCards.loading')) 
+                          : t('pages.network.statusCards.enableToView')}
                       </p>
                     </div>
                   </div>
@@ -554,7 +554,7 @@ const NetworkIntelligencePage = () => {
                       <Clock className="h-5 w-5 text-success" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Latency</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.latency')}</p>
                       <p className="text-xl font-bold">{networkInfo?.rtt || speedTest?.latency || '--'} ms</p>
                     </div>
                   </div>
@@ -576,7 +576,7 @@ const NetworkIntelligencePage = () => {
                       <Zap className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Est. Bandwidth</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.estBandwidth')}</p>
                       <p className="text-xl font-bold">{networkInfo?.downlink || '--'} Mbps</p>
                     </div>
                   </div>
