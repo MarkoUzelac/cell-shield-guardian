@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { Radio, Wifi, AlertTriangle, Activity, Shield, Power, Volume2, VolumeX, Crown, ChevronDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
