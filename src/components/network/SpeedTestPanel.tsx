@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Download, Upload, Clock, Activity, Zap, RefreshCw, Gauge } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 
 interface SpeedResult {
   download: number;
@@ -25,6 +26,7 @@ const TEST_ENDPOINTS = [
 const UPLOAD_ENDPOINT = 'https://httpbin.org/post';
 
 export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
+  const { t } = useTranslation();
   const { toast } = useToast();
   const [result, setResult] = useState<SpeedResult | null>(null);
   const [isTesting, setIsTesting] = useState(false);
@@ -125,7 +127,7 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
 
   const runTest = useCallback(async () => {
     if (!hasConsent) {
-      toast({ title: "Enable diagnostics first", variant: "destructive" });
+      toast({ title: t('components.network.speedTest.enableDiagnosticsFirst'), variant: "destructive" });
       return;
     }
 
@@ -164,10 +166,10 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
         serverLocation: 'Cloudflare Edge',
       });
 
-      toast({ title: "Speed test complete", description: `↓${download.toFixed(1)} ↑${upload.toFixed(1)} Mbps` });
+      toast({ title: t('components.network.speedTest.speedTestComplete'), description: t('components.network.speedTest.speedTestCompleteDescription', { download: download.toFixed(1), upload: upload.toFixed(1) }) });
     } catch (e) {
       if (e instanceof Error && e.name === 'AbortError') {
-        toast({ title: "Test cancelled", variant: "destructive" });
+        toast({ title: t('components.network.speedTest.testCancelled'), variant: "destructive" });
       }
     } finally {
       setIsTesting(false);
@@ -180,11 +182,11 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
   };
 
   const getQuality = (download: number) => {
-    if (download >= 100) return { label: 'EXCELLENT', color: 'text-success' };
-    if (download >= 50) return { label: 'VERY GOOD', color: 'text-success' };
-    if (download >= 25) return { label: 'GOOD', color: 'text-primary' };
-    if (download >= 10) return { label: 'FAIR', color: 'text-warning' };
-    return { label: 'POOR', color: 'text-destructive' };
+    if (download >= 100) return { label: t('components.network.speedTest.quality.EXCELLENT'), color: 'text-success' };
+    if (download >= 50) return { label: t('components.network.speedTest.quality.VERY_GOOD'), color: 'text-success' };
+    if (download >= 25) return { label: t('components.network.speedTest.quality.GOOD'), color: 'text-primary' };
+    if (download >= 10) return { label: t('components.network.speedTest.quality.FAIR'), color: 'text-warning' };
+    return { label: t('components.network.speedTest.quality.POOR'), color: 'text-destructive' };
   };
 
   return (
@@ -192,10 +194,10 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
       <CardHeader>
         <CardTitle className="flex items-center gap-2 text-sm">
           <Gauge className="h-4 w-4 text-primary" />
-          Precision Speed Test
+          {t('components.network.speedTest.title')}
         </CardTitle>
         <CardDescription className="text-xs">
-          Multi-server download/upload measurement via Cloudflare Edge
+          {t('components.network.speedTest.description')}
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
@@ -217,17 +219,17 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
             {isTesting && (
               <>
                 <p className="text-xs text-muted-foreground uppercase tracking-wider">
-                  {phase === 'latency' ? 'Measuring Latency...' :
-                   phase === 'download' ? 'Testing Download...' :
-                   phase === 'upload' ? 'Testing Upload...' : 'Completing...'}
+                  {phase === 'latency' ? t('components.network.speedTest.measuringLatency') :
+                   phase === 'download' ? t('components.network.speedTest.testingDownload') :
+                   phase === 'upload' ? t('components.network.speedTest.testingUpload') : t('components.network.speedTest.completing')}
                 </p>
                 {phase === 'download' && liveSpeed > 0 && (
-                  <p className="text-lg font-bold font-mono text-primary">{liveSpeed} Mbps</p>
+                  <p className="text-lg font-bold font-mono text-primary">{t('components.network.speedTest.liveSpeed', { speed: liveSpeed })}</p>
                 )}
               </>
             )}
             {!isTesting && !result && (
-              <p className="text-xs text-muted-foreground">Tap to start</p>
+              <p className="text-xs text-muted-foreground">{t('components.network.speedTest.tapToStart')}</p>
             )}
           </div>
         </div>
@@ -260,55 +262,55 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
               <div className="p-3 rounded-lg bg-success/10 border border-success/20 text-center">
                 <Download className="h-4 w-4 mx-auto text-success mb-1" />
                 <p className="text-lg font-bold font-mono text-success">{result.download.toFixed(1)}</p>
-                <p className="text-[10px] text-muted-foreground">Mbps Down</p>
+                <p className="text-[10px] text-muted-foreground">{t('components.network.speedTest.downMbps')}</p>
               </div>
               <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 text-center">
                 <Upload className="h-4 w-4 mx-auto text-primary mb-1" />
                 <p className="text-lg font-bold font-mono text-primary">{result.upload.toFixed(1)}</p>
-                <p className="text-[10px] text-muted-foreground">Mbps Up</p>
+                <p className="text-[10px] text-muted-foreground">{t('components.network.speedTest.upMbps')}</p>
               </div>
               <div className="p-3 rounded-lg bg-warning/10 border border-warning/20 text-center">
                 <Clock className="h-4 w-4 mx-auto text-warning mb-1" />
                 <p className="text-lg font-bold font-mono text-warning">{result.latency}</p>
-                <p className="text-[10px] text-muted-foreground">ms Latency</p>
+                <p className="text-[10px] text-muted-foreground">{t('components.network.speedTest.msLatency')}</p>
               </div>
               <div className="p-3 rounded-lg bg-muted/30 border border-border text-center">
                 <Activity className="h-4 w-4 mx-auto text-muted-foreground mb-1" />
                 <p className="text-lg font-bold font-mono text-foreground">{result.jitter}</p>
-                <p className="text-[10px] text-muted-foreground">ms Jitter</p>
+                <p className="text-[10px] text-muted-foreground">{t('components.network.speedTest.msJitter')}</p>
               </div>
             </div>
 
             {/* Assessment */}
             <div className="p-2 rounded-lg bg-muted/30 border border-border text-xs space-y-1">
               <div className="flex justify-between">
-                <span className="text-muted-foreground">4K Streaming</span>
+                <span className="text-muted-foreground">{t('components.network.speedTest.streaming4k')}</span>
                 <span className={result.download >= 25 ? 'text-success' : result.download >= 5 ? 'text-warning' : 'text-destructive'}>
-                  {result.download >= 25 ? '✓ Ready' : result.download >= 5 ? '~ Possible' : '✗ Insufficient'}
+                  {result.download >= 25 ? t('components.network.speedTest.ready') : result.download >= 5 ? t('components.network.speedTest.possible') : t('components.network.speedTest.insufficient')}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Video Calls</span>
+                <span className="text-muted-foreground">{t('components.network.speedTest.videoCalls')}</span>
                 <span className={result.latency <= 100 ? 'text-success' : result.latency <= 200 ? 'text-warning' : 'text-destructive'}>
-                  {result.latency <= 100 ? '✓ Excellent' : result.latency <= 200 ? '~ Okay' : '✗ Poor'}
+                  {result.latency <= 100 ? t('components.network.speedTest.excellent') : result.latency <= 200 ? t('components.network.speedTest.okay') : t('components.network.speedTest.poor')}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Gaming</span>
+                <span className="text-muted-foreground">{t('components.network.speedTest.gaming')}</span>
                 <span className={result.jitter <= 10 && result.latency <= 50 ? 'text-success' : result.jitter <= 30 ? 'text-warning' : 'text-destructive'}>
-                  {result.jitter <= 10 && result.latency <= 50 ? '✓ Great' : result.jitter <= 30 ? '~ Playable' : '✗ High Lag'}
+                  {result.jitter <= 10 && result.latency <= 50 ? t('components.network.speedTest.great') : result.jitter <= 30 ? t('components.network.speedTest.playable') : t('components.network.speedTest.highLag')}
                 </span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Security Check</span>
+                <span className="text-muted-foreground">{t('components.network.speedTest.securityCheck')}</span>
                 <span className={result.latency > 500 ? 'text-destructive' : 'text-success'}>
-                  {result.latency > 500 ? '⚠ Possible interception' : '✓ Normal latency'}
+                  {result.latency > 500 ? t('components.network.speedTest.possibleInterception') : t('components.network.speedTest.normalLatency')}
                 </span>
               </div>
             </div>
 
             <p className="text-[10px] text-muted-foreground text-center">
-              Server: {result.serverLocation} • {result.timestamp.toLocaleTimeString()}
+              {t('components.network.speedTest.serverTimestamp', { server: result.serverLocation, time: result.timestamp.toLocaleTimeString() })}
             </p>
           </motion.div>
         )}
