@@ -7,8 +7,10 @@ import { Badge } from '@/components/ui/badge';
 import { MetadataResult } from '@/types/signal';
 import { generateMockMetadata } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export const MetadataAnalyzer = () => {
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<MetadataResult | null>(null);
@@ -74,7 +76,7 @@ export const MetadataAnalyzer = () => {
       {/* Upload Area */}
       <Card className="bg-card border-border">
         <CardHeader>
-          <CardTitle className="text-lg">Upload File for Analysis</CardTitle>
+          <CardTitle className="text-lg">{t('components.metadata.uploadTitle')}</CardTitle>
         </CardHeader>
         <CardContent>
           <div
@@ -100,7 +102,7 @@ export const MetadataAnalyzer = () => {
                 </div>
                 <Button variant="outline" size="sm" onClick={clearFile}>
                   <Trash2 className="w-4 h-4 mr-2" />
-                  Remove
+                  {t('components.metadata.remove')}
                 </Button>
               </div>
             ) : (
@@ -111,10 +113,10 @@ export const MetadataAnalyzer = () => {
                 )} />
                 <div>
                   <p className="font-medium text-foreground">
-                    Drag & drop a file here
+                    {t('components.metadata.dragDrop')}
                   </p>
                   <p className="text-sm text-muted-foreground">
-                    or click to browse
+                    {t('components.metadata.orBrowse')}
                   </p>
                 </div>
                 <input
@@ -126,7 +128,7 @@ export const MetadataAnalyzer = () => {
                 />
                 <Button asChild variant="outline">
                   <label htmlFor="file-upload" className="cursor-pointer">
-                    Browse Files
+                    {t('components.metadata.browseFiles')}
                   </label>
                 </Button>
               </div>
@@ -134,9 +136,9 @@ export const MetadataAnalyzer = () => {
           </div>
 
           <div className="mt-4 text-xs text-muted-foreground">
-            <p>Supported formats: Images (JPEG, PNG, TIFF, RAW), Documents (PDF, DOC, XLS)</p>
+            <p>{t('components.metadata.supportedFormats')}</p>
             <p className="mt-1">
-              Analysis uses ExifTool to extract embedded metadata including GPS, device info, and timestamps.
+              {t('components.metadata.analysisDescription')}
             </p>
           </div>
         </CardContent>
@@ -146,11 +148,11 @@ export const MetadataAnalyzer = () => {
       <Card className="bg-card border-border">
         <CardHeader>
           <CardTitle className="text-lg flex items-center justify-between">
-            Analysis Results
+            {t('components.metadata.resultsTitle')}
             {result && (
               <Button variant="outline" size="sm">
                 <Download className="w-4 h-4 mr-2" />
-                Export JSON
+                {t('components.metadata.exportJson')}
               </Button>
             )}
           </CardTitle>
@@ -166,7 +168,7 @@ export const MetadataAnalyzer = () => {
                 className="flex flex-col items-center justify-center py-12"
               >
                 <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin" />
-                <p className="mt-4 text-muted-foreground">Analyzing file...</p>
+                <p className="mt-4 text-muted-foreground">{t('components.metadata.analyzing')}</p>
               </motion.div>
             ) : result ? (
               <motion.div
@@ -182,7 +184,7 @@ export const MetadataAnalyzer = () => {
                     <div className="flex items-center gap-2 mb-3">
                       <AlertTriangle className="w-5 h-5 text-destructive" />
                       <span className="font-semibold text-destructive">
-                        Privacy Risks Detected
+                        {t('components.metadata.privacyRisksDetected')}
                       </span>
                     </div>
                     <ul className="space-y-2">
@@ -201,7 +203,7 @@ export const MetadataAnalyzer = () => {
                   <div className="p-4 rounded-lg bg-warning/10 border border-warning/30">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin className="w-5 h-5 text-warning" />
-                      <span className="font-semibold text-warning">GPS Location Found</span>
+                      <span className="font-semibold text-warning">{t('components.metadata.gpsLocationFound')}</span>
                     </div>
                     <p className="font-mono text-sm text-foreground">
                       {result.gpsLocation.lat.toFixed(6)}, {result.gpsLocation.lng.toFixed(6)}
@@ -211,7 +213,7 @@ export const MetadataAnalyzer = () => {
 
                 {/* Metadata Table */}
                 <div className="space-y-2">
-                  <h4 className="font-medium text-foreground">Extracted Metadata</h4>
+                  <h4 className="font-medium text-foreground">{t('components.metadata.extractedMetadata')}</h4>
                   <div className="rounded-lg border border-border overflow-hidden">
                     <table className="w-full text-sm">
                       <tbody>
@@ -245,7 +247,7 @@ export const MetadataAnalyzer = () => {
                 className="flex flex-col items-center justify-center py-12 text-muted-foreground"
               >
                 <FileImage className="w-12 h-12 mb-4 opacity-50" />
-                <p>Upload a file to see extracted metadata</p>
+                <p>{t('components.metadata.emptyState')}</p>
               </motion.div>
             )}
           </AnimatePresence>

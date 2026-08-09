@@ -174,12 +174,12 @@ export const MobileNav = () => {
                       <div className="flex items-center gap-2 min-w-0">
                         <Crown className="w-5 h-5 text-primary shrink-0" />
                         <div className="min-w-0">
-                          <p className="font-semibold text-foreground text-sm">Upgrade to Pro</p>
-                          <p className="text-[10px] text-muted-foreground">Real-time tower data & advanced alerts</p>
+                          <p className="font-semibold text-foreground text-sm">{t('common.proUpsell.title')}</p>
+                          <p className="text-[10px] text-muted-foreground">{t('common.proUpsell.subtitle')}</p>
                         </div>
                       </div>
                       <Button size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-8 text-xs">
-                        €9.99/mo
+                        {t('common.proUpsell.price')}
                       </Button>
                     </div>
                   </div>
@@ -242,7 +242,7 @@ export const MobileNav = () => {
                   <Separator className="mb-4" />
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground">
                     <span>{t('common.appName')}</span>
-                    <span>Educational Use Only</span>
+                    <span>{t('common.educationalUseOnly')}</span>
                   </div>
                 </div>
               </div>

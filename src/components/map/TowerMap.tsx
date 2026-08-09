@@ -2,6 +2,7 @@ import { Fragment, useEffect, useMemo } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useTranslation } from "react-i18next";
 
 import type { CellTower } from "@/types/signal";
 
@@ -94,6 +95,7 @@ export const TowerMap = ({
   minZoom = 3,
   maxZoom = 19,
 }: TowerMapProps) => {
+  const { t } = useTranslation();
   useEffect(() => {
     ensureLeafletDefaultIcons();
   }, []);
@@ -141,15 +143,15 @@ export const TowerMap = ({
             />
             <Marker position={[userLocation.lat, userLocation.lng]} icon={userIcon}>
               <Popup>
-                <div className="p-2 min-w-[180px]" tabIndex={0} role="region" aria-label="Your location details">
-                  <div className="font-semibold text-primary mb-1">📍 Your Location</div>
+                <div className="p-2 min-w-[180px]" tabIndex={0} role="region" aria-label={t("components.map.towerMap.yourLocationAria")}>
+                  <div className="font-semibold text-primary mb-1">📍 {t("components.map.towerMap.yourLocation")}</div>
                   <div className="text-sm space-y-1">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Lat</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.lat")}</span>
                       <span className="font-mono">{userLocation.lat.toFixed(6)}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Lng</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.lng")}</span>
                       <span className="font-mono">{userLocation.lng.toFixed(6)}</span>
                     </div>
                   </div>
@@ -184,32 +186,32 @@ export const TowerMap = ({
               }}
             >
               <Popup>
-                <div className="p-2 min-w-[220px]" tabIndex={0} role="region" aria-label={`Tower ${tower.cellId} details`}>
+                <div className="p-2 min-w-[220px]" tabIndex={0} role="region" aria-label={t("components.map.towerMap.towerDetailsAria", { cellId: tower.cellId })}>
                   <div className="flex items-center justify-between gap-2 mb-2">
                     <span className="font-semibold">{tower.operator}</span>
                     <span className={tower.isSuspicious ? "text-destructive font-bold" : "text-success"}>
-                      {tower.isSuspicious ? "⚠ SUSPICIOUS" : "✓ Verified"}
+                      {tower.isSuspicious ? `⚠ ${t("components.map.towerMap.suspicious")}` : `✓ ${t("components.map.towerMap.verified")}`}
                     </span>
                   </div>
                   <div className="space-y-1 text-sm">
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Cell ID</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.cellId")}</span>
                       <span className="font-mono">{tower.cellId}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">MCC/MNC</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.mccMnc")}</span>
                       <span className="font-mono">{tower.mcc}/{tower.mnc}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">LAC</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.lac")}</span>
                       <span className="font-mono">{tower.lac}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Technology</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.technology")}</span>
                       <span className="font-mono">{tower.technology}</span>
                     </div>
                     <div className="flex justify-between">
-                      <span className="text-muted-foreground">Signal</span>
+                      <span className="text-muted-foreground">{t("components.map.towerMap.signal")}</span>
                       <span className="font-mono">{tower.signalStrength} dBm</span>
                     </div>
                   </div>

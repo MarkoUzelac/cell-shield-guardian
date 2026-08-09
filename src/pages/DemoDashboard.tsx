@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { Radio, Wifi, AlertTriangle, Activity, Shield, Power, Volume2, VolumeX, Crown, ChevronDown } from 'lucide-react';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -26,6 +27,7 @@ import {
 } from '@/lib/mockData';
 
 const DemoDashboard = () => {
+  const { t } = useTranslation();
   const [isScanning, setIsScanning] = useState(true);
   const [imsiRecords, setImsiRecords] = useState<IMSIRecord[]>([]);
   const [alerts, setAlerts] = useState<Alert[]>([]);
@@ -88,23 +90,21 @@ const DemoDashboard = () => {
   return (
     <MainLayout>
       <Header
-        title="Cellular Simulation (Demo)"
-        subtitle="Synthetic data — not from your device"
+        title={t('pages.demo.header.title')}
+        subtitle={t('pages.demo.header.subtitle')}
       />
 
       <div className="p-3 md:p-6 space-y-4">
         {/* Honesty banner: nothing on this page is a real measurement. */}
         <div className="rounded-xl border border-warning/40 bg-warning/10 p-3">
-          <p className="text-sm font-semibold text-warning">Simulated data — nothing here is real</p>
+          <p className="text-sm font-semibold text-warning">{t('pages.demo.banner.title')}</p>
           <p className="mt-1 text-xs text-muted-foreground">
-            Web browsers cannot read IMSI, IMEI, cell tower identity, encryption state or baseband
-            information. Every signal, tower and alert on this page is generated locally to
-            illustrate what a native Android companion app could show. For measurements taken from
-            your actual device, use the{' '}
-            <Link to="/" className="font-medium text-primary underline underline-offset-2">
-              live diagnostics dashboard
-            </Link>
-            .
+            <Trans
+              i18nKey="pages.demo.banner.body"
+              components={{
+                link: <Link to="/" className="font-medium text-primary underline underline-offset-2" />,
+              }}
+            />
           </p>
         </div>
         {/* Premium Banner - Compact */}
@@ -117,13 +117,13 @@ const DemoDashboard = () => {
             <div className="flex items-center gap-2 min-w-0">
               <Crown className="w-5 h-5 text-primary shrink-0" />
               <div className="min-w-0">
-                <p className="font-semibold text-foreground text-sm truncate">Upgrade to Pro</p>
-                <p className="text-xs text-muted-foreground hidden sm:block">Real-time tower data & advanced alerts</p>
+                <p className="font-semibold text-foreground text-sm truncate">{t('pages.demo.premiumBanner.title')}</p>
+                <p className="text-xs text-muted-foreground hidden sm:block">{t('pages.demo.premiumBanner.subtitle')}</p>
               </div>
             </div>
             <Button size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-8 text-xs">
               <Crown className="w-3 h-3 mr-1" />
-              €9.99/mo
+              {t('pages.demo.premiumBanner.price')}
             </Button>
           </div>
         </motion.div>
@@ -131,31 +131,31 @@ const DemoDashboard = () => {
         {/* Stats Row */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <StatsCard
-            title="Signals"
+            title={t('pages.demo.stats.signals')}
             value={imsiRecords.length}
-            subtitle="Last hour"
+            subtitle={t('pages.demo.stats.signalsSubtitle')}
             icon={Wifi}
             trend={{ value: 12, isPositive: true }}
             variant="primary"
           />
           <StatsCard
-            title="Suspicious"
+            title={t('pages.demo.stats.suspicious')}
             value={suspiciousCount}
-            subtitle="Attention"
+            subtitle={t('pages.demo.stats.suspiciousSubtitle')}
             icon={AlertTriangle}
             variant={suspiciousCount > 0 ? 'warning' : 'default'}
           />
           <StatsCard
-            title="Critical"
+            title={t('pages.demo.stats.critical')}
             value={criticalAlerts}
-            subtitle="Unacked"
+            subtitle={t('pages.demo.stats.criticalSubtitle')}
             icon={Activity}
             variant={criticalAlerts > 0 ? 'danger' : 'default'}
           />
           <StatsCard
-            title="Status"
-            value="Active"
-            subtitle="Protected"
+            title={t('pages.demo.stats.status')}
+            value={t('pages.demo.stats.statusValue')}
+            subtitle={t('pages.demo.stats.statusSubtitle')}
             icon={Shield}
             variant="success"
           />
@@ -176,7 +176,7 @@ const DemoDashboard = () => {
                 <div className="flex items-center justify-between">
                   <CardTitle className="text-sm flex items-center gap-2">
                     <Radio className="w-4 h-4 text-primary" />
-                    Scan Control
+                    {t('pages.demo.scanControl.title')}
                   </CardTitle>
                   <Button
                     variant="ghost"
@@ -206,19 +206,19 @@ const DemoDashboard = () => {
 
                 <div className="space-y-1.5 text-xs">
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Frequency:</span>
+                    <span className="text-muted-foreground">{t('pages.demo.scanControl.frequency')}</span>
                     <span className="font-mono text-foreground">{frequency}</span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Status:</span>
+                    <span className="text-muted-foreground">{t('pages.demo.scanControl.status')}</span>
                     <Badge variant={isScanning ? 'default' : 'secondary'} className="text-xs h-5">
-                      {isScanning ? 'Scanning' : 'Idle'}
+                      {isScanning ? t('pages.demo.scanControl.scanning') : t('pages.demo.scanControl.idle')}
                     </Badge>
                   </div>
                   <div className="flex items-center justify-between">
-                    <span className="text-muted-foreground">Location:</span>
+                    <span className="text-muted-foreground">{t('pages.demo.scanControl.location')}</span>
                     <span className="text-foreground text-xs font-mono">
-                      {hasRealLocation ? `${latitude?.toFixed(2)}°, ${longitude?.toFixed(2)}°` : 'Croatia'}
+                      {hasRealLocation ? `${latitude?.toFixed(2)}°, ${longitude?.toFixed(2)}°` : t('pages.demo.scanControl.defaultLocation')}
                     </span>
                   </div>
                 </div>
@@ -230,7 +230,7 @@ const DemoDashboard = () => {
                   size="sm"
                 >
                   <Power className="w-4 h-4 mr-2" />
-                  {isScanning ? 'Stop' : 'Start'}
+                  {isScanning ? t('pages.demo.scanControl.stop') : t('pages.demo.scanControl.start')}
                 </Button>
               </CardContent>
             </Card>
@@ -240,7 +240,7 @@ const DemoDashboard = () => {
               <CardHeader className="pb-2">
                 <CardTitle className="text-sm flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 text-warning" />
-                  Recent Alerts
+                  {t('pages.demo.recentAlerts.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
@@ -263,7 +263,7 @@ const DemoDashboard = () => {
                 <CardTitle className="text-sm flex items-center justify-between">
                   <span className="flex items-center gap-2">
                     <Activity className="w-4 h-4 text-primary" />
-                    Croatian LTE/5G Bands
+                    {t('pages.demo.frequencyBands.title')}
                   </span>
                   <ChevronDown className={cn(
                     "w-4 h-4 text-muted-foreground transition-transform",

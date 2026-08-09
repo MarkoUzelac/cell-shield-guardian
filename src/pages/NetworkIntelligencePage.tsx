@@ -28,6 +28,7 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '@/hooks/use-toast';
+import { useTranslation } from 'react-i18next';
 import { SpeedTestPanel } from '@/components/network/SpeedTestPanel';
 import { getOperatorsByIso } from '@/lib/worldOperators';
 import { z } from 'zod';
@@ -88,16 +89,17 @@ interface SecurityIndicator {
 }
 
 const FREQUENCY_BANDS = [
-  { band: '2G (GSM)', frequencies: ['850 MHz', '900 MHz', '1800 MHz', '1900 MHz'], risk: 'high', note: 'Weak encryption, vulnerable to interception' },
-  { band: '3G (UMTS)', frequencies: ['850 MHz', '900 MHz', '2100 MHz'], risk: 'medium', note: 'Better encryption, still some vulnerabilities' },
-  { band: '4G (LTE)', frequencies: ['Band 1 (2100 MHz)', 'Band 3 (1800 MHz)', 'Band 7 (2600 MHz)', 'Band 8 (900 MHz)', 'Band 20 (800 MHz)', 'Band 28 (700 MHz)'], risk: 'low', note: 'Strong encryption, most secure legacy network' },
-  { band: '5G (NR)', frequencies: ['n78 (3500 MHz)', 'n41 (2500 MHz)', 'n28 (700 MHz)', 'n258 (26 GHz mmWave)'], risk: 'low', note: 'Latest encryption standards, enhanced security' },
+  { band: '2G (GSM)', frequencies: ['850 MHz', '900 MHz', '1800 MHz', '1900 MHz'], risk: 'high' },
+  { band: '3G (UMTS)', frequencies: ['850 MHz', '900 MHz', '2100 MHz'], risk: 'medium' },
+  { band: '4G (LTE)', frequencies: ['Band 1 (2100 MHz)', 'Band 3 (1800 MHz)', 'Band 7 (2600 MHz)', 'Band 8 (900 MHz)', 'Band 20 (800 MHz)', 'Band 28 (700 MHz)'], risk: 'low' },
+  { band: '5G (NR)', frequencies: ['n78 (3500 MHz)', 'n41 (2500 MHz)', 'n28 (700 MHz)', 'n258 (26 GHz mmWave)'], risk: 'low' },
 ];
 
 const NETWORK_CONSENT_KEY = 'network-diagnostics-consent';
 
 const NetworkIntelligencePage = () => {
   const { toast } = useToast();
+  const { t } = useTranslation();
   const [networkInfo, setNetworkInfo] = useState<NetworkInfo | null>(null);
   const [carrierInfo, setCarrierInfo] = useState<CarrierInfo | null>(null);
   const [speedTest, setSpeedTest] = useState<SpeedTestResult | null>(null);
@@ -153,8 +155,8 @@ const NetworkIntelligencePage = () => {
     localStorage.setItem(NETWORK_CONSENT_KEY, 'true');
     setHasConsent(true);
     toast({
-      title: "Network Diagnostics Enabled",
-      description: "Fetching network information...",
+      title: t('pages.network.consent.enabledToastTitle'),
+      description: t('pages.network.consent.enabledToastDescription'),
     });
   };
 
@@ -164,8 +166,8 @@ const NetworkIntelligencePage = () => {
     setIpInfo(null);
     setCarrierInfo(null);
     toast({
-      title: "Network Diagnostics Disabled",
-      description: "External API calls have been disabled.",
+      title: t('pages.network.consent.disabledToastTitle'),
+      description: t('pages.network.consent.disabledToastDescription'),
     });
   };
 
@@ -189,8 +191,8 @@ const NetworkIntelligencePage = () => {
         if (!validationResult.success) {
           console.warn('IP API response validation failed');
           toast({
-            title: "Invalid data received",
-            description: "Network information may be incomplete.",
+            title: t('pages.network.errors.invalidDataTitle'),
+            description: t('pages.network.errors.invalidDataDescription'),
             variant: "destructive"
           });
           setIsLoading(false);
@@ -213,8 +215,8 @@ const NetworkIntelligencePage = () => {
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         toast({
-          title: "Request timeout",
-          description: "Network information request timed out.",
+          title: t('pages.network.errors.requestTimeoutTitle'),
+          description: t('pages.network.errors.requestTimeoutDescription'),
           variant: "destructive"
         });
       } else {
@@ -228,55 +230,55 @@ const NetworkIntelligencePage = () => {
     const indicators: SecurityIndicator[] = [
       {
         id: 'encryption',
-        name: 'Connection Encryption',
+        name: t('pages.network.security.indicators.encryption.name'),
         status: window.location.protocol === 'https:' ? 'safe' : 'warning',
         description: window.location.protocol === 'https:' 
-          ? 'Your connection is encrypted with TLS/SSL'
-          : 'Connection is not encrypted - data may be intercepted',
-        details: 'HTTPS encrypts data between your device and servers'
+          ? t('pages.network.security.indicators.encryption.descriptionSecure')
+          : t('pages.network.security.indicators.encryption.descriptionInsecure'),
+        details: t('pages.network.security.indicators.encryption.details')
       },
       {
         id: 'network_type',
-        name: 'Network Generation',
+        name: t('pages.network.security.indicators.networkType.name'),
         status: getNetworkTypeRisk(networkInfo?.effectiveType),
-        description: `Connected via ${networkInfo?.effectiveType?.toUpperCase() || 'Unknown'} network`,
+        description: t('pages.network.security.indicators.networkType.description', { type: networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown') }),
         details: networkInfo?.effectiveType === '2g' 
-          ? 'WARNING: 2G networks have weak encryption and are vulnerable to IMSI catchers'
+          ? t('pages.network.security.indicators.networkType.detailsWarning2g')
           : networkInfo?.effectiveType === '3g'
-          ? 'CAUTION: 3G has some known vulnerabilities'
-          : '4G/5G networks have stronger encryption'
+          ? t('pages.network.security.indicators.networkType.detailsCaution3g')
+          : t('pages.network.security.indicators.networkType.detailsSecure')
       },
       {
         id: 'downgrade_risk',
-        name: 'Downgrade Attack Risk',
+        name: t('pages.network.security.indicators.downgradeRisk.name'),
         status: networkInfo?.effectiveType === '2g' ? 'danger' : 'safe',
         description: networkInfo?.effectiveType === '2g'
-          ? 'ALERT: You may be experiencing a forced network downgrade'
-          : 'No forced downgrade detected',
-        details: 'IMSI catchers often force phones to connect via 2G for easier interception'
+          ? t('pages.network.security.indicators.downgradeRisk.descriptionAlert')
+          : t('pages.network.security.indicators.downgradeRisk.descriptionSafe'),
+        details: t('pages.network.security.indicators.downgradeRisk.details')
       },
       {
         id: 'latency',
-        name: 'Connection Latency',
+        name: t('pages.network.security.indicators.latency.name'),
         status: getLatencyRisk(networkInfo?.rtt),
-        description: `Current latency: ${networkInfo?.rtt || 'Unknown'}ms`,
-        details: 'Abnormally high latency can indicate traffic interception or man-in-the-middle attacks'
+        description: t('pages.network.security.indicators.latency.description', { rtt: networkInfo?.rtt || t('pages.network.statusCards.unknown') }),
+        details: t('pages.network.security.indicators.latency.details')
       },
       {
         id: 'data_saver',
-        name: 'Data Saver Mode',
+        name: t('pages.network.security.indicators.dataSaver.name'),
         status: networkInfo?.saveData ? 'warning' : 'safe',
         description: networkInfo?.saveData 
-          ? 'Data saver is active - some content may be proxied'
-          : 'Data saver is not active',
-        details: 'Proxied connections may route through third-party servers'
+          ? t('pages.network.security.indicators.dataSaver.descriptionActive')
+          : t('pages.network.security.indicators.dataSaver.descriptionInactive'),
+        details: t('pages.network.security.indicators.dataSaver.details')
       },
       {
         id: 'dns_security',
-        name: 'DNS Security',
+        name: t('pages.network.security.indicators.dnsSecurity.name'),
         status: 'unknown',
-        description: 'DNS security status cannot be determined from browser',
-        details: 'Consider using DNS-over-HTTPS (DoH) for encrypted DNS queries'
+        description: t('pages.network.security.indicators.dnsSecurity.description'),
+        details: t('pages.network.security.indicators.dnsSecurity.details')
       }
     ];
 
@@ -308,8 +310,8 @@ const NetworkIntelligencePage = () => {
     // Require consent for external API calls
     if (!hasConsent) {
       toast({
-        title: "Enable Network Diagnostics",
-        description: "Please enable network diagnostics to run speed tests.",
+        title: t('pages.network.consent.requiredToastTitle'),
+        description: t('pages.network.consent.requiredToastDescription'),
         variant: "destructive"
       });
       return;
@@ -365,8 +367,8 @@ const NetworkIntelligencePage = () => {
         });
 
         toast({
-          title: "Speed Test Complete",
-          description: `Download: ${downloadSpeed.toFixed(2)} Mbps`,
+          title: t('pages.network.speedTest.completeTitle'),
+          description: t('pages.network.speedTest.completeDescription', { speed: downloadSpeed.toFixed(2) }),
         });
       }
     } catch (error) {
@@ -374,8 +376,8 @@ const NetworkIntelligencePage = () => {
       
       if (error instanceof Error && error.name === 'AbortError') {
         toast({
-          title: "Speed Test Timeout",
-          description: "The speed test took too long. Please try again.",
+          title: t('pages.network.errors.speedTestTimeoutTitle'),
+          description: t('pages.network.errors.speedTestTimeoutDescription'),
           variant: "destructive"
         });
       } else {
@@ -389,8 +391,8 @@ const NetworkIntelligencePage = () => {
         });
         
         toast({
-          title: "Speed Test Complete",
-          description: "Results based on browser network estimation",
+          title: t('pages.network.speedTest.completeTitle'),
+          description: t('pages.network.speedTest.estimationDescription'),
           variant: "default"
         });
       }
@@ -412,19 +414,19 @@ const NetworkIntelligencePage = () => {
 
   const getStatusBadge = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">SECURE</Badge>;
-      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">CAUTION</Badge>;
-      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">RISK</Badge>;
-      default: return <Badge variant="outline">UNKNOWN</Badge>;
+      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">{t('pages.network.security.statusBadge.safe')}</Badge>;
+      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">{t('pages.network.security.statusBadge.warning')}</Badge>;
+      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">{t('pages.network.security.statusBadge.danger')}</Badge>;
+      default: return <Badge variant="outline">{t('pages.network.security.statusBadge.unknown')}</Badge>;
     }
   };
 
   const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">HIGH RISK</Badge>;
-      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">MEDIUM</Badge>;
-      case 'low': return <Badge className="bg-success/20 text-success border-success/30">LOW RISK</Badge>;
-      default: return <Badge variant="outline">UNKNOWN</Badge>;
+      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">{t('pages.network.frequencies.riskBadge.high')}</Badge>;
+      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">{t('pages.network.frequencies.riskBadge.medium')}</Badge>;
+      case 'low': return <Badge className="bg-success/20 text-success border-success/30">{t('pages.network.frequencies.riskBadge.low')}</Badge>;
+      default: return <Badge variant="outline">{t('pages.network.frequencies.riskBadge.unknown')}</Badge>;
     }
   };
 
@@ -433,8 +435,8 @@ const NetworkIntelligencePage = () => {
       <div className="p-6 space-y-6">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Network Intelligence</h1>
-          <p className="text-muted-foreground">Carrier analysis, speed testing, and security monitoring</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('pages.network.header.title')}</h1>
+          <p className="text-muted-foreground">{t('pages.network.header.subtitle')}</p>
         </div>
 
         {/* Disclaimer Banner */}
@@ -443,11 +445,9 @@ const NetworkIntelligencePage = () => {
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-warning">Educational Information Only</p>
+                <p className="font-medium text-warning">{t('pages.network.disclaimer.title')}</p>
                 <p className="text-muted-foreground mt-1">
-                  This page provides network diagnostics and educational information about potential security risks. 
-                  The indicators shown are informational and NOT definitive proof of surveillance or attacks. 
-                  Most anomalies have benign explanations.
+                  {t('pages.network.disclaimer.body')}
                 </p>
               </div>
             </div>
@@ -462,15 +462,14 @@ const NetworkIntelligencePage = () => {
                 <div className="flex items-start gap-3">
                   <Shield className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div className="text-sm">
-                    <p className="font-medium text-primary">Enable Network Diagnostics?</p>
+                    <p className="font-medium text-primary">{t('pages.network.consent.enableTitle')}</p>
                     <p className="text-muted-foreground mt-1">
-                      This will share your IP address with ipapi.co for location/carrier information. 
-                      Speed tests use httpbin.org. No personal data is stored.
+                      {t('pages.network.consent.enableBody')}
                     </p>
                   </div>
                 </div>
                 <Button onClick={handleConsentGiven} size="sm" className="whitespace-nowrap">
-                  Enable Diagnostics
+                  {t('pages.network.consent.enableButton')}
                 </Button>
               </div>
             </CardContent>
@@ -487,7 +486,7 @@ const NetworkIntelligencePage = () => {
               className="text-muted-foreground hover:text-foreground"
             >
               <EyeOff className="h-4 w-4 mr-2" />
-              Disable External Diagnostics
+              {t('pages.network.consent.disableButton')}
             </Button>
           </div>
         )}
@@ -507,8 +506,8 @@ const NetworkIntelligencePage = () => {
                       <Signal className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Network Type</p>
-                      <p className="text-xl font-bold">{networkInfo?.effectiveType?.toUpperCase() || 'Unknown'}</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.networkType')}</p>
+                      <p className="text-xl font-bold">{networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown')}</p>
                     </div>
                   </div>
                 </div>
@@ -529,11 +528,11 @@ const NetworkIntelligencePage = () => {
                       <Globe className="h-5 w-5 text-accent" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">ISP/Carrier</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.ispCarrier')}</p>
                       <p className="text-lg font-bold truncate max-w-[150px]">
                         {hasConsent 
-                          ? (sanitizeDisplayText(ipInfo?.org)?.split(' ')[0] || 'Loading...') 
-                          : 'Enable to view'}
+                          ? (sanitizeDisplayText(ipInfo?.org)?.split(' ')[0] || t('pages.network.statusCards.loading')) 
+                          : t('pages.network.statusCards.enableToView')}
                       </p>
                     </div>
                   </div>
@@ -555,7 +554,7 @@ const NetworkIntelligencePage = () => {
                       <Clock className="h-5 w-5 text-success" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Latency</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.latency')}</p>
                       <p className="text-xl font-bold">{networkInfo?.rtt || speedTest?.latency || '--'} ms</p>
                     </div>
                   </div>
@@ -577,7 +576,7 @@ const NetworkIntelligencePage = () => {
                       <Zap className="h-5 w-5 text-primary" />
                     </div>
                     <div>
-                      <p className="text-sm text-muted-foreground">Est. Bandwidth</p>
+                      <p className="text-sm text-muted-foreground">{t('pages.network.statusCards.estBandwidth')}</p>
                       <p className="text-xl font-bold">{networkInfo?.downlink || '--'} Mbps</p>
                     </div>
                   </div>
@@ -591,19 +590,19 @@ const NetworkIntelligencePage = () => {
           <TabsList className="bg-muted/50">
             <TabsTrigger value="security" className="data-[state=active]:bg-primary/20">
               <Shield className="h-4 w-4 mr-2" />
-              Security Analysis
+              {t('pages.network.tabs.security')}
             </TabsTrigger>
             <TabsTrigger value="speed" className="data-[state=active]:bg-primary/20">
               <Activity className="h-4 w-4 mr-2" />
-              Speed Test
+              {t('pages.network.tabs.speed')}
             </TabsTrigger>
             <TabsTrigger value="carrier" className="data-[state=active]:bg-primary/20">
               <Smartphone className="h-4 w-4 mr-2" />
-              Carrier Info
+              {t('pages.network.tabs.carrier')}
             </TabsTrigger>
             <TabsTrigger value="frequencies" className="data-[state=active]:bg-primary/20">
               <Radio className="h-4 w-4 mr-2" />
-              Frequencies
+              {t('pages.network.tabs.frequencies')}
             </TabsTrigger>
           </TabsList>
 
@@ -612,10 +611,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Shield className="h-5 w-5 text-primary" />
-                  Security Indicators
+                  {t('pages.network.security.indicatorsTitle')}
                 </CardTitle>
                 <CardDescription>
-                  Real-time analysis of potential network security risks
+                  {t('pages.network.security.indicatorsDescription')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -659,13 +658,13 @@ const NetworkIntelligencePage = () => {
                     onClick={() => {
                       fetchNetworkInfo();
                       analyzeSecurityIndicators();
-                      toast({ title: "Security analysis refreshed" });
+                      toast({ title: t('pages.network.security.refreshedToastTitle') });
                     }}
                     variant="outline"
                     className="gap-2"
                   >
                     <RefreshCw className="h-4 w-4" />
-                    Refresh Analysis
+                    {t('pages.network.security.refreshButton')}
                   </Button>
                 </div>
               </CardContent>
@@ -676,45 +675,41 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-warning">
                   <AlertTriangle className="h-5 w-5" />
-                  What to Watch For
+                  {t('pages.network.security.watchFor.title')}
                 </CardTitle>
               </CardHeader>
               <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="p-4 rounded-lg bg-destructive/5 border border-destructive/20">
-                    <h4 className="font-medium text-destructive mb-2">IMSI Catcher Signs</h4>
+                    <h4 className="font-medium text-destructive mb-2">{t('pages.network.security.watchFor.imsiCatcher.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Sudden downgrade to 2G in strong signal area</li>
-                      <li>• Unusual cell tower ID changes</li>
-                      <li>• Rapid battery drain</li>
-                      <li>• Call quality degradation</li>
+                      {(t('pages.network.security.watchFor.imsiCatcher.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-warning/5 border border-warning/20">
-                    <h4 className="font-medium text-warning mb-2">Silent SMS Indicators</h4>
+                    <h4 className="font-medium text-warning mb-2">{t('pages.network.security.watchFor.silentSms.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Unexplained network activity</li>
-                      <li>• Brief signal interruptions</li>
-                      <li>• Unusual data usage patterns</li>
-                      <li>• Phone waking without notifications</li>
+                      {(t('pages.network.security.watchFor.silentSms.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-primary/5 border border-primary/20">
-                    <h4 className="font-medium text-primary mb-2">Man-in-the-Middle</h4>
+                    <h4 className="font-medium text-primary mb-2">{t('pages.network.security.watchFor.mitm.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Certificate warnings on trusted sites</li>
-                      <li>• Abnormally high latency</li>
-                      <li>• DNS resolution anomalies</li>
-                      <li>• Unexpected redirects</li>
+                      {(t('pages.network.security.watchFor.mitm.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                   <div className="p-4 rounded-lg bg-accent/5 border border-accent/20">
-                    <h4 className="font-medium text-accent mb-2">Location Tracking</h4>
+                    <h4 className="font-medium text-accent mb-2">{t('pages.network.security.watchFor.locationTracking.title')}</h4>
                     <ul className="text-sm text-muted-foreground space-y-1">
-                      <li>• Frequent cell tower handoffs while stationary</li>
-                      <li>• GPS requests from unknown apps</li>
-                      <li>• Wi-Fi probe requests</li>
-                      <li>• Bluetooth scanning activity</li>
+                      {(t('pages.network.security.watchFor.locationTracking.items', { returnObjects: true }) as string[]).map((item) => (
+                        <li key={item}>• {item}</li>
+                      ))}
                     </ul>
                   </div>
                 </div>
@@ -731,10 +726,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="h-5 w-5 text-primary" />
-                  Carrier & Network Information
+                  {t('pages.network.carrier.title')}
                 </CardTitle>
                 <CardDescription>
-                  Details about your current network connection
+                  {t('pages.network.carrier.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -764,37 +759,37 @@ const NetworkIntelligencePage = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-3">
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">IP Address</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.ipAddress')}</span>
                             <span className="font-mono">{ipInfo.ip}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">ISP/Organization</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.ispOrganization')}</span>
                             <span className="text-right max-w-[200px] truncate">{ipInfo.org}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">ASN</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.asn')}</span>
                             <span className="font-mono">{ipInfo.asn}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Network Type</span>
-                            <span>{networkInfo?.type || networkInfo?.effectiveType?.toUpperCase() || 'Unknown'}</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.networkType')}</span>
+                            <span>{networkInfo?.type || networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown')}</span>
                           </div>
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Country</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.country')}</span>
                             <span>{ipInfo.country_name} ({ipInfo.country_code})</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Region</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.region')}</span>
                             <span>{ipInfo.region}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">City</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.city')}</span>
                             <span>{ipInfo.city}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Timezone</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.timezone')}</span>
                             <span>{ipInfo.timezone}</span>
                           </div>
                         </div>
@@ -805,24 +800,24 @@ const NetworkIntelligencePage = () => {
                     <div className="p-4 rounded-lg bg-background/50 border border-border/50">
                       <h4 className="font-medium mb-3 flex items-center gap-2">
                         <Network className="h-4 w-4" />
-                        Connection Details
+                        {t('pages.network.carrier.connectionDetails')}
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <p className="text-muted-foreground">Effective Type</p>
-                          <p className="font-medium">{networkInfo?.effectiveType?.toUpperCase() || 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.effectiveType')}</p>
+                          <p className="font-medium">{networkInfo?.effectiveType?.toUpperCase() || t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Downlink</p>
-                          <p className="font-medium">{networkInfo?.downlink ? `${networkInfo.downlink} Mbps` : 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.downlink')}</p>
+                          <p className="font-medium">{networkInfo?.downlink ? `${networkInfo.downlink} Mbps` : t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">RTT</p>
-                          <p className="font-medium">{networkInfo?.rtt ? `${networkInfo.rtt} ms` : 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.rtt')}</p>
+                          <p className="font-medium">{networkInfo?.rtt ? `${networkInfo.rtt} ms` : t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Data Saver</p>
-                          <p className="font-medium">{networkInfo?.saveData ? 'Enabled' : 'Disabled'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.dataSaver')}</p>
+                          <p className="font-medium">{networkInfo?.saveData ? t('pages.network.carrier.enabled') : t('pages.network.carrier.disabled')}</p>
                         </div>
                     </div>
                     </div>
@@ -834,10 +829,10 @@ const NetworkIntelligencePage = () => {
                         <div className="p-4 rounded-lg bg-background/50 border border-border/50">
                           <h4 className="font-medium mb-1 flex items-center gap-2">
                             <Smartphone className="h-4 w-4" />
-                            Mobile Operators in {local.country}
+                            {t('pages.network.carrier.mobileOperatorsIn', { country: local.country })}
                           </h4>
                           <p className="text-xs text-muted-foreground mb-3">
-                            MCC {local.mcc} · the carriers operating where you are located
+                            {t('pages.network.carrier.mobileOperatorsDescription', { mcc: local.mcc })}
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {local.operators.map((op) => (
@@ -864,13 +859,13 @@ const NetworkIntelligencePage = () => {
                     <Button 
                       onClick={() => {
                         fetchIpInfo();
-                        toast({ title: "Carrier info refreshed" });
+                        toast({ title: t('pages.network.carrier.refreshedToastTitle') });
                       }}
                       variant="outline"
                       className="w-full gap-2"
                     >
                       <RefreshCw className="h-4 w-4" />
-                      Refresh Information
+                      {t('pages.network.carrier.refreshButton')}
                     </Button>
                   </div>
                 )}
@@ -883,10 +878,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Radio className="h-5 w-5 text-primary" />
-                  Common Mobile Frequencies
+                  {t('pages.network.frequencies.title')}
                 </CardTitle>
                 <CardDescription>
-                  Reference guide for mobile network frequency bands and their security characteristics
+                  {t('pages.network.frequencies.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -910,7 +905,10 @@ const NetworkIntelligencePage = () => {
                           </Badge>
                         ))}
                       </div>
-                      <p className="text-sm text-muted-foreground">{band.note}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {t(`pages.network.frequencies.bands.${band.band}.note`)}
+                      </p>
+
                     </motion.div>
                   ))}
                 </div>
@@ -918,14 +916,12 @@ const NetworkIntelligencePage = () => {
                 <div className="mt-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <Server className="h-4 w-4 text-primary" />
-                    Monitoring Recommendations
+                    {t('pages.network.frequencies.monitoringRecommendations.title')}
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Use RTL-SDR with gr-gsm to passively monitor GSM frequencies</li>
-                    <li>• Focus on 900 MHz and 1800 MHz bands for GSM in most regions</li>
-                    <li>• Monitor for unusual broadcast channels or fake base stations</li>
-                    <li>• Compare captured Cell IDs against OpenCellID database</li>
-                    <li>• Watch for IMSI/TMSI patterns that indicate tracking attempts</li>
+                    {(t('pages.network.frequencies.monitoringRecommendations.items', { returnObjects: true }) as string[]).map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </CardContent>

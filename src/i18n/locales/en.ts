@@ -4,6 +4,22 @@
  * Adding a language means copying this file, translating the values and
  * registering it in `src/i18n/index.ts`. Keys must never be translated.
  */
+import { dashboard as dashboardComponents } from '../components/en-dashboard';
+import { map as mapComponents } from '../components/en-map';
+import { metadata as metadataComponents } from '../components/en-metadata';
+import { network as networkComponents } from '../components/en-network';
+import { triangulation as triangulationComponents } from '../components/en-triangulation';
+import { misc as miscComponents } from '../components/en-misc';
+import { about } from '../pages/en/about';
+import { alerts } from '../pages/en/alerts';
+import { demo } from '../pages/en/demo';
+import { map } from '../pages/en/map';
+import { metadata } from '../pages/en/metadata';
+import { network } from '../pages/en/network';
+import { protection } from '../pages/en/protection';
+import { settings } from '../pages/en/settings';
+import { tactical } from '../pages/en/tactical';
+
 export const en = {
   common: {
     appName: 'Cell Shield Guardian',
@@ -20,6 +36,12 @@ export const en = {
     collapseSidebar: 'Collapse sidebar',
     moreNavigation: 'More navigation options',
     loading: 'Loading…',
+    educationalUseOnly: 'Educational Use Only',
+    proUpsell: {
+      title: 'Upgrade to Pro',
+      subtitle: 'Real-time tower data & advanced alerts',
+      price: '€9.99/mo',
+    },
   },
 
   header: {
@@ -315,7 +337,30 @@ export const en = {
     },
   },
 
+  // Copy for shared feature components, kept separate from page copy because
+  // the same component can appear on several screens.
+  components: {
+    dashboard: dashboardComponents,
+    map: mapComponents,
+    metadata: metadataComponents,
+    network: networkComponents,
+    triangulation: triangulationComponents,
+    misc: miscComponents,
+  },
+
   pages: {
+    // Page copy lives in `src/i18n/pages/en/*` so each screen's strings can be
+    // translated (and reviewed) independently of the shared vocabulary above.
+    about,
+    alerts,
+    demo,
+    map,
+    metadata,
+    network,
+    protection,
+    settings,
+    tactical,
+
     index: {
       title: 'Privacy & Connection Check',
       subtitle: 'Live measurements from your browser',

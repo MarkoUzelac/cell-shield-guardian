@@ -1,4 +1,5 @@
 import React from "react";
+import i18n from "@/i18n";
 
 type Props = {
   children: React.ReactNode;
@@ -31,9 +32,9 @@ export class ErrorBoundary extends React.Component<Props, State> {
       return (
         <div className="p-6">
           <div className="rounded-lg border border-destructive/30 bg-destructive/10 p-4">
-            <h2 className="text-lg font-semibold text-destructive">Map failed to render</h2>
+            <h2 className="text-lg font-semibold text-destructive">{i18n.t('components.misc.errorBoundary.title')}</h2>
             <p className="mt-2 text-sm text-muted-foreground">
-              A runtime error occurred while loading the map view.
+              {i18n.t('components.misc.errorBoundary.description')}
             </p>
             <pre className="mt-3 max-h-48 overflow-auto rounded bg-background/60 p-3 text-xs text-foreground">
               {String(this.state.error)}

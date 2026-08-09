@@ -8,6 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
 import { toast } from 'sonner';
 import { useAlertSound } from '@/hooks/useAlertSound';
+import { useTranslation } from 'react-i18next';
 
 interface IMSITableProps {
   records: IMSIRecord[];
@@ -16,6 +17,7 @@ interface IMSITableProps {
 }
 
 export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITableProps) => {
+  const { t } = useTranslation();
   const [maskedIMSI, setMaskedIMSI] = useState(true);
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [lastAlertedId, setLastAlertedId] = useState<string | null>(null);
@@ -51,7 +53,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
   const copyToClipboard = async (text: string, id: string) => {
     await navigator.clipboard.writeText(text);
     setCopiedId(id);
-    toast.success('Copied to clipboard');
+    toast.success(t('components.dashboard.imsiTable.copiedToast'));
     setTimeout(() => setCopiedId(null), 2000);
   };
 
@@ -59,10 +61,10 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
     if (!alertType) return null;
     
     const badges = {
-      IMSI_CATCHER: { label: 'IMSI Catcher', variant: 'destructive' as const },
-      RAPID_HANDOVER: { label: 'Rapid Handover', variant: 'default' as const },
-      SILENT_SMS: { label: 'Silent SMS', variant: 'default' as const },
-      DOWNGRADE_ATTACK: { label: 'Downgrade', variant: 'destructive' as const },
+      IMSI_CATCHER: { label: t('components.dashboard.imsiTable.alertBadges.IMSI_CATCHER'), variant: 'destructive' as const },
+      RAPID_HANDOVER: { label: t('components.dashboard.imsiTable.alertBadges.RAPID_HANDOVER'), variant: 'default' as const },
+      SILENT_SMS: { label: t('components.dashboard.imsiTable.alertBadges.SILENT_SMS'), variant: 'default' as const },
+      DOWNGRADE_ATTACK: { label: t('components.dashboard.imsiTable.alertBadges.DOWNGRADE_ATTACK'), variant: 'destructive' as const },
     };
 
     const badge = badges[alertType];
@@ -76,7 +78,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
   return (
     <div className="rounded-xl border border-border bg-card overflow-hidden">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 p-3 md:p-4 border-b border-border">
-        <h3 className="font-semibold text-foreground text-sm md:text-base">Live IMSI/TMSI Records</h3>
+        <h3 className="font-semibold text-foreground text-sm md:text-base">{t('components.dashboard.imsiTable.title')}</h3>
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
@@ -86,7 +88,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
               "text-muted-foreground h-11 w-11 p-0 focus:ring-2 focus:ring-primary",
               !isMuted && "text-primary"
             )}
-            aria-label={isMuted ? 'Unmute alerts' : 'Mute alerts'}
+            aria-label={isMuted ? t('components.dashboard.imsiTable.unmuteAria') : t('components.dashboard.imsiTable.muteAria')}
           >
             {isMuted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
           </Button>
@@ -95,10 +97,10 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
             size="sm"
             onClick={() => setMaskedIMSI(!maskedIMSI)}
             className="text-muted-foreground h-11 px-3 focus:ring-2 focus:ring-primary"
-            aria-label={maskedIMSI ? 'Show IMSI values' : 'Hide IMSI values'}
+            aria-label={maskedIMSI ? t('components.dashboard.imsiTable.showAria') : t('components.dashboard.imsiTable.hideAria')}
           >
             {maskedIMSI ? <Eye className="w-5 h-5 mr-1" /> : <EyeOff className="w-5 h-5 mr-1" />}
-            <span className="hidden sm:inline">{maskedIMSI ? 'Show' : 'Hide'}</span>
+            <span className="hidden sm:inline">{maskedIMSI ? t('components.dashboard.imsiTable.show') : t('components.dashboard.imsiTable.hide')}</span>
           </Button>
         </div>
       </div>
@@ -151,7 +153,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
                   <button
                     onClick={() => copyToClipboard(record.imsi, record.id)}
                     className="text-muted-foreground min-h-[44px] min-w-[44px] flex items-center justify-center"
-                    aria-label={`Copy IMSI ${record.imsi}`}
+                    aria-label={t('components.dashboard.imsiTable.copyAria', { imsi: record.imsi })}
                   >
                     {copiedId === record.id ? (
                       <Check className="w-4 h-4 text-success" />
@@ -164,7 +166,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
               </div>
               <div className="flex items-center justify-between text-xs">
                 <span className="text-foreground">{record.operator}</span>
-                <span className="text-muted-foreground">Cell: {record.cellId}</span>
+                <span className="text-muted-foreground">{t('components.dashboard.imsiTable.cellLabel', { cellId: record.cellId })}</span>
               </div>
               {record.isSuspicious && (
                 <div className="flex items-center gap-2">
@@ -183,14 +185,14 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
         <table className="w-full data-table">
           <thead>
             <tr className="border-b border-border bg-muted/30">
-              <th className="text-left p-3 text-xs">Status</th>
-              <th className="text-left p-3 text-xs">IMSI</th>
-              <th className="text-left p-3 text-xs">TMSI</th>
-              <th className="text-left p-3 text-xs">Operator</th>
-              <th className="text-left p-3 text-xs">Signal</th>
-              <th className="text-left p-3 text-xs">Cell ID</th>
-              <th className="text-left p-3 text-xs">Time</th>
-              <th className="text-left p-3 text-xs">Alert</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.status')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.imsi')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.tmsi')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.operator')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.signal')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.cellId')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.time')}</th>
+              <th className="text-left p-3 text-xs">{t('components.dashboard.imsiTable.columns.alert')}</th>
             </tr>
           </thead>
           <tbody>
@@ -270,7 +272,7 @@ export const IMSITable = ({ records, maxRows = 10, onSuspiciousRecord }: IMSITab
       {records.length > maxRows && (
         <div className="p-3 text-center border-t border-border">
           <span className="text-xs md:text-sm text-muted-foreground">
-            Showing {maxRows} of {records.length} records
+            {t('components.dashboard.imsiTable.showingCount', { shown: maxRows, total: records.length })}
           </span>
         </div>
       )}

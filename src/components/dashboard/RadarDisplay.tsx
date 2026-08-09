@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useTranslation } from 'react-i18next';
 
 interface RadarBlip {
   id: number;
@@ -16,6 +17,7 @@ interface RadarDisplayProps {
 }
 
 export const RadarDisplay = ({ isScanning, detectedCount, suspiciousCount = 0 }: RadarDisplayProps) => {
+  const { t } = useTranslation();
   const [blips, setBlips] = useState<RadarBlip[]>([]);
   const [sweepAngle, setSweepAngle] = useState(0);
 
@@ -168,10 +170,10 @@ export const RadarDisplay = ({ isScanning, detectedCount, suspiciousCount = 0 }:
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
         <div className="text-center">
           <div className="text-xl font-bold text-primary font-mono leading-none">{detectedCount}</div>
-          <div className="text-[9px] text-muted-foreground uppercase tracking-wider">Signals</div>
+          <div className="text-[9px] text-muted-foreground uppercase tracking-wider">{t('components.dashboard.radarDisplay.signals')}</div>
           {suspiciousCount > 0 && (
             <div className="text-[9px] text-destructive font-mono mt-0.5">
-              {suspiciousCount} threats
+              {t('components.dashboard.radarDisplay.threats', { count: suspiciousCount })}
             </div>
           )}
         </div>
@@ -181,7 +183,7 @@ export const RadarDisplay = ({ isScanning, detectedCount, suspiciousCount = 0 }:
       <div className="absolute -bottom-1 left-1/2 -translate-x-1/2 flex items-center gap-1.5">
         <span className={`w-1.5 h-1.5 rounded-full ${isScanning ? 'bg-primary animate-pulse' : 'bg-muted'}`} />
         <span className="text-[10px] text-muted-foreground font-mono">
-          {isScanning ? 'ACTIVE' : 'IDLE'}
+          {isScanning ? t('components.dashboard.radarDisplay.active') : t('components.dashboard.radarDisplay.idle')}
         </span>
       </div>
     </div>

@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { AlertTriangle, Info, AlertCircle, Check, X } from 'lucide-react';
 import { Alert } from '@/types/signal';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 
@@ -44,6 +45,7 @@ export const AlertsList = ({
   onDismiss,
   compact = false,
 }: AlertsListProps) => {
+  const { t } = useTranslation();
   const sortedAlerts = [...alerts].sort((a, b) => {
     // Sort by acknowledged (unacknowledged first), then by type priority, then by time
     if (a.acknowledged !== b.acknowledged) return a.acknowledged ? 1 : -1;
@@ -89,7 +91,7 @@ export const AlertsList = ({
                             size="icon"
                             className="h-11 w-11 focus:ring-2 focus:ring-primary"
                             onClick={() => onAcknowledge(alert.id)}
-                            aria-label={`Acknowledge alert: ${alert.title}`}
+                            aria-label={t('components.dashboard.alertsList.acknowledgeAria', { title: alert.title })}
                           >
                             <Check className="w-5 h-5" />
                           </Button>
@@ -100,7 +102,7 @@ export const AlertsList = ({
                             size="icon"
                             className="h-11 w-11 focus:ring-2 focus:ring-primary"
                             onClick={() => onDismiss(alert.id)}
-                            aria-label={`Dismiss alert: ${alert.title}`}
+                            aria-label={t('components.dashboard.alertsList.dismissAria', { title: alert.title })}
                           >
                             <X className="w-5 h-5" />
                           </Button>
@@ -118,7 +120,7 @@ export const AlertsList = ({
                     {alert.acknowledged && (
                       <>
                         <span>•</span>
-                        <span className="text-success">Acknowledged</span>
+                        <span className="text-success">{t('components.dashboard.alertsList.acknowledged')}</span>
                       </>
                     )}
                   </div>
@@ -132,7 +134,7 @@ export const AlertsList = ({
       {alerts.length === 0 && (
         <div className="text-center py-8 text-muted-foreground">
           <Info className="w-8 h-8 mx-auto mb-2 opacity-50" />
-          <p>No alerts at this time</p>
+          <p>{t('components.dashboard.alertsList.empty')}</p>
         </div>
       )}
     </div>

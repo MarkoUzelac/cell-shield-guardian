@@ -1,0 +1,197 @@
+// Locale strings for the Network Intelligence page.
+export const network = {
+  header: {
+    title: 'Network Intelligence',
+    subtitle: 'Carrier analysis, speed testing, and security monitoring',
+  },
+  disclaimer: {
+    title: 'Educational Information Only',
+    body: 'This page provides network diagnostics and educational information about potential security risks. The indicators shown are informational and NOT definitive proof of surveillance or attacks. Most anomalies have benign explanations.',
+  },
+  consent: {
+    enableTitle: 'Enable Network Diagnostics?',
+    enableBody: 'This will share your IP address with ipapi.co for location/carrier information. Speed tests use httpbin.org. No personal data is stored.',
+    enableButton: 'Enable Diagnostics',
+    disableButton: 'Disable External Diagnostics',
+    enabledToastTitle: 'Network Diagnostics Enabled',
+    enabledToastDescription: 'Fetching network information...',
+    disabledToastTitle: 'Network Diagnostics Disabled',
+    disabledToastDescription: 'External API calls have been disabled.',
+    requiredToastTitle: 'Enable Network Diagnostics',
+    requiredToastDescription: 'Please enable network diagnostics to run speed tests.',
+  },
+  errors: {
+    invalidDataTitle: 'Invalid data received',
+    invalidDataDescription: 'Network information may be incomplete.',
+    requestTimeoutTitle: 'Request timeout',
+    requestTimeoutDescription: 'Network information request timed out.',
+    speedTestTimeoutTitle: 'Speed Test Timeout',
+    speedTestTimeoutDescription: 'The speed test took too long. Please try again.',
+  },
+  speedTest: {
+    completeTitle: 'Speed Test Complete',
+    completeDescription: 'Download: {{speed}} Mbps',
+    estimationDescription: 'Results based on browser network estimation',
+  },
+  statusCards: {
+    networkType: 'Network Type',
+    ispCarrier: 'ISP/Carrier',
+    latency: 'Latency',
+    estBandwidth: 'Est. Bandwidth',
+    unknown: 'Unknown',
+    loading: 'Loading...',
+    enableToView: 'Enable to view',
+  },
+  tabs: {
+    security: 'Security Analysis',
+    speed: 'Speed Test',
+    carrier: 'Carrier Info',
+    frequencies: 'Frequencies',
+  },
+  security: {
+    indicatorsTitle: 'Security Indicators',
+    indicatorsDescription: 'Real-time analysis of potential network security risks',
+    refreshButton: 'Refresh Analysis',
+    refreshedToastTitle: 'Security analysis refreshed',
+    statusBadge: {
+      safe: 'SECURE',
+      warning: 'CAUTION',
+      danger: 'RISK',
+      unknown: 'UNKNOWN',
+    },
+    indicators: {
+      encryption: {
+        name: 'Connection Encryption',
+        descriptionSecure: 'Your connection is encrypted with TLS/SSL',
+        descriptionInsecure: 'Connection is not encrypted - data may be intercepted',
+        details: 'HTTPS encrypts data between your device and servers',
+      },
+      networkType: {
+        name: 'Network Generation',
+        description: 'Connected via {{type}} network',
+        detailsWarning2g: 'WARNING: 2G networks have weak encryption and are vulnerable to IMSI catchers',
+        detailsCaution3g: 'CAUTION: 3G has some known vulnerabilities',
+        detailsSecure: '4G/5G networks have stronger encryption',
+      },
+      downgradeRisk: {
+        name: 'Downgrade Attack Risk',
+        descriptionAlert: 'ALERT: You may be experiencing a forced network downgrade',
+        descriptionSafe: 'No forced downgrade detected',
+        details: 'IMSI catchers often force phones to connect via 2G for easier interception',
+      },
+      latency: {
+        name: 'Connection Latency',
+        description: 'Current latency: {{rtt}}ms',
+        details: 'Abnormally high latency can indicate traffic interception or man-in-the-middle attacks',
+      },
+      dataSaver: {
+        name: 'Data Saver Mode',
+        descriptionActive: 'Data saver is active - some content may be proxied',
+        descriptionInactive: 'Data saver is not active',
+        details: 'Proxied connections may route through third-party servers',
+      },
+      dnsSecurity: {
+        name: 'DNS Security',
+        description: 'DNS security status cannot be determined from browser',
+        details: 'Consider using DNS-over-HTTPS (DoH) for encrypted DNS queries',
+      },
+    },
+    watchFor: {
+      title: 'What to Watch For',
+      imsiCatcher: {
+        title: 'IMSI Catcher Signs',
+        items: [
+          'Sudden downgrade to 2G in strong signal area',
+          'Unusual cell tower ID changes',
+          'Rapid battery drain',
+          'Call quality degradation',
+        ],
+      },
+      silentSms: {
+        title: 'Silent SMS Indicators',
+        items: [
+          'Unexplained network activity',
+          'Brief signal interruptions',
+          'Unusual data usage patterns',
+          'Phone waking without notifications',
+        ],
+      },
+      mitm: {
+        title: 'Man-in-the-Middle',
+        items: [
+          'Certificate warnings on trusted sites',
+          'Abnormally high latency',
+          'DNS resolution anomalies',
+          'Unexpected redirects',
+        ],
+      },
+      locationTracking: {
+        title: 'Location Tracking',
+        items: [
+          'Frequent cell tower handoffs while stationary',
+          'GPS requests from unknown apps',
+          'Wi-Fi probe requests',
+          'Bluetooth scanning activity',
+        ],
+      },
+    },
+  },
+  carrier: {
+    title: 'Carrier & Network Information',
+    description: 'Details about your current network connection',
+    ipAddress: 'IP Address',
+    ispOrganization: 'ISP/Organization',
+    asn: 'ASN',
+    networkType: 'Network Type',
+    country: 'Country',
+    region: 'Region',
+    city: 'City',
+    timezone: 'Timezone',
+    connectionDetails: 'Connection Details',
+    effectiveType: 'Effective Type',
+    downlink: 'Downlink',
+    rtt: 'RTT',
+    dataSaver: 'Data Saver',
+    enabled: 'Enabled',
+    disabled: 'Disabled',
+    notAvailable: 'N/A',
+    mobileOperatorsIn: 'Mobile Operators in {{country}}',
+    mobileOperatorsDescription: 'MCC {{mcc}} \u00b7 the carriers operating where you are located',
+    refreshButton: 'Refresh Information',
+    refreshedToastTitle: 'Carrier info refreshed',
+  },
+  frequencies: {
+    title: 'Common Mobile Frequencies',
+    description: 'Reference guide for mobile network frequency bands and their security characteristics',
+    riskBadge: {
+      high: 'HIGH RISK',
+      medium: 'MEDIUM',
+      low: 'LOW RISK',
+      unknown: 'UNKNOWN',
+    },
+    bands: {
+      '2G (GSM)': {
+        note: 'Weak encryption, vulnerable to interception',
+      },
+      '3G (UMTS)': {
+        note: 'Better encryption, still some vulnerabilities',
+      },
+      '4G (LTE)': {
+        note: 'Strong encryption, most secure legacy network',
+      },
+      '5G (NR)': {
+        note: 'Latest encryption standards, enhanced security',
+      },
+    },
+    monitoringRecommendations: {
+      title: 'Monitoring Recommendations',
+      items: [
+        'Use RTL-SDR with gr-gsm to passively monitor GSM frequencies',
+        'Focus on 900 MHz and 1800 MHz bands for GSM in most regions',
+        'Monitor for unusual broadcast channels or fake base stations',
+        'Compare captured Cell IDs against OpenCellID database',
+        'Watch for IMSI/TMSI patterns that indicate tracking attempts',
+      ],
+    },
+  },
+} as const;
