@@ -2,10 +2,12 @@ import type {
   CapabilitySupport,
   Confidence,
   DiagnosticCategory,
+  DiagnosticParams,
   DiagnosticResult,
   DiagnosticSource,
   DiagnosticStatus,
 } from './types';
+
 
 interface MakeArgs {
   id: string;
