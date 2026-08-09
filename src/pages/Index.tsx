@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Info, SlidersHorizontal } from 'lucide-react';
+import { Trans, useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
@@ -12,11 +13,12 @@ import { CategoryCard } from '@/components/diagnostics/CategoryCard';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
 import { groupByCategory } from '@/lib/diagnostics/engine';
 import { downloadReport } from '@/lib/diagnostics/report';
-import { CATEGORY_META, type DiagnosticCategory } from '@/lib/diagnostics/types';
+import { type DiagnosticCategory } from '@/lib/diagnostics/types';
 
 const ORDER: DiagnosticCategory[] = ['security', 'connection', 'network', 'privacy', 'browser'];
 
 const Index = () => {
+  const { t } = useTranslation();
   const [showTechnical, setShowTechnical] = useState(false);
   const { results, summary, phase, progress, startedAt, durationMs, scan } = useDiagnostics();
 
@@ -25,8 +27,8 @@ const Index = () => {
   return (
     <MainLayout>
       <Header
-        title="Privacy & Connection Check"
-        subtitle="Live measurements from your browser"
+        title={t('pages.index.title')}
+        subtitle={t('pages.index.subtitle')}
       />
 
       <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
@@ -44,7 +46,7 @@ const Index = () => {
           <div className="flex items-center gap-2">
             <SlidersHorizontal className="h-4 w-4 text-muted-foreground" aria-hidden />
             <Label htmlFor="technical-details" className="cursor-pointer text-sm">
-              Technical details
+              {t('pages.index.technicalDetails')}
             </Label>
             <Switch
               id="technical-details"
@@ -66,7 +68,7 @@ const Index = () => {
             }
           >
             <Download className="mr-2 h-4 w-4" aria-hidden />
-            Export report
+            {t('pages.index.exportReport')}
           </Button>
         </div>
 
@@ -83,21 +85,20 @@ const Index = () => {
           <CardContent className="space-y-2 p-4">
             <h2 className="flex items-center gap-2 text-sm font-semibold text-foreground">
               <Info className="h-4 w-4 text-primary" aria-hidden />
-              What this tool cannot tell you
+              {t('pages.index.cannotTellTitle')}
             </h2>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              A web page has no access to your mobile network. IMSI catchers, cell tower identity,
-              SIM details, encryption downgrades, baseband state and VPN usage cannot be detected
-              from a browser, and this dashboard will never guess at them. Checks that cannot be
-              performed are reported as <span className="font-medium text-foreground">Not available</span>,
-              which is not the same as safe.
+              <Trans
+                i18nKey="pages.index.cannotTellBody"
+                components={{ strong: <span className="font-medium text-foreground" /> }}
+              />
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              A simulation of what a privileged native Android app could show is available on the{' '}
+              {t('pages.index.demoPointerBefore')}{' '}
               <Link to="/demo" className="font-medium text-primary underline underline-offset-2">
-                demo dashboard
+                {t('pages.index.demoPointerLink')}
               </Link>{' '}
-              — its data is generated locally and clearly labelled as synthetic.
+              {t('pages.index.demoPointerAfter')}
             </p>
           </CardContent>
         </Card>
