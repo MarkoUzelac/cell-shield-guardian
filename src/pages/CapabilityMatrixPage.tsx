@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CapabilityBadge } from '@/components/diagnostics/CapabilityBadge';
 import { PermissionPanel } from '@/components/diagnostics/PermissionPanel';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { useDiagnosticText } from '@/hooks/useDiagnosticText';
 import { usePermissionProbes } from '@/hooks/usePermissionProbes';
 import { resolveCapability } from '@/lib/diagnostics/permissions';
 import {
