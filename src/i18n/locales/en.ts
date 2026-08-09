@@ -175,7 +175,57 @@ export const en = {
         'Capability describes whether a measurement is possible, not whether you are safe. See the',
       footerLink: 'privacy & connection check',
       footerAfter: 'for actual results.',
+      permissions: {
+        title: 'Live permission check',
+        intro:
+          'Some capabilities stay unknown until you ask the browser for them. Running a check opens your browser’s own permission prompt — the result updates the matrix immediately, and nothing measured here is stored or sent anywhere.',
+        check: 'Check access',
+        refresh: 'Re-read',
+        footer:
+          'You can change any answer later in your browser’s site settings. Denying a permission is respected: this page will not ask again unless you use the buttons above.',
+        state: {
+          prompt: 'Not asked yet — your browser will prompt you.',
+          granted: 'Granted to this site.',
+          denied: 'Blocked. Re-enable it in your browser site settings if you want it.',
+          unsupported: 'This browser does not offer the API at all.',
+          requesting: 'Waiting for your answer…',
+          error: 'The request could not complete. Try again.',
+        },
+        probe: {
+          geolocation: {
+            label: 'Location',
+            description:
+              'Only the permission answer is used — coordinates are discarded and never leave your device.',
+          },
+          notifications: {
+            label: 'Notifications',
+            description:
+              'Checks whether this site may show system notifications. No notification is sent.',
+          },
+          camera: {
+            label: 'Camera',
+            description:
+              'Opens the camera just long enough to read the permission answer, then releases it immediately.',
+          },
+          microphone: {
+            label: 'Microphone',
+            description:
+              'Opens the microphone just long enough to read the permission answer, then releases it immediately. No audio is recorded.',
+          },
+          'clipboard-read': {
+            label: 'Clipboard read',
+            description:
+              'Checks whether this site could read your clipboard. Any content returned is discarded unread.',
+          },
+          'persistent-storage': {
+            label: 'Persistent storage',
+            description:
+              'Asks the browser not to evict this app’s local data when storage runs low.',
+          },
+        },
+      },
     },
+
     notFound: {
       title: '404',
       message: 'Oops! Page not found',

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Info } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
@@ -7,7 +7,10 @@ import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { CapabilityBadge } from '@/components/diagnostics/CapabilityBadge';
+import { PermissionPanel } from '@/components/diagnostics/PermissionPanel';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { usePermissionProbes } from '@/hooks/usePermissionProbes';
+import { resolveCapability } from '@/lib/diagnostics/permissions';
 import {
   CAPABILITY_ORDER,
   type CapabilitySupport,
@@ -26,22 +29,45 @@ const CATEGORY_ORDER: DiagnosticCategory[] = [
 
 const CapabilityMatrixPage = () => {
   const { t } = useTranslation();
-  const { results, phase } = useDiagnostics();
+  const { results, phase, scan } = useDiagnostics();
   const [filter, setFilter] = useState<CapabilitySupport | 'ALL'>('ALL');
+
+  // A permission answer can change what a diagnostic is able to report, so
+  // re-run the affected scan as soon as the browser tells us it changed.
+  const onPermissionChange = useCallback(() => {
+    void scan();
+  }, [scan]);
+
+  const {
+    states: permissionStates,
+    ready: permissionsReady,
+    request: requestPermission,
+    refresh: refreshPermissions,
+  } = usePermissionProbes({ onChange: onPermissionChange });
+
+  /** Declared capability, overridden by whatever the live probes now know. */
+  const effective = useMemo(
+    () =>
+      results.map((r) => ({
+        ...r,
+        capability: resolveCapability(r.id, r.capability, permissionStates),
+      })),
+    [results, permissionStates],
+  );
 
   const counts = useMemo(() => {
     const base = Object.fromEntries(
       CAPABILITY_ORDER.map((c) => [c, 0]),
     ) as Record<CapabilitySupport, number>;
-    results.forEach((r) => {
+    effective.forEach((r) => {
       base[r.capability] += 1;
     });
     return base;
-  }, [results]);
+  }, [effective]);
 
   const visible = useMemo(
-    () => (filter === 'ALL' ? results : results.filter((r) => r.capability === filter)),
-    [results, filter],
+    () => (filter === 'ALL' ? effective : effective.filter((r) => r.capability === filter)),
+    [effective, filter],
   );
 
   const grouped = useMemo(() => {
@@ -53,6 +79,7 @@ const CapabilityMatrixPage = () => {
     });
     return map;
   }, [visible]);
+
 
   return (
     <MainLayout>
@@ -97,6 +124,15 @@ const CapabilityMatrixPage = () => {
             </div>
           </CardContent>
         </Card>
+
+        <PermissionPanel
+          states={permissionStates}
+          onRequest={requestPermission}
+          onRefresh={() => void refreshPermissions()}
+          busy={!permissionsReady}
+        />
+
+
 
         {filter !== 'ALL' && (
           <Card>
