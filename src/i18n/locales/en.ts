@@ -4,6 +4,16 @@
  * Adding a language means copying this file, translating the values and
  * registering it in `src/i18n/index.ts`. Keys must never be translated.
  */
+import { about } from '../pages/en/about';
+import { alerts } from '../pages/en/alerts';
+import { demo } from '../pages/en/demo';
+import { map } from '../pages/en/map';
+import { metadata } from '../pages/en/metadata';
+import { network } from '../pages/en/network';
+import { protection } from '../pages/en/protection';
+import { settings } from '../pages/en/settings';
+import { tactical } from '../pages/en/tactical';
+
 export const en = {
   common: {
     appName: 'Cell Shield Guardian',
@@ -316,6 +326,18 @@ export const en = {
   },
 
   pages: {
+    // Page copy lives in `src/i18n/pages/en/*` so each screen's strings can be
+    // translated (and reviewed) independently of the shared vocabulary above.
+    about,
+    alerts,
+    demo,
+    map,
+    metadata,
+    network,
+    protection,
+    settings,
+    tactical,
+
     index: {
       title: 'Privacy & Connection Check',
       subtitle: 'Live measurements from your browser',
