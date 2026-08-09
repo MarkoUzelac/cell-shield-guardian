@@ -54,6 +54,7 @@ export const browserChecks: DiagnosticDefinition[] = [
         status: 'good',
         value: browserName(),
         source: 'browser-api',
+        params: { browser: browserName() },
         confidence: uaData()?.brands ? 'confirmed' : 'estimated',
         explanation:
           'Derived from the identity your browser sends to every website. It can be changed or spoofed, so treat it as an indication rather than proof.',
@@ -73,6 +74,7 @@ export const browserChecks: DiagnosticDefinition[] = [
         status: 'good',
         value: platformFamily(),
         source: 'browser-api',
+        params: { platform: platformFamily() },
         confidence: 'estimated',
         explanation:
           'Only the broad OS family is detectable from a web page. Exact version, device model, IMEI and baseband details are not available to any website.',
@@ -94,6 +96,11 @@ export const browserChecks: DiagnosticDefinition[] = [
         unit: 'px',
         source: 'browser-api',
         confidence: 'confirmed',
+        params: {
+          width: window.innerWidth,
+          height: window.innerHeight,
+          density: window.devicePixelRatio,
+        },
         explanation:
           'The size of the area available to this page, plus your display density. Websites use this for layout, but it also contributes to browser fingerprinting.',
         raw: {
@@ -118,6 +125,7 @@ export const browserChecks: DiagnosticDefinition[] = [
         value: navigator.language,
         source: 'browser-api',
         confidence: 'confirmed',
+        params: { language: navigator.language, count: navigator.languages?.length ?? 1 },
         explanation:
           'Your preferred language is sent with every request so sites can localise content.',
         raw: { language: navigator.language, languages: navigator.languages },
@@ -146,6 +154,7 @@ export const browserChecks: DiagnosticDefinition[] = [
         value: tz,
         source: 'browser-api',
         confidence: 'confirmed',
+        params: { timeZone: tz },
         explanation:
           'Your time zone is readable by any website and gives a coarse hint about your region. It is not your location.',
         raw: { timeZone: tz, offsetMinutes: new Date().getTimezoneOffset() },
@@ -172,6 +181,9 @@ export const browserChecks: DiagnosticDefinition[] = [
         cores ? `${cores} logical cores` : null,
         memory ? `${memory} GB memory class` : null,
       ].filter(Boolean);
+      // The two hints are independent, so the sentence differs per outcome
+      // rather than being glued together from fragments.
+      const variant = cores && memory ? 'both' : cores ? 'cores' : 'memory';
       return make({
         id: 'browser.hardware',
         label: 'Reported hardware',
@@ -180,6 +192,8 @@ export const browserChecks: DiagnosticDefinition[] = [
         value: parts.join(', '),
         source: 'browser-api',
         confidence: 'estimated',
+        variant,
+        params: { cores: cores ?? 0, memory: memory ?? 0 },
         explanation:
           'Coarse, deliberately rounded hardware hints. They help sites tune performance but also add to fingerprinting surface.',
         raw: { hardwareConcurrency: cores, deviceMemory: memory },

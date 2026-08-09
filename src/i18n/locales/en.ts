@@ -109,6 +109,172 @@ export const en = {
       security: 'Transport and context security checks for this page.',
       network: 'Values actively measured from your device right now.',
     },
+
+    /**
+     * Per-check copy. Keys resolve as
+     *   diagnostics.checks.<id>.<variant>.<field>  →  diagnostics.checks.<id>.<field>
+     * and fall back to the engine's English text when absent, so a locale only
+     * needs to translate what it wants to change.
+     *
+     * Values are interpolated (never concatenated): numbers go through
+     * `{{x, number}}` so decimal separators follow the locale, and `count`
+     * drives real plural rules.
+     */
+    checks: {
+      'connection.online': {
+        online: {
+          value: 'Online',
+          explanation:
+            'Your browser reports an active network connection. This flag only means a network interface is up, not that the internet is reachable.',
+        },
+        offline: {
+          value: 'Offline',
+          explanation:
+            'Your browser reports no network connection. Results below may be stale or unavailable.',
+        },
+      },
+      'connection.type': {
+        'slow-2g': { value: 'Very slow (slow-2g)' },
+        '2g': { value: 'Slow (2g)' },
+        '3g': { value: 'Moderate (3g)' },
+        '4g': { value: 'Fast (4g or better)' },
+        raw: { value: '{{type}}' },
+      },
+      'connection.downlink': {
+        value: '{{downlink, number}} Mbps',
+      },
+      'connection.savedata': {
+        on: {
+          value: 'Requested',
+          explanation:
+            'You have asked for reduced data usage. This app defers non-essential work while this is on.',
+        },
+        off: { value: 'Not requested' },
+      },
+
+      'browser.viewport': {
+        value: '{{width, number}} × {{height, number}} px',
+        explanation:
+          'This page can see an area of {{width, number}} by {{height, number}} pixels at a density of {{density, number}}×. Websites use this for layout, but it also contributes to browser fingerprinting.',
+      },
+      'browser.language': {
+        value: '{{language}}',
+        explanation_one:
+          'Your browser sends {{language}} as your preferred language with every request.',
+        explanation_other:
+          'Your browser sends {{language}} first out of {{count}} preferred languages with every request.',
+      },
+      'browser.hardware': {
+        both: {
+          value: '{{cores, number}} cores · {{memory, number}} GB memory class',
+          explanation:
+            'Your browser reports {{cores, number}} logical CPU cores and a memory class of {{memory, number}} GB. Both numbers are deliberately rounded, but they still add to fingerprinting surface.',
+        },
+        cores: {
+          value: '{{cores, number}} cores',
+          explanation:
+            'Your browser reports {{cores, number}} logical CPU cores and withholds the memory hint.',
+        },
+        memory: {
+          value: '{{memory, number}} GB memory class',
+          explanation:
+            'Your browser reports a memory class of {{memory, number}} GB and withholds the CPU hint.',
+        },
+      },
+
+      'network.latency': {
+        value: '{{ms, number}} ms',
+        explanation_one:
+          'Median of a single request round-trip to this site’s own server. It reflects the delay between your device and this server only.',
+        explanation_other:
+          'Median of {{count}} request round-trips to this site’s own server. It reflects the delay between your device and this server only — other destinations may differ.',
+        slow: {
+          recommendation:
+            'A round trip of {{ms, number}} ms is high. This usually comes from a weak signal, a congested network, or a distant server.',
+        },
+        failed: { value: 'Measurement failed' },
+      },
+      'network.ttfb': {
+        value: '{{ms, number}} ms',
+        explanation:
+          'Your browser recorded {{ms, number}} ms between requesting this page and the first byte arriving.',
+      },
+      'network.throughput': {
+        value: '{{mbps, number}} Mbps',
+        explanation_one:
+          'A lower bound of {{mbps, number}} Mbps derived from one real download this page already made. Your actual maximum speed is likely higher — this is not a speed test.',
+        explanation_other:
+          'A lower bound of {{mbps, number}} Mbps derived from the fastest of {{count}} real downloads this page already made. Your actual maximum speed is likely higher — this is not a speed test.',
+      },
+      'network.reachability': {
+        reachable: { value: 'Reachable' },
+        status: {
+          value: 'Responded {{status, number}}',
+          explanation:
+            'The server answered with status {{status, number}}. Connectivity exists, but something is interfering with the request.',
+        },
+        offline: { value: 'Offline' },
+        unreachable: { value: 'Unreachable' },
+      },
+
+      'security.https': {
+        https: { value: 'HTTPS' },
+        localhost: {
+          value: 'HTTP (local development)',
+          explanation:
+            'You are on {{host}}, a local development address where plain HTTP is expected and not a real risk.',
+        },
+        http: {
+          value: 'HTTP',
+          explanation:
+            'This page loaded from {{host}} over plain HTTP. Anything you send can be read or altered by anyone on the network path.',
+        },
+      },
+      'security.secure-context': {
+        active: { value: 'Active' },
+        inactive: { value: 'Inactive' },
+      },
+      'security.mixed-content': {
+        clean: { value: 'None detected' },
+        insecure: {
+          value_one: '{{count}} insecure resource',
+          value_other: '{{count}} insecure resources',
+          explanation_one:
+            'One resource on this page loaded over unencrypted HTTP, which weakens the protection of the whole page.',
+          explanation_other:
+            '{{count}} resources on this page loaded over unencrypted HTTP, which weakens the protection of the whole page.',
+        },
+      },
+
+      'privacy.dnt': {
+        enabled: { value: 'Signal sent' },
+        disabled: { value: 'Not sent' },
+      },
+      'privacy.cookies': {
+        enabled: { value: 'Enabled' },
+        blocked: { value: 'Blocked' },
+      },
+      'privacy.storage': {
+        available: { value: 'Available' },
+        unavailable: { value: 'Unavailable' },
+      },
+      'privacy.permissions': {
+        none: {
+          value: 'None granted to this site',
+        },
+        granted: {
+          value_one: '{{count}} granted to this site',
+          value_other: '{{count}} granted to this site',
+          explanation_one:
+            'This site currently holds one permission ({{list}}). This app never uses it unless you start a feature that needs it.',
+          explanation_other:
+            'This site currently holds {{count}} permissions ({{list}}). This app never uses them unless you start a feature that needs them.',
+          recommendation:
+            'You can revoke these in your browser site settings at any time.',
+        },
+      },
+    },
+
     row: {
       whatYouCanDo: 'What you can do:',
       id: 'id',

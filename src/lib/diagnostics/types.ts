@@ -42,7 +42,12 @@ export type CapabilitySupport =
   | 'PERMISSION_REQUIRED'
   | 'NOT_APPLICABLE';
 
+/** Values interpolated into translated diagnostic copy. */
+export type DiagnosticParams = Record<string, string | number | boolean>;
+
 export interface DiagnosticResult {
+
+
   id: string;
   label: string;
   category: DiagnosticCategory;
@@ -63,6 +68,18 @@ export interface DiagnosticResult {
   recommendation?: string;
   /** Raw payload shown only in Technical Details. */
   raw?: Record<string, unknown>;
+  /**
+   * Selects the wording variant for this outcome, e.g. `granted` vs `none`.
+   * Locales key their copy off `<id>.<variant>.<field>` so a sentence can be
+   * rewritten per outcome instead of assembled from fragments.
+   */
+  variant?: string;
+  /**
+   * Interpolation values for the translated strings. Numbers stay numbers so
+   * i18next can format them (`{{ms, number}}`) and pluralise on `count`.
+   */
+  params?: DiagnosticParams;
+
 }
 
 export interface DiagnosticDefinition {

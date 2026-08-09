@@ -28,6 +28,7 @@ export const privacyChecks: DiagnosticDefinition[] = [
         value: enabled ? 'Signal sent' : 'Not sent',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: enabled ? 'enabled' : 'disabled',
         explanation: enabled
           ? 'Your browser asks sites not to track you. This is a request only — it is not enforced, and many sites ignore it.'
           : 'Your browser is not sending a tracking-opt-out signal. Even when sent, the signal is advisory rather than enforced.',
@@ -52,6 +53,7 @@ export const privacyChecks: DiagnosticDefinition[] = [
         value: navigator.cookieEnabled ? 'Enabled' : 'Blocked',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: navigator.cookieEnabled ? 'enabled' : 'blocked',
         explanation: navigator.cookieEnabled
           ? 'This site could set cookies. Whether third-party cookies are blocked is a separate setting that pages cannot reliably read.'
           : 'Cookie storage is blocked for this site. Some sites will not work correctly.',
@@ -82,6 +84,7 @@ export const privacyChecks: DiagnosticDefinition[] = [
         value: writable ? 'Available' : 'Unavailable',
         source: 'browser-api',
         confidence: 'measured',
+        variant: writable ? 'available' : 'unavailable',
         explanation: writable
           ? 'This app can store your preferences and scan history on your device. Nothing stored here is uploaded anywhere.'
           : 'Storage is blocked, likely by private browsing or a strict privacy setting. Your preferences will not persist between visits.',
@@ -127,6 +130,11 @@ export const privacyChecks: DiagnosticDefinition[] = [
             : 'None granted to this site',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: granted.length > 0 ? 'granted' : 'none',
+        params: {
+          count: granted.length,
+          list: granted.map(([name]) => name).join(', '),
+        },
         explanation:
           granted.length > 0
             ? `This site currently holds: ${granted.map(([n]) => n).join(', ')}. This app never uses them unless you start a feature that needs them.`

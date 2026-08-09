@@ -2,10 +2,12 @@ import type {
   CapabilitySupport,
   Confidence,
   DiagnosticCategory,
+  DiagnosticParams,
   DiagnosticResult,
   DiagnosticSource,
   DiagnosticStatus,
 } from './types';
+
 
 interface MakeArgs {
   id: string;
@@ -21,6 +23,9 @@ interface MakeArgs {
   recommendation?: string;
   durationMs?: number;
   raw?: Record<string, unknown>;
+  variant?: string;
+  params?: DiagnosticParams;
+
 }
 
 export function make(args: MakeArgs): DiagnosticResult {
@@ -31,13 +36,18 @@ export function make(args: MakeArgs): DiagnosticResult {
   };
 }
 
-/** Standard result for an API the current browser does not implement. */
+/**
+ * Standard result for an API the current browser does not implement.
+ * The `unavailable` variant lets locales phrase the "why" per check while
+ * still falling back to the engine's English reason.
+ */
 export function unavailable(
   id: string,
   label: string,
   category: DiagnosticCategory,
   reason: string,
   capability: CapabilitySupport = 'UNSUPPORTED',
+  params?: DiagnosticParams,
 ): DiagnosticResult {
   return make({
     id,
@@ -49,8 +59,11 @@ export function unavailable(
     confidence: 'not-available',
     capability,
     explanation: reason,
+    variant: 'unavailable',
+    params,
   });
 }
+
 
 /** Rejects with an AbortError-like timeout, and aborts the passed controller. */
 export function withTimeout<T>(

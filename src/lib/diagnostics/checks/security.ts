@@ -20,6 +20,8 @@ export const securityChecks: DiagnosticDefinition[] = [
         value: https ? 'HTTPS' : localhost ? 'HTTP (local development)' : 'HTTP',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: https ? 'https' : localhost ? 'localhost' : 'http',
+        params: { host: window.location.hostname },
         explanation: https
           ? 'Traffic between your device and this site is encrypted, so it cannot be read or modified in transit by your network, your provider, or anyone on the same Wi-Fi.'
           : localhost
@@ -45,6 +47,7 @@ export const securityChecks: DiagnosticDefinition[] = [
         value: window.isSecureContext ? 'Active' : 'Inactive',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: window.isSecureContext ? 'active' : 'inactive',
         explanation: window.isSecureContext
           ? 'Your browser considers this page trustworthy, which unlocks privacy-protected features such as secure storage and permission-gated APIs.'
           : 'This page is not a secure context, so the browser withholds several privacy and security protected features.',
@@ -93,6 +96,8 @@ export const securityChecks: DiagnosticDefinition[] = [
             : 'None detected',
         source: 'measured',
         confidence: 'measured',
+        variant: insecure.length > 0 ? 'insecure' : 'clean',
+        params: { count: insecure.length },
         explanation:
           insecure.length > 0
             ? 'Some resources on this page loaded over unencrypted HTTP, which weakens the protection of the whole page.'

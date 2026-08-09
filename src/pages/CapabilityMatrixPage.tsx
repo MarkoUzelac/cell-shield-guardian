@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CapabilityBadge } from '@/components/diagnostics/CapabilityBadge';
 import { PermissionPanel } from '@/components/diagnostics/PermissionPanel';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { useDiagnosticText } from '@/hooks/useDiagnosticText';
 import { usePermissionProbes } from '@/hooks/usePermissionProbes';
 import { resolveCapability } from '@/lib/diagnostics/permissions';
 import {
@@ -26,6 +27,28 @@ const CATEGORY_ORDER: DiagnosticCategory[] = [
   'privacy',
   'browser',
 ];
+
+/** One diagnostic in the matrix, with its label resolved through i18n. */
+const MatrixRow = ({ result }: { result: DiagnosticResult }) => {
+  const { t } = useTranslation();
+  const { label } = useDiagnosticText(result);
+  return (
+    <li
+      className={cn(
+        'flex flex-wrap items-start justify-between gap-2 border-b border-border/60 px-3 py-3 last:border-b-0',
+      )}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          {t(`diagnostics.capabilityHelp.${result.capability}`)}
+        </p>
+      </div>
+      <CapabilityBadge capability={result.capability} />
+    </li>
+  );
+};
+
 
 const CapabilityMatrixPage = () => {
   const { t } = useTranslation();
@@ -158,21 +181,9 @@ const CapabilityMatrixPage = () => {
                 </div>
                 <ul>
                   {rows.map((r) => (
-                    <li
-                      key={r.id}
-                      className={cn(
-                        'flex flex-wrap items-start justify-between gap-2 border-b border-border/60 px-3 py-3 last:border-b-0',
-                      )}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground">{r.label}</p>
-                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {t(`diagnostics.capabilityHelp.${r.capability}`)}
-                        </p>
-                      </div>
-                      <CapabilityBadge capability={r.capability} />
-                    </li>
+                    <MatrixRow key={r.id} result={r} />
                   ))}
+
                 </ul>
               </CardContent>
             </Card>
