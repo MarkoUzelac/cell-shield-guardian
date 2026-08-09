@@ -1,12 +1,9 @@
 import { useState } from 'react';
 import { ChevronDown } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { StatusBadge } from './StatusBadge';
-import {
-  CONFIDENCE_HELP,
-  CONFIDENCE_LABEL,
-  type DiagnosticResult,
-} from '@/lib/diagnostics/types';
+import type { DiagnosticResult } from '@/lib/diagnostics/types';
 
 interface DiagnosticRowProps {
   result: DiagnosticResult;
@@ -14,8 +11,21 @@ interface DiagnosticRowProps {
 }
 
 export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => {
+  const { t } = useTranslation();
   const [open, setOpen] = useState(false);
   const panelId = `diag-${result.id.replace(/\./g, '-')}`;
+
+  // Check copy is authored in the engine; a locale may override it per check id
+  // without any change to the engine itself.
+  const label = t(`diagnostics.checks.${result.id}.label`, { defaultValue: result.label });
+  const explanation = t(`diagnostics.checks.${result.id}.explanation`, {
+    defaultValue: result.explanation,
+  });
+  const recommendation = result.recommendation
+    ? t(`diagnostics.checks.${result.id}.recommendation`, {
+        defaultValue: result.recommendation,
+      })
+    : undefined;
 
   return (
     <li className="border-b border-border/60 last:border-b-0">
@@ -27,7 +37,7 @@ export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => 
         className="flex w-full min-h-11 items-start justify-between gap-3 px-3 py-3 text-left transition-colors hover:bg-muted/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span className="min-w-0 flex-1">
-          <span className="block text-sm font-medium text-foreground">{result.label}</span>
+          <span className="block text-sm font-medium text-foreground">{label}</span>
           <span className="mt-0.5 block font-mono text-xs text-muted-foreground">
             {result.value}
             {result.unit ? ` ${result.unit}` : ''}
@@ -47,31 +57,31 @@ export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => 
 
       {open && (
         <div id={panelId} className="space-y-3 px-3 pb-4 pt-0">
-          <p className="text-sm leading-relaxed text-muted-foreground">{result.explanation}</p>
+          <p className="text-sm leading-relaxed text-muted-foreground">{explanation}</p>
 
-          {result.recommendation && (
+          {recommendation && (
             <p className="rounded-md border border-primary/25 bg-primary/5 p-2.5 text-sm text-foreground">
-              <span className="font-medium">What you can do: </span>
-              {result.recommendation}
+              <span className="font-medium">{t('diagnostics.row.whatYouCanDo')} </span>
+              {recommendation}
             </p>
           )}
 
           <p className="text-xs text-muted-foreground">
             <span className="font-medium text-foreground">
-              {CONFIDENCE_LABEL[result.confidence]}
+              {t(`diagnostics.confidence.${result.confidence}`)}
             </span>{' '}
-            — {CONFIDENCE_HELP[result.confidence]}
+            — {t(`diagnostics.confidenceHelp.${result.confidence}`)}
           </p>
 
           {showTechnical && (
             <dl className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 rounded-md bg-muted/40 p-2.5 font-mono text-[11px]">
-              <dt className="text-muted-foreground">id</dt>
+              <dt className="text-muted-foreground">{t('diagnostics.row.id')}</dt>
               <dd className="truncate text-foreground">{result.id}</dd>
-              <dt className="text-muted-foreground">source</dt>
+              <dt className="text-muted-foreground">{t('diagnostics.row.source')}</dt>
               <dd className="text-foreground">{result.source}</dd>
-              <dt className="text-muted-foreground">capability</dt>
+              <dt className="text-muted-foreground">{t('diagnostics.row.capability')}</dt>
               <dd className="text-foreground">{result.capability}</dd>
-              <dt className="text-muted-foreground">measured</dt>
+              <dt className="text-muted-foreground">{t('diagnostics.row.measured')}</dt>
               <dd className="text-foreground">
                 {new Date(result.timestamp).toLocaleTimeString()}
                 {result.durationMs !== undefined
@@ -80,7 +90,7 @@ export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => 
               </dd>
               {result.raw && (
                 <>
-                  <dt className="text-muted-foreground">raw</dt>
+                  <dt className="text-muted-foreground">{t('diagnostics.row.raw')}</dt>
                   <dd className="overflow-x-auto whitespace-pre-wrap break-all text-foreground">
                     {JSON.stringify(result.raw)}
                   </dd>
