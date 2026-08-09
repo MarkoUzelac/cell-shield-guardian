@@ -2,6 +2,7 @@ import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
 import { LucideIcon } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface StatsCardProps {
   title: string;
@@ -39,6 +40,7 @@ export const StatsCard = ({
   trend,
   variant = 'default',
 }: StatsCardProps) => {
+  const { t } = useTranslation();
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
@@ -62,7 +64,7 @@ export const StatsCard = ({
                 'text-xs font-medium',
                 trend.isPositive ? 'text-success' : 'text-destructive'
               )}>
-                {trend.isPositive ? '↑' : '↓'} {Math.abs(trend.value)}% from last hour
+                {t('components.dashboard.statsCard.trendFromLastHour', { arrow: trend.isPositive ? '↑' : '↓', value: Math.abs(trend.value) })}
               </p>
             )}
           </div>

@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { cn } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface SignalStrengthMeterProps {
   strength: number; // -50 to -110 dBm
@@ -12,6 +13,7 @@ export const SignalStrengthMeter = ({
   showValue = true,
   size = 'md' 
 }: SignalStrengthMeterProps) => {
+  const { t } = useTranslation();
   // Normalize strength to 0-100%
   const normalized = Math.max(0, Math.min(100, ((strength + 110) / 60) * 100));
   
@@ -48,7 +50,7 @@ export const SignalStrengthMeter = ({
       ))}
       {showValue && (
         <span className="ml-2 font-mono text-xs text-muted-foreground">
-          {strength} dBm
+          {t('components.dashboard.signalStrengthMeter.dbm', { strength })}
         </span>
       )}
     </div>

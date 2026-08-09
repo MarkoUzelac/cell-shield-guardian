@@ -726,10 +726,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Smartphone className="h-5 w-5 text-primary" />
-                  Carrier & Network Information
+                  {t('pages.network.carrier.title')}
                 </CardTitle>
                 <CardDescription>
-                  Details about your current network connection
+                  {t('pages.network.carrier.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -759,37 +759,37 @@ const NetworkIntelligencePage = () => {
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="space-y-3">
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">IP Address</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.ipAddress')}</span>
                             <span className="font-mono">{ipInfo.ip}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">ISP/Organization</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.ispOrganization')}</span>
                             <span className="text-right max-w-[200px] truncate">{ipInfo.org}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">ASN</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.asn')}</span>
                             <span className="font-mono">{ipInfo.asn}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Network Type</span>
-                            <span>{networkInfo?.type || networkInfo?.effectiveType?.toUpperCase() || 'Unknown'}</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.networkType')}</span>
+                            <span>{networkInfo?.type || networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown')}</span>
                           </div>
                         </div>
                         <div className="space-y-3">
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Country</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.country')}</span>
                             <span>{ipInfo.country_name} ({ipInfo.country_code})</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Region</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.region')}</span>
                             <span>{ipInfo.region}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">City</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.city')}</span>
                             <span>{ipInfo.city}</span>
                           </div>
                           <div className="flex justify-between p-3 rounded-lg bg-background/50">
-                            <span className="text-muted-foreground">Timezone</span>
+                            <span className="text-muted-foreground">{t('pages.network.carrier.timezone')}</span>
                             <span>{ipInfo.timezone}</span>
                           </div>
                         </div>
@@ -800,24 +800,24 @@ const NetworkIntelligencePage = () => {
                     <div className="p-4 rounded-lg bg-background/50 border border-border/50">
                       <h4 className="font-medium mb-3 flex items-center gap-2">
                         <Network className="h-4 w-4" />
-                        Connection Details
+                        {t('pages.network.carrier.connectionDetails')}
                       </h4>
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
-                          <p className="text-muted-foreground">Effective Type</p>
-                          <p className="font-medium">{networkInfo?.effectiveType?.toUpperCase() || 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.effectiveType')}</p>
+                          <p className="font-medium">{networkInfo?.effectiveType?.toUpperCase() || t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Downlink</p>
-                          <p className="font-medium">{networkInfo?.downlink ? `${networkInfo.downlink} Mbps` : 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.downlink')}</p>
+                          <p className="font-medium">{networkInfo?.downlink ? `${networkInfo.downlink} Mbps` : t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">RTT</p>
-                          <p className="font-medium">{networkInfo?.rtt ? `${networkInfo.rtt} ms` : 'N/A'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.rtt')}</p>
+                          <p className="font-medium">{networkInfo?.rtt ? `${networkInfo.rtt} ms` : t('pages.network.carrier.notAvailable')}</p>
                         </div>
                         <div>
-                          <p className="text-muted-foreground">Data Saver</p>
-                          <p className="font-medium">{networkInfo?.saveData ? 'Enabled' : 'Disabled'}</p>
+                          <p className="text-muted-foreground">{t('pages.network.carrier.dataSaver')}</p>
+                          <p className="font-medium">{networkInfo?.saveData ? t('pages.network.carrier.enabled') : t('pages.network.carrier.disabled')}</p>
                         </div>
                     </div>
                     </div>
@@ -829,10 +829,10 @@ const NetworkIntelligencePage = () => {
                         <div className="p-4 rounded-lg bg-background/50 border border-border/50">
                           <h4 className="font-medium mb-1 flex items-center gap-2">
                             <Smartphone className="h-4 w-4" />
-                            Mobile Operators in {local.country}
+                            {t('pages.network.carrier.mobileOperatorsIn', { country: local.country })}
                           </h4>
                           <p className="text-xs text-muted-foreground mb-3">
-                            MCC {local.mcc} · the carriers operating where you are located
+                            {t('pages.network.carrier.mobileOperatorsDescription', { mcc: local.mcc })}
                           </p>
                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                             {local.operators.map((op) => (
@@ -859,13 +859,13 @@ const NetworkIntelligencePage = () => {
                     <Button 
                       onClick={() => {
                         fetchIpInfo();
-                        toast({ title: "Carrier info refreshed" });
+                        toast({ title: t('pages.network.carrier.refreshedToastTitle') });
                       }}
                       variant="outline"
                       className="w-full gap-2"
                     >
                       <RefreshCw className="h-4 w-4" />
-                      Refresh Information
+                      {t('pages.network.carrier.refreshButton')}
                     </Button>
                   </div>
                 )}

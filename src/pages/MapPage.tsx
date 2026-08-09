@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
@@ -18,6 +19,7 @@ import { cn } from '@/lib/utils';
 import { MapPin, Navigation, RefreshCw, Loader2, ChevronDown, Target } from 'lucide-react';
 
 const MapPage = () => {
+  const { t } = useTranslation();
   const [towers, setTowers] = useState<CellTower[]>([]);
   const [selectedTower, setSelectedTower] = useState<CellTower | null>(null);
   const [isLookingUp, setIsLookingUp] = useState(false);
@@ -86,8 +88,8 @@ const MapPage = () => {
   return (
     <MainLayout>
       <Header
-        title="Cell Tower Map"
-        subtitle="Real-time tower mapping near your location"
+        title={t('pages.map.headerTitle')}
+        subtitle={t('pages.map.headerSubtitle')}
       />
 
       <div className="p-3 md:p-6 space-y-4">
@@ -110,8 +112,8 @@ const MapPage = () => {
                 </div>
                 <div className="min-w-0 flex-1">
                   <p className="text-sm font-medium truncate">
-                    {geoLoading ? 'Detecting...' : 
-                     hasRealLocation ? 'Your Exact Location' : 'Default (Zagreb)'}
+                    {geoLoading ? t('pages.map.locationStatus.detecting') : 
+                     hasRealLocation ? t('pages.map.locationStatus.exactLocation') : t('pages.map.locationStatus.defaultLocation')}
                   </p>
                   <p className="text-xs text-muted-foreground font-mono truncate">
                     {latitude?.toFixed(5)}, {longitude?.toFixed(5)}
@@ -128,7 +130,7 @@ const MapPage = () => {
                   className="flex-1 sm:flex-none h-9"
                 >
                   <Navigation className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Locate</span>
+                  <span className="hidden sm:inline">{t('pages.map.locationStatus.locate')}</span>
                 </Button>
                 <Button 
                   variant="outline" 
@@ -138,7 +140,7 @@ const MapPage = () => {
                   className="flex-1 sm:flex-none h-9"
                 >
                   <RefreshCw className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Refresh</span>
+                  <span className="hidden sm:inline">{t('pages.map.locationStatus.refresh')}</span>
                 </Button>
               </div>
             </div>
@@ -176,21 +178,21 @@ const MapPage = () => {
           {/* Tower Stats */}
           <Card className="bg-card border-border">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm font-medium">Detected Towers</CardTitle>
+              <CardTitle className="text-sm font-medium">{t('pages.map.towerStats.title')}</CardTitle>
             </CardHeader>
             <CardContent>
               <div className="flex items-center justify-between gap-4">
                 <div className="text-center flex-1">
                   <p className="text-2xl font-bold">{towers.length}</p>
-                  <p className="text-xs text-muted-foreground">Total</p>
+                  <p className="text-xs text-muted-foreground">{t('pages.map.towerStats.total')}</p>
                 </div>
                 <div className="text-center flex-1">
                   <p className="text-2xl font-bold text-success">{verifiedTowers.length}</p>
-                  <p className="text-xs text-muted-foreground">Verified</p>
+                  <p className="text-xs text-muted-foreground">{t('pages.map.towerStats.verified')}</p>
                 </div>
                 <div className="text-center flex-1">
                   <p className="text-2xl font-bold text-destructive">{suspiciousTowers.length}</p>
-                  <p className="text-xs text-muted-foreground">Suspicious</p>
+                  <p className="text-xs text-muted-foreground">{t('pages.map.towerStats.suspicious')}</p>
                 </div>
               </div>
             </CardContent>
@@ -203,7 +205,7 @@ const MapPage = () => {
                 <CardHeader className="pb-2 cursor-pointer hover:bg-muted/50 rounded-t-lg transition-colors">
                   <CardTitle className="text-sm font-medium flex items-center justify-between">
                     <span className="flex items-center gap-2">
-                      {countryLoading ? 'Detecting Operators…' : `${country.country} Operators`}
+                      {countryLoading ? t('pages.map.operators.detecting') : t('pages.map.operators.title', { country: country.country })}
                     </span>
                     <ChevronDown className={cn(
                       "w-4 h-4 text-muted-foreground transition-transform",
@@ -215,7 +217,7 @@ const MapPage = () => {
               <CollapsibleContent>
                 <CardContent className="pt-0 space-y-2">
                   <p className="text-xs text-muted-foreground pb-1">
-                    MCC {country.mcc}{countryName ? ` · ${countryName}` : ''}
+                    {t('pages.map.operators.mccLabel', { mcc: country.mcc })}{countryName ? ` · ${countryName}` : ''}
                   </p>
                   {country.operators.map(op => (
                     <div key={op.mnc} className="flex items-center gap-2 text-xs p-2 rounded bg-muted/30">
@@ -224,7 +226,7 @@ const MapPage = () => {
                         style={{ backgroundColor: op.color }}
                       />
                       <span className="font-medium flex-1">{op.name}</span>
-                      <span className="text-muted-foreground">MNC: {op.mnc}</span>
+                      <span className="text-muted-foreground">{t('pages.map.operators.mnc')}: {op.mnc}</span>
                     </div>
                   ))}
                 </CardContent>
@@ -252,28 +254,28 @@ const MapPage = () => {
                         selectedTower.isSuspicious ? 'bg-destructive' : 'bg-success'
                       )}
                     />
-                    {selectedTower.isSuspicious ? 'Suspicious Tower' : 'Verified Tower'}
+                    {selectedTower.isSuspicious ? t('pages.map.selectedTower.suspicious') : t('pages.map.selectedTower.verified')}
                   </CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-1 text-xs">
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Operator</span>
+                    <span className="text-muted-foreground">{t('pages.map.selectedTower.operator')}</span>
                     <span className="font-mono">{selectedTower.operator}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Cell ID</span>
+                    <span className="text-muted-foreground">{t('pages.map.selectedTower.cellId')}</span>
                     <span className="font-mono">{selectedTower.cellId}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">MCC/MNC</span>
+                    <span className="text-muted-foreground">{t('pages.map.selectedTower.mccMnc')}</span>
                     <span className="font-mono">{selectedTower.mcc}/{selectedTower.mnc}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Technology</span>
+                    <span className="text-muted-foreground">{t('pages.map.selectedTower.technology')}</span>
                     <Badge variant="secondary" className="text-xs h-5">{selectedTower.technology}</Badge>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-muted-foreground">Signal</span>
+                    <span className="text-muted-foreground">{t('pages.map.selectedTower.signal')}</span>
                     <span className="font-mono">{selectedTower.signalStrength} dBm</span>
                   </div>
                   {selectedTower.suspiciousReason && (
@@ -288,7 +290,7 @@ const MapPage = () => {
             <Card className="bg-card border-border">
               <CardContent className="p-6 text-center text-muted-foreground">
                 <MapPin className="w-8 h-8 mx-auto mb-2 opacity-50" />
-                <p className="text-sm">Tap a tower on the map to view details</p>
+                <p className="text-sm">{t('pages.map.emptyState')}</p>
               </CardContent>
             </Card>
           )}
