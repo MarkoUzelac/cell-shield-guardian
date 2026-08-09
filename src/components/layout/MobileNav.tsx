@@ -13,16 +13,16 @@ import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const mainNavItems = [
-  { to: '/', icon: Activity, label: 'Scan' },
+  { to: '/', icon: Activity, label: 'Check' },
   { to: '/map', icon: Map, label: 'Map' },
   { to: '/network', icon: Wifi, label: 'Network' },
   { to: '/alerts', icon: AlertTriangle, label: 'Alerts' },
 ];
 
 const allNavItems = [
-  { to: '/', icon: Activity, label: 'Live Scan', description: 'Real-time signal monitoring' },
-  { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard', description: 'Anomaly detection & scoring' },
-  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Cell tower mapping' },
+  { to: '/', icon: Activity, label: 'Privacy & Connection Check', description: 'Live browser measurements' },
+  { to: '/demo', icon: Crosshair, label: 'Cellular Simulation', description: 'Demo data — not from your device' },
+  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Simulated cell tower mapping' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
   { to: '/protection', icon: ShieldCheck, label: 'Protection Guide', description: 'Threats & countermeasures' },
   { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer', description: 'Analyze file metadata' },
