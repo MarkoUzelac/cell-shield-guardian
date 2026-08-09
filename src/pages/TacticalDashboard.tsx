@@ -408,6 +408,7 @@ function AnomalyRow({
   isSelected: boolean;
   onClick: () => void;
 }) {
+  const { t } = useTranslation();
   const { anomalyReport } = tower;
   const level = anomalyReport.threatLevel;
 
@@ -444,7 +445,7 @@ function AnomalyRow({
           )}
         </div>
         <p className="text-xs text-muted-foreground truncate">
-          Cell: {tower.cellId} · {tower.signalStrength} dBm
+          {t('pages.tactical.anomalyFeed.cellLabel', { cellId: tower.cellId, signal: tower.signalStrength })}
           {anomalyReport.details[0] && ` · ${anomalyReport.details[0]}`}
         </p>
       </div>
@@ -472,16 +473,17 @@ function AnomalyRow({
 }
 
 function TowerDetailCard({ tower }: { tower: TacticalTower }) {
+  const { t } = useTranslation();
   const { anomalyReport } = tower;
   const level = anomalyReport.threatLevel;
 
   const factors = [
-    { label: 'MCC/MNC Anomaly', value: anomalyReport.factors.mccMncAnomaly, weight: '20%' },
-    { label: 'Encryption Missing', value: anomalyReport.factors.encryptionMissing, weight: '20%' },
-    { label: 'Power Spike', value: anomalyReport.factors.powerSpike, weight: '15%' },
-    { label: 'Downgrade Attack', value: anomalyReport.factors.downgradeAttack, weight: '15%' },
-    { label: 'Geo Mismatch', value: anomalyReport.factors.geoMismatch, weight: '15%' },
-    { label: 'Rapid Switch', value: anomalyReport.factors.rapidSwitch, weight: '15%' },
+    { label: t('pages.tactical.factors.mccMncAnomaly'), value: anomalyReport.factors.mccMncAnomaly, weight: '20%' },
+    { label: t('pages.tactical.factors.encryptionMissing'), value: anomalyReport.factors.encryptionMissing, weight: '20%' },
+    { label: t('pages.tactical.factors.powerSpike'), value: anomalyReport.factors.powerSpike, weight: '15%' },
+    { label: t('pages.tactical.factors.downgradeAttack'), value: anomalyReport.factors.downgradeAttack, weight: '15%' },
+    { label: t('pages.tactical.factors.geoMismatch'), value: anomalyReport.factors.geoMismatch, weight: '15%' },
+    { label: t('pages.tactical.factors.rapidSwitch'), value: anomalyReport.factors.rapidSwitch, weight: '15%' },
   ];
 
   return (
@@ -502,19 +504,19 @@ function TowerDetailCard({ tower }: { tower: TacticalTower }) {
           {/* Tower info */}
           <div className="grid grid-cols-2 gap-1 text-xs">
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Cell ID</span>
+              <span className="text-muted-foreground">{t('pages.tactical.detail.cellId')}</span>
               <span className="font-mono">{tower.cellId}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">MCC/MNC</span>
+              <span className="text-muted-foreground">{t('pages.tactical.detail.mccMnc')}</span>
               <span className="font-mono">{tower.mcc}/{tower.mnc}</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Signal</span>
+              <span className="text-muted-foreground">{t('pages.tactical.detail.signal')}</span>
               <span className="font-mono">{tower.signalStrength} dBm</span>
             </div>
             <div className="flex justify-between">
-              <span className="text-muted-foreground">Encrypted</span>
+              <span className="text-muted-foreground">{t('pages.tactical.detail.encrypted')}</span>
               {tower.encryption ? (
                 <Lock className="w-3 h-3 text-success" />
               ) : (
@@ -525,7 +527,7 @@ function TowerDetailCard({ tower }: { tower: TacticalTower }) {
 
           {/* Score breakdown */}
           <div className="space-y-1.5">
-            <p className="text-xs font-medium">Score Breakdown</p>
+            <p className="text-xs font-medium">{t('pages.tactical.detail.scoreBreakdown')}</p>
             {factors.map(f => (
               <div key={f.label} className="space-y-0.5">
                 <div className="flex justify-between text-[10px]">
@@ -552,7 +554,7 @@ function TowerDetailCard({ tower }: { tower: TacticalTower }) {
           {/* Overall */}
           <div className="pt-2 border-t border-border/50">
             <div className="flex justify-between items-center">
-              <span className="text-xs font-medium">Overall Score</span>
+              <span className="text-xs font-medium">{t('pages.tactical.detail.overallScore')}</span>
               <span className={cn("text-lg font-bold font-mono",
                 level === 'CRITICAL' && "text-destructive animate-pulse",
                 level === 'HIGH' && "text-orange-400",
@@ -566,7 +568,7 @@ function TowerDetailCard({ tower }: { tower: TacticalTower }) {
           {/* Findings */}
           {anomalyReport.details.length > 0 && (
             <div className="space-y-1">
-              <p className="text-xs font-medium">Findings</p>
+              <p className="text-xs font-medium">{t('pages.tactical.detail.findings')}</p>
               {anomalyReport.details.map((d, i) => (
                 <p key={i} className="text-[10px] text-muted-foreground flex gap-1">
                   <span className="text-warning">⚠</span> {d}

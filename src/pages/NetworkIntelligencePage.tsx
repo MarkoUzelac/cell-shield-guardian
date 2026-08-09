@@ -230,55 +230,55 @@ const NetworkIntelligencePage = () => {
     const indicators: SecurityIndicator[] = [
       {
         id: 'encryption',
-        name: 'Connection Encryption',
+        name: t('pages.network.security.indicators.encryption.name'),
         status: window.location.protocol === 'https:' ? 'safe' : 'warning',
         description: window.location.protocol === 'https:' 
-          ? 'Your connection is encrypted with TLS/SSL'
-          : 'Connection is not encrypted - data may be intercepted',
-        details: 'HTTPS encrypts data between your device and servers'
+          ? t('pages.network.security.indicators.encryption.descriptionSecure')
+          : t('pages.network.security.indicators.encryption.descriptionInsecure'),
+        details: t('pages.network.security.indicators.encryption.details')
       },
       {
         id: 'network_type',
-        name: 'Network Generation',
+        name: t('pages.network.security.indicators.networkType.name'),
         status: getNetworkTypeRisk(networkInfo?.effectiveType),
-        description: `Connected via ${networkInfo?.effectiveType?.toUpperCase() || 'Unknown'} network`,
+        description: t('pages.network.security.indicators.networkType.description', { type: networkInfo?.effectiveType?.toUpperCase() || t('pages.network.statusCards.unknown') }),
         details: networkInfo?.effectiveType === '2g' 
-          ? 'WARNING: 2G networks have weak encryption and are vulnerable to IMSI catchers'
+          ? t('pages.network.security.indicators.networkType.detailsWarning2g')
           : networkInfo?.effectiveType === '3g'
-          ? 'CAUTION: 3G has some known vulnerabilities'
-          : '4G/5G networks have stronger encryption'
+          ? t('pages.network.security.indicators.networkType.detailsCaution3g')
+          : t('pages.network.security.indicators.networkType.detailsSecure')
       },
       {
         id: 'downgrade_risk',
-        name: 'Downgrade Attack Risk',
+        name: t('pages.network.security.indicators.downgradeRisk.name'),
         status: networkInfo?.effectiveType === '2g' ? 'danger' : 'safe',
         description: networkInfo?.effectiveType === '2g'
-          ? 'ALERT: You may be experiencing a forced network downgrade'
-          : 'No forced downgrade detected',
-        details: 'IMSI catchers often force phones to connect via 2G for easier interception'
+          ? t('pages.network.security.indicators.downgradeRisk.descriptionAlert')
+          : t('pages.network.security.indicators.downgradeRisk.descriptionSafe'),
+        details: t('pages.network.security.indicators.downgradeRisk.details')
       },
       {
         id: 'latency',
-        name: 'Connection Latency',
+        name: t('pages.network.security.indicators.latency.name'),
         status: getLatencyRisk(networkInfo?.rtt),
-        description: `Current latency: ${networkInfo?.rtt || 'Unknown'}ms`,
-        details: 'Abnormally high latency can indicate traffic interception or man-in-the-middle attacks'
+        description: t('pages.network.security.indicators.latency.description', { rtt: networkInfo?.rtt || t('pages.network.statusCards.unknown') }),
+        details: t('pages.network.security.indicators.latency.details')
       },
       {
         id: 'data_saver',
-        name: 'Data Saver Mode',
+        name: t('pages.network.security.indicators.dataSaver.name'),
         status: networkInfo?.saveData ? 'warning' : 'safe',
         description: networkInfo?.saveData 
-          ? 'Data saver is active - some content may be proxied'
-          : 'Data saver is not active',
-        details: 'Proxied connections may route through third-party servers'
+          ? t('pages.network.security.indicators.dataSaver.descriptionActive')
+          : t('pages.network.security.indicators.dataSaver.descriptionInactive'),
+        details: t('pages.network.security.indicators.dataSaver.details')
       },
       {
         id: 'dns_security',
-        name: 'DNS Security',
+        name: t('pages.network.security.indicators.dnsSecurity.name'),
         status: 'unknown',
-        description: 'DNS security status cannot be determined from browser',
-        details: 'Consider using DNS-over-HTTPS (DoH) for encrypted DNS queries'
+        description: t('pages.network.security.indicators.dnsSecurity.description'),
+        details: t('pages.network.security.indicators.dnsSecurity.details')
       }
     ];
 
