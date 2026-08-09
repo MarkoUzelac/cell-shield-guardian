@@ -53,6 +53,7 @@ export const networkChecks: DiagnosticDefinition[] = [
             value: 'Measurement failed',
             source: 'measured',
             confidence: 'not-available',
+            variant: 'failed',
             explanation:
               'No probe completed. You may be offline, or the request was blocked or timed out.',
             recommendation: 'Check your connection and run the scan again.',
@@ -70,7 +71,9 @@ export const networkChecks: DiagnosticDefinition[] = [
           source: 'measured',
           confidence: 'measured',
           durationMs: performance.now() - start,
+          params: { ms: Math.round(value), count: samples.length },
           explanation: `Median of ${samples.length} request round-trips to this site's own server. It reflects the delay between your device and this server only — other destinations may differ.`,
+          variant: status === 'warning' ? 'slow' : 'ok',
           recommendation:
             status === 'warning'
               ? 'High latency usually comes from a weak signal, a congested network, or a distant server.'
@@ -109,6 +112,7 @@ export const networkChecks: DiagnosticDefinition[] = [
         unit: 'ms',
         source: 'measured',
         confidence: 'measured',
+        params: { ms: Math.round(ttfb) },
         explanation:
           'Time from requesting this page to the first byte arriving, recorded by your browser during page load.',
         raw: {
@@ -149,6 +153,7 @@ export const networkChecks: DiagnosticDefinition[] = [
         unit: 'Mbps',
         source: 'measured',
         confidence: 'estimated',
+        params: { mbps: Number(mbps.toFixed(1)), count: usable.length },
         explanation:
           'A lower bound derived from the fastest real download this page already made. Your actual maximum speed is likely higher — this is not a speed test.',
         recommendation: 'Use the Network page for a deliberate, consent-gated speed test.',
@@ -175,6 +180,7 @@ export const networkChecks: DiagnosticDefinition[] = [
           value: 'Offline',
           source: 'browser-api',
           confidence: 'confirmed',
+          variant: 'offline',
           explanation: 'Your browser reports no network connection, so no probe was sent.',
         });
       }
@@ -196,6 +202,8 @@ export const networkChecks: DiagnosticDefinition[] = [
           value: response.ok ? 'Reachable' : `Responded ${response.status}`,
           source: 'measured',
           confidence: 'measured',
+          variant: response.ok ? 'reachable' : 'status',
+          params: { status: response.status },
           explanation: response.ok
             ? 'A live request to this site completed successfully, which confirms real connectivity rather than just an active network interface.'
             : `The server answered with status ${response.status}. Connectivity exists but something is interfering with the request.`,
@@ -210,6 +218,7 @@ export const networkChecks: DiagnosticDefinition[] = [
           value: 'Unreachable',
           source: 'measured',
           confidence: 'measured',
+          variant: 'unreachable',
           explanation:
             'The connectivity probe did not complete. This can mean you are offline, or that a captive portal, firewall, or content blocker is intercepting requests.',
           recommendation: 'Retry the scan, or check whether a network sign-in page is waiting.',
