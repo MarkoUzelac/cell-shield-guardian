@@ -34,9 +34,9 @@ export const DiagnosticRow = ({ result, showTechnical }: DiagnosticRowProps) => 
         <span className="min-w-0 flex-1">
           <span className="block text-sm font-medium text-foreground">{label}</span>
           <span className="mt-0.5 block font-mono text-xs text-muted-foreground">
-            {result.value}
-            {result.unit ? ` ${result.unit}` : ''}
+            {value}
           </span>
+
         </span>
         <span className="flex shrink-0 items-center gap-2">
           <StatusBadge status={result.status} showLabel={false} />
