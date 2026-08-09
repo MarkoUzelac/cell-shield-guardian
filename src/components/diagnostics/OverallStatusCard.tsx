@@ -1,29 +1,12 @@
 import { RefreshCw } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { cn } from '@/lib/utils';
 import { statusIcon, statusTone } from './StatusBadge';
-import { STATUS_LABEL, type DiagnosticStatus } from '@/lib/diagnostics/types';
+import type { DiagnosticStatus } from '@/lib/diagnostics/types';
 import type { ScanPhase } from '@/hooks/useDiagnostics';
-
-const HEADLINE: Record<DiagnosticStatus, string> = {
-  good: 'No issues found by the available checks',
-  attention: 'A few things are worth reviewing',
-  warning: 'Something needs your attention',
-  unknown: 'Not enough information yet',
-  pending: 'Checking your browser and connection',
-  error: 'Some checks could not complete',
-};
-
-const SUBLINE: Record<DiagnosticStatus, string> = {
-  good: 'This covers what a web page can observe. It is not a guarantee that your device or network is secure.',
-  attention: 'Nothing here is dangerous by itself, but the items below are worth a look.',
-  warning: 'One or more checks found a real problem. Open the item below for details.',
-  unknown: 'Your browser withheld the information these checks need. Unknown does not mean safe.',
-  pending: 'Results appear as each check finishes.',
-  error: 'Individual checks failed. Everything else on this page is still valid.',
-};
 
 interface OverallStatusCardProps {
   status: DiagnosticStatus;
@@ -44,6 +27,7 @@ export const OverallStatusCard = ({
   counts,
   onRescan,
 }: OverallStatusCardProps) => {
+  const { t } = useTranslation();
   const effective = phase === 'running' ? 'pending' : status;
   const Icon = statusIcon(effective);
 
@@ -64,43 +48,57 @@ export const OverallStatusCard = ({
           </span>
           <div className="min-w-0 flex-1">
             <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground">
-              Overall: {STATUS_LABEL[effective]}
+              {t('diagnostics.overall.label', {
+                status: t(`diagnostics.status.${effective}`),
+              })}
             </p>
             <h2 className="mt-0.5 text-lg font-semibold leading-tight text-foreground">
-              {HEADLINE[effective]}
+              {t(`diagnostics.overall.headline.${effective}`)}
             </h2>
-            <p className="mt-1 text-sm text-muted-foreground">{SUBLINE[effective]}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {t(`diagnostics.overall.subline.${effective}`)}
+            </p>
           </div>
         </div>
 
         {phase === 'running' && (
           <div>
-            <Progress value={progress} aria-label="Scan progress" />
-            <p className="mt-1.5 text-xs text-muted-foreground">{progress}% complete</p>
+            <Progress value={progress} aria-label={t('diagnostics.overall.scanProgress')} />
+            <p className="mt-1.5 text-xs text-muted-foreground">
+              {t('diagnostics.overall.percentComplete', { progress })}
+            </p>
           </div>
         )}
 
         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
           <span>
-            Good: <span className="font-medium text-foreground">{counts.good}</span>
+            {t('diagnostics.overall.countGood')}{' '}
+            <span className="font-medium text-foreground">{counts.good}</span>
           </span>
           <span>
-            Attention: <span className="font-medium text-foreground">{counts.attention}</span>
+            {t('diagnostics.overall.countAttention')}{' '}
+            <span className="font-medium text-foreground">{counts.attention}</span>
           </span>
           <span>
-            Warning: <span className="font-medium text-foreground">{counts.warning}</span>
+            {t('diagnostics.overall.countWarning')}{' '}
+            <span className="font-medium text-foreground">{counts.warning}</span>
           </span>
           <span>
-            Not available: <span className="font-medium text-foreground">{counts.unknown}</span>
+            {t('diagnostics.overall.countUnknown')}{' '}
+            <span className="font-medium text-foreground">{counts.unknown}</span>
           </span>
         </div>
 
         <div className="flex flex-wrap items-center justify-between gap-3">
           <p className="text-xs text-muted-foreground">
             {startedAt
-              ? `Last scan ${new Date(startedAt).toLocaleTimeString()}`
-              : 'No scan yet'}
-            {durationMs !== undefined ? ` · took ${(durationMs / 1000).toFixed(1)}s` : ''}
+              ? t('diagnostics.overall.lastScan', {
+                  time: new Date(startedAt).toLocaleTimeString(),
+                })
+              : t('diagnostics.overall.noScanYet')}
+            {durationMs !== undefined
+              ? t('diagnostics.overall.took', { seconds: (durationMs / 1000).toFixed(1) })
+              : ''}
           </p>
           <Button
             onClick={onRescan}
@@ -112,7 +110,9 @@ export const OverallStatusCard = ({
               className={cn('mr-2 h-4 w-4', phase === 'running' && 'animate-spin')}
               aria-hidden
             />
-            {phase === 'running' ? 'Scanning…' : 'Scan again'}
+            {phase === 'running'
+              ? t('diagnostics.overall.scanning')
+              : t('diagnostics.overall.scanAgain')}
           </Button>
         </div>
       </CardContent>
