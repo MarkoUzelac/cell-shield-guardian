@@ -1,6 +1,7 @@
 import { AlertTriangle, CheckCircle2, CircleHelp, Info, Loader2, XCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { STATUS_LABEL, type DiagnosticStatus } from '@/lib/diagnostics/types';
+import type { DiagnosticStatus } from '@/lib/diagnostics/types';
 
 /**
  * Status is communicated with an icon and a word as well as colour, so that it
@@ -31,7 +32,10 @@ interface StatusBadgeProps {
 }
 
 export const StatusBadge = ({ status, className, showLabel = true }: StatusBadgeProps) => {
+  const { t } = useTranslation();
   const { icon: Icon, className: tone } = STATUS_STYLES[status];
+  const label = t(`diagnostics.status.${status}`);
+
   return (
     <span
       className={cn(
@@ -41,7 +45,7 @@ export const StatusBadge = ({ status, className, showLabel = true }: StatusBadge
       )}
     >
       <Icon className={cn('h-3.5 w-3.5 shrink-0', status === 'pending' && 'animate-spin')} aria-hidden />
-      {showLabel && STATUS_LABEL[status]}
+      {showLabel ? label : <span className="sr-only">{label}</span>}
     </span>
   );
 };

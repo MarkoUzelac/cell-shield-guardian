@@ -1,6 +1,7 @@
 import { CheckCircle2, CircleSlash, HelpCircle, KeyRound, MinusCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { CAPABILITY_LABEL, type CapabilitySupport } from '@/lib/diagnostics/types';
+import type { CapabilitySupport } from '@/lib/diagnostics/types';
 
 const STYLES: Record<CapabilitySupport, string> = {
   SUPPORTED: 'border-emerald-500/40 bg-emerald-500/10 text-emerald-400',
@@ -29,8 +30,9 @@ export const CapabilityBadge = ({
   className,
   showLabel = true,
 }: CapabilityBadgeProps) => {
+  const { t } = useTranslation();
   const Icon = ICONS[capability];
-  const label = CAPABILITY_LABEL[capability];
+  const label = t(`diagnostics.capability.${capability}`);
 
   return (
     <span

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { AlertTriangle, Clock, Wifi, WifiOff } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
 
@@ -13,6 +14,7 @@ interface HeaderProps {
  * browser's own online/offline flag. No fabricated "Protected" claim.
  */
 export const Header = ({ title, subtitle }: HeaderProps) => {
+  const { t } = useTranslation();
   const [currentTime, setCurrentTime] = useState(new Date());
   const [online, setOnline] = useState(navigator.onLine);
   const isMobile = useIsMobile();
@@ -66,7 +68,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
               <WifiOff className="h-4 w-4" aria-hidden />
             )}
             <span className="text-xs font-medium sm:text-sm">
-              {online ? 'Online' : 'Offline'}
+              {online ? t('common.online') : t('common.offline')}
             </span>
           </div>
         </div>
@@ -75,10 +77,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
       <div className="border-t border-warning/30 bg-warning/10 px-3 py-1.5 sm:px-6 sm:py-2">
         <p className="flex items-center gap-1.5 text-[10px] text-warning sm:gap-2 sm:text-xs">
           <AlertTriangle className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" aria-hidden />
-          <span>
-            Browser-observable signals only. Cellular and radio-layer data cannot be read from a
-            web page.
-          </span>
+          <span>{t('header.disclaimer')}</span>
         </p>
       </div>
     </header>

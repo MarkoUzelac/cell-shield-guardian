@@ -17,22 +17,24 @@ import {
   ShieldCheck,
   ListChecks,
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/', icon: Activity, label: 'Privacy & Connection' },
-  { to: '/capabilities', icon: ListChecks, label: 'Capability Matrix' },
-  { to: '/demo', icon: Crosshair, label: 'Cellular Simulation' },
-  { to: '/map', icon: Map, label: 'Triangulation Map' },
-  { to: '/network', icon: Wifi, label: 'Network Intelligence' },
-  { to: '/protection', icon: ShieldCheck, label: 'Protection Guide' },
-  { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer' },
-  { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs' },
-  { to: '/settings', icon: Settings, label: 'Settings' },
-  { to: '/about', icon: Info, label: 'About' },
-];
+  { to: '/', icon: Activity, labelKey: 'nav.home' },
+  { to: '/capabilities', icon: ListChecks, labelKey: 'nav.capabilities' },
+  { to: '/demo', icon: Crosshair, labelKey: 'nav.demo' },
+  { to: '/map', icon: Map, labelKey: 'nav.map' },
+  { to: '/network', icon: Wifi, labelKey: 'nav.network' },
+  { to: '/protection', icon: ShieldCheck, labelKey: 'nav.protection' },
+  { to: '/metadata', icon: FileSearch, labelKey: 'nav.metadata' },
+  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alerts' },
+  { to: '/settings', icon: Settings, labelKey: 'nav.settings' },
+  { to: '/about', icon: Info, labelKey: 'nav.about' },
+] as const;
 
 export const Sidebar = () => {
+  const { t } = useTranslation();
   const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
@@ -57,8 +59,8 @@ export const Sidebar = () => {
                 exit={{ opacity: 0, x: -10 }}
                 className="flex flex-col"
               >
-                <span className="font-semibold text-foreground">Privacy Signal</span>
-                <span className="text-xs text-muted-foreground">Monitor v1.0</span>
+                <span className="font-semibold text-foreground">{t('common.appShortName')}</span>
+                <span className="text-xs text-muted-foreground">{t('common.appVersion')}</span>
               </motion.div>
             )}
           </AnimatePresence>
@@ -96,7 +98,7 @@ export const Sidebar = () => {
                       isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
                     )}
                   >
-                    {item.label}
+                    {t(item.labelKey)}
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -123,8 +125,8 @@ export const Sidebar = () => {
                 exit={{ opacity: 0 }}
                 className="flex flex-col"
               >
-                <span className="text-xs font-medium text-primary">Local analysis</span>
-                <span className="text-xs text-muted-foreground">Runs in your browser</span>
+                <span className="text-xs font-medium text-primary">{t('common.localAnalysis')}</span>
+                <span className="text-xs text-muted-foreground">{t('common.localAnalysisHint')}</span>
 
               </motion.div>
             )}
@@ -136,7 +138,7 @@ export const Sidebar = () => {
       <button
         onClick={() => setCollapsed(!collapsed)}
         className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sidebar-accent border border-sidebar-border flex items-center justify-center hover:bg-primary/20 focus:ring-2 focus:ring-primary transition-colors"
-        aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+        aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
       >
         {collapsed ? (
           <ChevronRight className="w-5 h-5 text-muted-foreground" />
