@@ -19,8 +19,8 @@ import {
 import { cn } from '@/lib/utils';
 
 const navItems = [
-  { to: '/', icon: Activity, label: 'Live Scan' },
-  { to: '/tactical', icon: Crosshair, label: 'Tactical Dashboard' },
+  { to: '/', icon: Activity, label: 'Privacy & Connection' },
+  { to: '/demo', icon: Crosshair, label: 'Cellular Simulation' },
   { to: '/map', icon: Map, label: 'Triangulation Map' },
   { to: '/network', icon: Wifi, label: 'Network Intelligence' },
   { to: '/protection', icon: ShieldCheck, label: 'Protection Guide' },
