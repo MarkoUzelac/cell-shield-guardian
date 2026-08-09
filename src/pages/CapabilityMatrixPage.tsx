@@ -158,21 +158,9 @@ const CapabilityMatrixPage = () => {
                 </div>
                 <ul>
                   {rows.map((r) => (
-                    <li
-                      key={r.id}
-                      className={cn(
-                        'flex flex-wrap items-start justify-between gap-2 border-b border-border/60 px-3 py-3 last:border-b-0',
-                      )}
-                    >
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground">{r.label}</p>
-                        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {t(`diagnostics.capabilityHelp.${r.capability}`)}
-                        </p>
-                      </div>
-                      <CapabilityBadge capability={r.capability} />
-                    </li>
+                    <MatrixRow key={r.id} result={r} />
                   ))}
+
                 </ul>
               </CardContent>
             </Card>
