@@ -18,6 +18,7 @@ const NetworkIntelligencePage = lazy(() => import("./pages/NetworkIntelligencePa
 const TacticalDashboard = lazy(() => import("./pages/TacticalDashboard"));
 const ProtectionGuidePage = lazy(() => import("./pages/ProtectionGuidePage"));
 const DemoDashboard = lazy(() => import("./pages/DemoDashboard"));
+const CapabilityMatrixPage = lazy(() => import("./pages/CapabilityMatrixPage"));
 
 const queryClient = new QueryClient();
 
@@ -38,6 +39,7 @@ const App = () => (
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/capabilities" element={<CapabilityMatrixPage />} />
             <Route path="/demo" element={<DemoDashboard />} />
             <Route path="/map" element={<MapPage />} />
             <Route path="/metadata" element={<MetadataPage />} />
