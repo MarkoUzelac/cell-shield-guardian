@@ -125,6 +125,15 @@ const CapabilityMatrixPage = () => {
           </CardContent>
         </Card>
 
+        <PermissionPanel
+          states={permissionStates}
+          onRequest={requestPermission}
+          onRefresh={() => void refreshPermissions()}
+          busy={!permissionsReady}
+        />
+
+
+
         {filter !== 'ALL' && (
           <Card>
             <CardContent className="flex gap-2 p-4">
