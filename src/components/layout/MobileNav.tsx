@@ -4,6 +4,7 @@ import {
   Shield, FileSearch, Info, Radio, X, ChevronRight,
   Bell, Volume2, VolumeX, Power, Crown, Crosshair, ShieldCheck, ListChecks
 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useState, useEffect } from 'react';
 import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
@@ -13,24 +14,24 @@ import { Separator } from '@/components/ui/separator';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const mainNavItems = [
-  { to: '/', icon: Activity, label: 'Check' },
-  { to: '/map', icon: Map, label: 'Map' },
-  { to: '/network', icon: Wifi, label: 'Network' },
-  { to: '/alerts', icon: AlertTriangle, label: 'Alerts' },
-];
+  { to: '/', icon: Activity, labelKey: 'nav.homeShort' },
+  { to: '/map', icon: Map, labelKey: 'nav.mapShort' },
+  { to: '/network', icon: Wifi, labelKey: 'nav.networkShort' },
+  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alertsShort' },
+] as const;
 
 const allNavItems = [
-  { to: '/', icon: Activity, label: 'Privacy & Connection Check', description: 'Live browser measurements' },
-  { to: '/capabilities', icon: ListChecks, label: 'Capability Matrix', description: 'What your browser can measure' },
-  { to: '/demo', icon: Crosshair, label: 'Cellular Simulation', description: 'Demo data — not from your device' },
-  { to: '/map', icon: Map, label: 'Triangulation Map', description: 'Simulated cell tower mapping' },
-  { to: '/network', icon: Wifi, label: 'Network Intelligence', description: 'Network security analysis' },
-  { to: '/protection', icon: ShieldCheck, label: 'Protection Guide', description: 'Threats & countermeasures' },
-  { to: '/metadata', icon: FileSearch, label: 'Metadata Analyzer', description: 'Analyze file metadata' },
-  { to: '/alerts', icon: AlertTriangle, label: 'Alerts & Logs', description: 'View all alerts' },
-  { to: '/settings', icon: Settings, label: 'Settings', description: 'App preferences' },
-  { to: '/about', icon: Info, label: 'About', description: 'App information' },
-];
+  { to: '/', icon: Activity, labelKey: 'nav.homeLong', descriptionKey: 'nav.homeDescription' },
+  { to: '/capabilities', icon: ListChecks, labelKey: 'nav.capabilities', descriptionKey: 'nav.capabilitiesDescription' },
+  { to: '/demo', icon: Crosshair, labelKey: 'nav.demo', descriptionKey: 'nav.demoDescription' },
+  { to: '/map', icon: Map, labelKey: 'nav.map', descriptionKey: 'nav.mapDescription' },
+  { to: '/network', icon: Wifi, labelKey: 'nav.network', descriptionKey: 'nav.networkDescription' },
+  { to: '/protection', icon: ShieldCheck, labelKey: 'nav.protection', descriptionKey: 'nav.protectionDescription' },
+  { to: '/metadata', icon: FileSearch, labelKey: 'nav.metadata', descriptionKey: 'nav.metadataDescription' },
+  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alerts', descriptionKey: 'nav.alertsDescription' },
+  { to: '/settings', icon: Settings, labelKey: 'nav.settings', descriptionKey: 'nav.settingsDescription' },
+  { to: '/about', icon: Info, labelKey: 'nav.about', descriptionKey: 'nav.aboutDescription' },
+] as const;
 
 const quickActions = [
   { icon: Bell, label: 'Notifications', badge: 3 },
@@ -38,6 +39,7 @@ const quickActions = [
 ];
 
 export const MobileNav = () => {
+  const { t } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -71,7 +73,7 @@ export const MobileNav = () => {
                 )}
               >
                 <item.icon className={cn('w-5 h-5', isActive && 'text-primary')} />
-                <span className="text-[10px] font-medium leading-tight">{item.label}</span>
+                <span className="text-[10px] font-medium leading-tight">{t(item.labelKey)}</span>
                 {isActive && (
                   <motion.div 
                     layoutId="activeTab"
@@ -90,10 +92,10 @@ export const MobileNav = () => {
                   "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 focus:ring-2 focus:ring-primary",
                   "text-muted-foreground hover:text-foreground active:bg-muted/50"
                 )}
-                aria-label="More navigation options"
+                aria-label={t('common.moreNavigation')}
               >
                 <Menu className="w-5 h-5" />
-                <span className="text-[10px] font-medium leading-tight">More</span>
+                <span className="text-[10px] font-medium leading-tight">{t('common.more')}</span>
               </button>
             </SheetTrigger>
             
@@ -110,7 +112,7 @@ export const MobileNav = () => {
                         <Shield className="w-4 h-4 text-primary" />
                       </div>
                       <div className="flex flex-col items-start">
-                        <span className="font-semibold">Privacy Signal Monitor</span>
+                        <span className="font-semibold">{t('common.appName')}</span>
                         <span className="text-[10px] text-muted-foreground font-normal">v1.0</span>
                       </div>
                     </SheetTitle>
@@ -219,10 +221,10 @@ export const MobileNav = () => {
                               "text-sm font-medium block",
                               isActive && "text-primary"
                             )}>
-                              {item.label}
+                              {t(item.labelKey)}
                             </span>
                             <span className="text-[10px] text-muted-foreground block">
-                              {item.description}
+                              {t(item.descriptionKey)}
                             </span>
                           </div>
                           <ChevronRight className={cn(
@@ -239,7 +241,7 @@ export const MobileNav = () => {
                 <div className="p-4 pt-2">
                   <Separator className="mb-4" />
                   <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                    <span>Privacy Signal Monitor</span>
+                    <span>{t('common.appName')}</span>
                     <span>Educational Use Only</span>
                   </div>
                 </div>
