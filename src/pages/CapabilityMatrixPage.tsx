@@ -27,6 +27,28 @@ const CATEGORY_ORDER: DiagnosticCategory[] = [
   'browser',
 ];
 
+/** One diagnostic in the matrix, with its label resolved through i18n. */
+const MatrixRow = ({ result }: { result: DiagnosticResult }) => {
+  const { t } = useTranslation();
+  const { label } = useDiagnosticText(result);
+  return (
+    <li
+      className={cn(
+        'flex flex-wrap items-start justify-between gap-2 border-b border-border/60 px-3 py-3 last:border-b-0',
+      )}
+    >
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-medium text-foreground">{label}</p>
+        <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
+          {t(`diagnostics.capabilityHelp.${result.capability}`)}
+        </p>
+      </div>
+      <CapabilityBadge capability={result.capability} />
+    </li>
+  );
+};
+
+
 const CapabilityMatrixPage = () => {
   const { t } = useTranslation();
   const { results, phase, scan } = useDiagnostics();
