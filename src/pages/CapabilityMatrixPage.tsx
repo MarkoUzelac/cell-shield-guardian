@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Info } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
 import { Button } from '@/components/ui/button';
@@ -8,10 +9,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { CapabilityBadge } from '@/components/diagnostics/CapabilityBadge';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
 import {
-  CAPABILITY_HELP,
-  CAPABILITY_LABEL,
   CAPABILITY_ORDER,
-  CATEGORY_META,
   type CapabilitySupport,
   type DiagnosticCategory,
   type DiagnosticResult,
@@ -27,6 +25,7 @@ const CATEGORY_ORDER: DiagnosticCategory[] = [
 ];
 
 const CapabilityMatrixPage = () => {
+  const { t } = useTranslation();
   const { results, phase } = useDiagnostics();
   const [filter, setFilter] = useState<CapabilitySupport | 'ALL'>('ALL');
 
@@ -58,17 +57,16 @@ const CapabilityMatrixPage = () => {
   return (
     <MainLayout>
       <Header
-        title="Browser Capability Matrix"
-        subtitle="What your browser can and cannot measure"
+        title={t('pages.capabilities.title')}
+        subtitle={t('pages.capabilities.subtitle')}
       />
 
       <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
         <Card>
           <CardContent className="space-y-3 p-4">
             <p className="text-sm leading-relaxed text-muted-foreground">
-              Every diagnostic in this app depends on a browser API. This matrix shows, for your
-              current browser, whether each one can actually run — and when it cannot, why.
-              {phase === 'running' ? ' Detecting capabilities…' : ''}
+              {t('pages.capabilities.intro')}
+              {phase === 'running' ? ` ${t('pages.capabilities.detecting')}` : ''}
             </p>
             <div className="flex flex-wrap gap-2">
               <Button
@@ -77,7 +75,10 @@ const CapabilityMatrixPage = () => {
                 className="min-h-11"
                 onClick={() => setFilter('ALL')}
               >
-                All ({results.length})
+                {t('pages.capabilities.filterCount', {
+                  label: t('common.all'),
+                  count: results.length,
+                })}
               </Button>
               {CAPABILITY_ORDER.map((cap) => (
                 <Button
@@ -87,7 +88,10 @@ const CapabilityMatrixPage = () => {
                   className="min-h-11"
                   onClick={() => setFilter(cap)}
                 >
-                  {CAPABILITY_LABEL[cap]} ({counts[cap]})
+                  {t('pages.capabilities.filterCount', {
+                    label: t(`diagnostics.capability.${cap}`),
+                    count: counts[cap],
+                  })}
                 </Button>
               ))}
             </div>
@@ -99,7 +103,7 @@ const CapabilityMatrixPage = () => {
             <CardContent className="flex gap-2 p-4">
               <Info className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
               <p className="text-sm leading-relaxed text-muted-foreground">
-                {CAPABILITY_HELP[filter]}
+                {t(`diagnostics.capabilityHelp.${filter}`)}
               </p>
             </CardContent>
           </Card>
@@ -113,7 +117,7 @@ const CapabilityMatrixPage = () => {
               <CardContent className="p-0">
                 <div className="border-b border-border px-3 py-2.5">
                   <h2 className="eyebrow text-xs text-muted-foreground">
-                    {CATEGORY_META[category].label}
+                    {t(`diagnostics.category.${category}`)}
                   </h2>
                 </div>
                 <ul>
@@ -127,7 +131,7 @@ const CapabilityMatrixPage = () => {
                       <div className="min-w-0 flex-1">
                         <p className="text-sm font-medium text-foreground">{r.label}</p>
                         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">
-                          {CAPABILITY_HELP[r.capability]}
+                          {t(`diagnostics.capabilityHelp.${r.capability}`)}
                         </p>
                       </div>
                       <CapabilityBadge capability={r.capability} />
@@ -142,17 +146,17 @@ const CapabilityMatrixPage = () => {
         {visible.length === 0 && phase === 'complete' && (
           <Card>
             <CardContent className="p-4 text-sm text-muted-foreground">
-              No diagnostics in this state on your browser.
+              {t('pages.capabilities.empty')}
             </CardContent>
           </Card>
         )}
 
         <p className="text-xs leading-relaxed text-muted-foreground">
-          Capability describes whether a measurement is possible, not whether you are safe. See the{' '}
+          {t('pages.capabilities.footerBefore')}{' '}
           <Link to="/" className="font-medium text-primary underline underline-offset-2">
-            privacy &amp; connection check
+            {t('pages.capabilities.footerLink')}
           </Link>{' '}
-          for actual results.
+          {t('pages.capabilities.footerAfter')}
         </p>
       </div>
     </MainLayout>

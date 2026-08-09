@@ -157,8 +157,7 @@ export const en = {
       exportReport: 'Export report',
       cannotTellTitle: 'What this tool cannot tell you',
       cannotTellBody:
-        'A web page has no access to your mobile network. IMSI catchers, cell tower identity, SIM details, encryption downgrades, baseband state and VPN usage cannot be detected from a browser, and this dashboard will never guess at them. Checks that cannot be performed are reported as Not available, which is not the same as safe.',
-      cannotTellNotAvailable: 'Not available',
+        'A web page has no access to your mobile network. IMSI catchers, cell tower identity, SIM details, encryption downgrades, baseband state and VPN usage cannot be detected from a browser, and this dashboard will never guess at them. Checks that cannot be performed are reported as <strong>Not available</strong>, which is not the same as safe.',
       demoPointerBefore:
         'A simulation of what a privileged native Android app could show is available on the',
       demoPointerLink: 'demo dashboard',
