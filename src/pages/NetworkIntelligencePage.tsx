@@ -414,19 +414,19 @@ const NetworkIntelligencePage = () => {
 
   const getStatusBadge = (status: SecurityIndicator['status']) => {
     switch (status) {
-      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">SECURE</Badge>;
-      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">CAUTION</Badge>;
-      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">RISK</Badge>;
-      default: return <Badge variant="outline">UNKNOWN</Badge>;
+      case 'safe': return <Badge className="bg-success/20 text-success border-success/30">{t('pages.network.security.statusBadge.safe')}</Badge>;
+      case 'warning': return <Badge className="bg-warning/20 text-warning border-warning/30">{t('pages.network.security.statusBadge.warning')}</Badge>;
+      case 'danger': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">{t('pages.network.security.statusBadge.danger')}</Badge>;
+      default: return <Badge variant="outline">{t('pages.network.security.statusBadge.unknown')}</Badge>;
     }
   };
 
   const getRiskBadge = (risk: string) => {
     switch (risk) {
-      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">HIGH RISK</Badge>;
-      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">MEDIUM</Badge>;
-      case 'low': return <Badge className="bg-success/20 text-success border-success/30">LOW RISK</Badge>;
-      default: return <Badge variant="outline">UNKNOWN</Badge>;
+      case 'high': return <Badge className="bg-destructive/20 text-destructive border-destructive/30">{t('pages.network.frequencies.riskBadge.high')}</Badge>;
+      case 'medium': return <Badge className="bg-warning/20 text-warning border-warning/30">{t('pages.network.frequencies.riskBadge.medium')}</Badge>;
+      case 'low': return <Badge className="bg-success/20 text-success border-success/30">{t('pages.network.frequencies.riskBadge.low')}</Badge>;
+      default: return <Badge variant="outline">{t('pages.network.frequencies.riskBadge.unknown')}</Badge>;
     }
   };
 
@@ -435,8 +435,8 @@ const NetworkIntelligencePage = () => {
       <div className="p-6 space-y-6">
         {/* Page Header */}
         <div className="mb-6">
-          <h1 className="text-2xl font-bold text-foreground">Network Intelligence</h1>
-          <p className="text-muted-foreground">Carrier analysis, speed testing, and security monitoring</p>
+          <h1 className="text-2xl font-bold text-foreground">{t('pages.network.header.title')}</h1>
+          <p className="text-muted-foreground">{t('pages.network.header.subtitle')}</p>
         </div>
 
         {/* Disclaimer Banner */}
@@ -445,11 +445,9 @@ const NetworkIntelligencePage = () => {
             <div className="flex items-start gap-3">
               <AlertTriangle className="h-5 w-5 text-warning mt-0.5 flex-shrink-0" />
               <div className="text-sm">
-                <p className="font-medium text-warning">Educational Information Only</p>
+                <p className="font-medium text-warning">{t('pages.network.disclaimer.title')}</p>
                 <p className="text-muted-foreground mt-1">
-                  This page provides network diagnostics and educational information about potential security risks. 
-                  The indicators shown are informational and NOT definitive proof of surveillance or attacks. 
-                  Most anomalies have benign explanations.
+                  {t('pages.network.disclaimer.body')}
                 </p>
               </div>
             </div>
@@ -464,15 +462,14 @@ const NetworkIntelligencePage = () => {
                 <div className="flex items-start gap-3">
                   <Shield className="h-5 w-5 text-primary mt-0.5 flex-shrink-0" />
                   <div className="text-sm">
-                    <p className="font-medium text-primary">Enable Network Diagnostics?</p>
+                    <p className="font-medium text-primary">{t('pages.network.consent.enableTitle')}</p>
                     <p className="text-muted-foreground mt-1">
-                      This will share your IP address with ipapi.co for location/carrier information. 
-                      Speed tests use httpbin.org. No personal data is stored.
+                      {t('pages.network.consent.enableBody')}
                     </p>
                   </div>
                 </div>
                 <Button onClick={handleConsentGiven} size="sm" className="whitespace-nowrap">
-                  Enable Diagnostics
+                  {t('pages.network.consent.enableButton')}
                 </Button>
               </div>
             </CardContent>
@@ -489,7 +486,7 @@ const NetworkIntelligencePage = () => {
               className="text-muted-foreground hover:text-foreground"
             >
               <EyeOff className="h-4 w-4 mr-2" />
-              Disable External Diagnostics
+              {t('pages.network.consent.disableButton')}
             </Button>
           </div>
         )}
