@@ -47,6 +47,7 @@ export type DiagnosticParams = Record<string, string | number | boolean>;
 
 export interface DiagnosticResult {
 
+
   id: string;
   label: string;
   category: DiagnosticCategory;
