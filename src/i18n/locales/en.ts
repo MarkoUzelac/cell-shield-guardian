@@ -36,6 +36,12 @@ export const en = {
     collapseSidebar: 'Collapse sidebar',
     moreNavigation: 'More navigation options',
     loading: 'Loading…',
+    educationalUseOnly: 'Educational Use Only',
+    proUpsell: {
+      title: 'Upgrade to Pro',
+      subtitle: 'Real-time tower data & advanced alerts',
+      price: '€9.99/mo',
+    },
   },
 
   header: {
