@@ -87,11 +87,25 @@ const DemoDashboard = () => {
   return (
     <MainLayout>
       <Header
-        title="Live Signal Monitor"
-        subtitle="Real-time GSM/LTE signal analysis"
+        title="Cellular Simulation (Demo)"
+        subtitle="Synthetic data — not from your device"
       />
 
       <div className="p-3 md:p-6 space-y-4">
+        {/* Honesty banner: nothing on this page is a real measurement. */}
+        <div className="rounded-xl border border-warning/40 bg-warning/10 p-3">
+          <p className="text-sm font-semibold text-warning">Simulated data — nothing here is real</p>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Web browsers cannot read IMSI, IMEI, cell tower identity, encryption state or baseband
+            information. Every signal, tower and alert on this page is generated locally to
+            illustrate what a native Android companion app could show. For measurements taken from
+            your actual device, use the{' '}
+            <Link to="/" className="font-medium text-primary underline underline-offset-2">
+              live diagnostics dashboard
+            </Link>
+            .
+          </p>
+        </div>
         {/* Premium Banner - Compact */}
         <motion.div
           initial={{ opacity: 0, y: -10 }}
