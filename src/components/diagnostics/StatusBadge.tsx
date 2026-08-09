@@ -34,7 +34,7 @@ interface StatusBadgeProps {
 export const StatusBadge = ({ status, className, showLabel = true }: StatusBadgeProps) => {
   const { t } = useTranslation();
   const { icon: Icon, className: tone } = STATUS_STYLES[status];
-  const label = t(`diagnostics.status.${status}` as const);
+  const label = t(`diagnostics.status.${status}`);
 
   return (
     <span
