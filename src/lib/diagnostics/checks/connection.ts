@@ -41,6 +41,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
         value: online ? 'Online' : 'Offline',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: online ? 'online' : 'offline',
         explanation: online
           ? 'Your browser reports an active network connection. This flag only means a network interface is up, not that the internet is reachable.'
           : 'Your browser reports no network connection. Results below may be stale or unavailable.',
@@ -63,8 +64,9 @@ export const connectionChecks: DiagnosticDefinition[] = [
           'The Network Information API is not available in this browser. Safari and Firefox do not expose it, so the connection type cannot be determined.',
         );
       }
-      const label = c.effectiveType
-        ? EFFECTIVE_TYPE_LABEL[c.effectiveType] ?? c.effectiveType
+      const effectiveType = c.effectiveType;
+      const label = effectiveType
+        ? EFFECTIVE_TYPE_LABEL[effectiveType] ?? effectiveType
         : (c.type as string);
       return make({
         id: 'connection.type',
@@ -74,6 +76,8 @@ export const connectionChecks: DiagnosticDefinition[] = [
         value: label,
         source: 'browser-api',
         confidence: 'estimated',
+        variant: effectiveType && EFFECTIVE_TYPE_LABEL[effectiveType] ? effectiveType : 'raw',
+        params: { type: effectiveType ?? (c.type as string) },
         explanation:
           'Your browser groups your connection into a broad speed class based on recent traffic. It is an estimate, not a measurement, and it does not reveal your carrier or network operator.',
         raw: { ...c },
@@ -104,6 +108,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
         unit: 'Mbps',
         source: 'browser-api',
         confidence: 'estimated',
+        params: { downlink: c.downlink },
         explanation:
           'A rounded bandwidth estimate from your browser, capped for privacy reasons. Treat it as a rough indication only.',
         raw: { downlink: c.downlink, rtt: c.rtt },
@@ -133,6 +138,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
         value: c.saveData ? 'Requested' : 'Not requested',
         source: 'browser-api',
         confidence: 'confirmed',
+        variant: c.saveData ? 'on' : 'off',
         explanation: c.saveData
           ? 'You have asked for reduced data usage. This app defers non-essential work while this is on.'
           : 'You have not asked for reduced data usage.',
