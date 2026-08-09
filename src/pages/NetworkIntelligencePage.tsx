@@ -878,10 +878,10 @@ const NetworkIntelligencePage = () => {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Radio className="h-5 w-5 text-primary" />
-                  Common Mobile Frequencies
+                  {t('pages.network.frequencies.title')}
                 </CardTitle>
                 <CardDescription>
-                  Reference guide for mobile network frequency bands and their security characteristics
+                  {t('pages.network.frequencies.description')}
                 </CardDescription>
               </CardHeader>
               <CardContent>
@@ -916,14 +916,12 @@ const NetworkIntelligencePage = () => {
                 <div className="mt-6 p-4 rounded-lg bg-primary/5 border border-primary/20">
                   <h4 className="font-medium mb-2 flex items-center gap-2">
                     <Server className="h-4 w-4 text-primary" />
-                    Monitoring Recommendations
+                    {t('pages.network.frequencies.monitoringRecommendations.title')}
                   </h4>
                   <ul className="text-sm text-muted-foreground space-y-2">
-                    <li>• Use RTL-SDR with gr-gsm to passively monitor GSM frequencies</li>
-                    <li>• Focus on 900 MHz and 1800 MHz bands for GSM in most regions</li>
-                    <li>• Monitor for unusual broadcast channels or fake base stations</li>
-                    <li>• Compare captured Cell IDs against OpenCellID database</li>
-                    <li>• Watch for IMSI/TMSI patterns that indicate tracking attempts</li>
+                    {(t('pages.network.frequencies.monitoringRecommendations.items', { returnObjects: true }) as string[]).map((item) => (
+                      <li key={item}>• {item}</li>
+                    ))}
                   </ul>
                 </div>
               </CardContent>
