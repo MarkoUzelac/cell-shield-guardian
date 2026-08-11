@@ -18,7 +18,6 @@ const NotFound = () => {
         <div className="mx-auto mb-5 flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15">
           <ShieldAlert className="h-7 w-7 text-primary" aria-hidden="true" />
         </div>
-        <p className="eyebrow mb-2 text-xs uppercase tracking-widest text-muted-foreground">404</p>
         <h1 className="mb-3 text-2xl font-semibold text-foreground sm:text-3xl">
           {t("pages.notFound.title")}
         </h1>
