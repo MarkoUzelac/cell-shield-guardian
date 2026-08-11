@@ -38,24 +38,27 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/capabilities" element={<CapabilityMatrixPage />} />
-            <Route path="/demo" element={<DemoDashboard />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/metadata" element={<MetadataPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/network" element={<NetworkIntelligencePage />} />
-            <Route path="/tactical" element={<TacticalDashboard />} />
-            <Route path="/protection" element={<ProtectionGuidePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/capabilities" element={<CapabilityMatrixPage />} />
+              <Route path="/demo" element={<DemoDashboard />} />
+              <Route path="/map" element={<MapPage />} />
+              <Route path="/metadata" element={<MetadataPage />} />
+              <Route path="/alerts" element={<AlertsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/network" element={<NetworkIntelligencePage />} />
+              <Route path="/tactical" element={<TacticalDashboard />} />
+              <Route path="/protection" element={<ProtectionGuidePage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
+
   </QueryClientProvider>
 );
 
