@@ -16,8 +16,8 @@ Included:
   .htaccess               Apache SPA fallback, HTTPS redirect, security headers, caching
 
 Apache / cPanel / DirectAdmin
-  Nothing else to do. Make sure mod_rewrite and mod_headers are enabled and
-  that "AllowOverride All" applies to the web root.
+  Nothing else to do. Ensure mod_rewrite and mod_headers are enabled and that
+  "AllowOverride All" applies to the web root.
 
 Nginx (translate .htaccess)
   location / { try_files $uri $uri/ /index.html; }
@@ -27,8 +27,8 @@ Nginx (translate .htaccess)
   location /assets/ { add_header Cache-Control "public, max-age=31536000, immutable"; }
 
 Cloudflare Pages / Netlify
-  SPA fallback is automatic (or add a _redirects file with: /*  /index.html  200).
-  Configure the security headers in the dashboard / _headers file.
+  SPA fallback is automatic (or add _redirects containing:  /*  /index.html  200).
+  Set the security headers in the dashboard or a _headers file.
 
 DNS (NOT configured by this package — do it at your registrar)
   A     @      -> your host IPv4
