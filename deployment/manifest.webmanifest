@@ -1,0 +1,26 @@
+{
+  "name": "Cell Shield Guardian — Browser Privacy & Connection Check",
+  "short_name": "Cell Shield",
+  "description": "Check what your browser reveals about your privacy, connection and security. Every check runs locally on your device.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#09090b",
+  "theme_color": "#09090b",
+  "lang": "en",
+  "categories": ["utilities", "security"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "/favicon.ico",
+      "sizes": "48x48",
+      "type": "image/x-icon"
+    }
+  ]
+}

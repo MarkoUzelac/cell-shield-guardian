@@ -4,8 +4,10 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { ErrorBoundary } from "@/components/ErrorBoundary";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+
 
 // Heavy or secondary routes are split out so the first paint of the main
 // diagnostics dashboard does not carry Leaflet, Recharts or the simulation.
@@ -36,24 +38,27 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
-        <Suspense fallback={<RouteFallback />}>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/capabilities" element={<CapabilityMatrixPage />} />
-            <Route path="/demo" element={<DemoDashboard />} />
-            <Route path="/map" element={<MapPage />} />
-            <Route path="/metadata" element={<MetadataPage />} />
-            <Route path="/alerts" element={<AlertsPage />} />
-            <Route path="/settings" element={<SettingsPage />} />
-            <Route path="/about" element={<AboutPage />} />
-            <Route path="/network" element={<NetworkIntelligencePage />} />
-            <Route path="/tactical" element={<TacticalDashboard />} />
-            <Route path="/protection" element={<ProtectionGuidePage />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </Suspense>
+        <ErrorBoundary>
+          <Suspense fallback={<RouteFallback />}>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/capabilities" element={<CapabilityMatrixPage />} />
+              <Route path="/demo" element={<DemoDashboard />} />
+              <Route path="/map" element={<MapPage />} />
+              <Route path="/metadata" element={<MetadataPage />} />
+              <Route path="/alerts" element={<AlertsPage />} />
+              <Route path="/settings" element={<SettingsPage />} />
+              <Route path="/about" element={<AboutPage />} />
+              <Route path="/network" element={<NetworkIntelligencePage />} />
+              <Route path="/tactical" element={<TacticalDashboard />} />
+              <Route path="/protection" element={<ProtectionGuidePage />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </Suspense>
+        </ErrorBoundary>
       </BrowserRouter>
     </TooltipProvider>
+
   </QueryClientProvider>
 );
 
