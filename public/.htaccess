@@ -1,0 +1,61 @@
+# ---------------------------------------------------------------------
+# Cell Shield Guardian — Apache production configuration (SPA)
+# Upload alongside index.html in the hosting web root (e.g. public_html/)
+# ---------------------------------------------------------------------
+
+# ----------------------------- SPA fallback --------------------------
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteBase /
+
+  # Force HTTPS (safe no-op if the host already terminates TLS and sets the header)
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^(.*)$ https://%{HTTP_HOST}/$1 [R=301,L]
+
+  # Never rewrite real files or directories (assets, robots.txt, sitemap.xml, ...)
+  RewriteCond %{REQUEST_FILENAME} -f [OR]
+  RewriteCond %{REQUEST_FILENAME} -d
+  RewriteRule ^ - [L]
+
+  # Leave any server-side API directory untouched
+  RewriteRule ^api/ - [L]
+
+  # Everything else is handled by the client-side router
+  RewriteRule . /index.html [L]
+</IfModule>
+
+# ----------------------------- Security headers ----------------------
+<IfModule mod_headers.c>
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Frame-Options "SAMEORIGIN"
+  Header always set Permissions-Policy "geolocation=(self), microphone=(self), camera=(self), interest-cohort=()"
+  # Enable only once the domain is confirmed HTTPS-only (includes subdomains).
+  Header always set Strict-Transport-Security "max-age=31536000; includeSubDomains" env=HTTPS
+
+  # CSP tuned to what the app actually loads: self-hosted bundle, Google Fonts,
+  # OpenStreetMap raster tiles, inline styles used by Tailwind/Leaflet.
+  Header always set Content-Security-Policy "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob: https://*.tile.openstreetmap.org https://*.basemaps.cartocdn.com https://storage.googleapis.com; connect-src 'self' https://ipapi.co https://api.ipify.org; worker-src 'self' blob:; manifest-src 'self'; frame-ancestors 'self'; base-uri 'self'; form-action 'self'; object-src 'none'"
+
+  # Fingerprinted build assets are immutable
+  <FilesMatch "\.(js|css|woff2?|svg|png|jpg|jpeg|webp|avif|ico)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  # The HTML shell must always be revalidated
+  <FilesMatch "\.(html|webmanifest)$">
+    Header set Cache-Control "no-cache"
+  </FilesMatch>
+</IfModule>
+
+# ----------------------------- Compression ---------------------------
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml application/javascript application/json image/svg+xml application/manifest+json
+</IfModule>
+
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType image/svg+xml .svg
+</IfModule>
+
+ErrorDocument 404 /index.html
