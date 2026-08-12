@@ -12,13 +12,11 @@ import { triangulation as triangulationComponents } from '../components/en-trian
 import { misc as miscComponents } from '../components/en-misc';
 import { about } from '../pages/en/about';
 import { alerts } from '../pages/en/alerts';
-import { demo } from '../pages/en/demo';
 import { map } from '../pages/en/map';
 import { metadata } from '../pages/en/metadata';
 import { network } from '../pages/en/network';
 import { protection } from '../pages/en/protection';
 import { settings } from '../pages/en/settings';
-import { tactical } from '../pages/en/tactical';
 
 export const en = {
   common: {
@@ -68,8 +66,6 @@ export const en = {
     homeDescription: 'Live browser measurements',
     capabilities: 'Capability Matrix',
     capabilitiesDescription: 'What your browser can measure',
-    demo: 'Cellular Simulation',
-    demoDescription: 'Demo data — not from your device',
     map: 'Tower Map',
     mapShort: 'Map',
     mapDescription: 'Nearby mast locations from OpenStreetMap',
@@ -365,13 +361,11 @@ export const en = {
     // translated (and reviewed) independently of the shared vocabulary above.
     about,
     alerts,
-    demo,
     map,
     metadata,
     network,
     protection,
     settings,
-    tactical,
 
     index: {
       title: 'Privacy & Connection Check',
