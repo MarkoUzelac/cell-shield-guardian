@@ -42,7 +42,13 @@ export const en = {
       subtitle: 'Real-time tower data & advanced alerts',
       price: '€9.99/mo',
     },
+    language: {
+      label: 'Language',
+      switchTo: 'Switch language to {{language}}',
+      autoDetected: 'Language set from your region',
+    },
   },
+
 
   header: {
     disclaimer:
@@ -50,7 +56,13 @@ export const en = {
   },
 
   nav: {
+    groups: {
+      measure: 'Measure',
+      analyse: 'Analyse',
+      learn: 'Learn',
+    },
     home: 'Privacy & Connection',
+
     homeLong: 'Privacy & Connection Check',
     homeShort: 'Check',
     homeDescription: 'Live browser measurements',
