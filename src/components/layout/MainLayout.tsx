@@ -1,32 +1,36 @@
-import { ReactNode } from 'react';
-import { motion } from 'framer-motion';
+import { ReactNode, useState } from 'react';
 import { Sidebar } from './Sidebar';
 import { MobileNav } from './MobileNav';
-import { useIsMobile } from '@/hooks/use-mobile';
 
 interface MainLayoutProps {
   children: ReactNode;
 }
 
+/**
+ * Shell layout. Below `lg` the sidebar is replaced by the bottom nav — the
+ * breakpoint matches `MobileNav`'s `lg:hidden` so the two can never both show.
+ */
 export const MainLayout = ({ children }: MainLayoutProps) => {
-  const isMobile = useIsMobile();
+  const [collapsed, setCollapsed] = useState(false);
 
   return (
-    <div className="min-h-screen bg-background bg-grid">
-      {/* Desktop Sidebar - hidden on mobile */}
-      {!isMobile && <Sidebar />}
-      
-      {/* Mobile Bottom Nav */}
+    <div className="min-h-dvh bg-background bg-grid">
+      <div className="hidden lg:block">
+        <Sidebar collapsed={collapsed} onToggle={() => setCollapsed((prev) => !prev)} />
+      </div>
+
       <MobileNav />
-      
-      <motion.main
-        initial={false}
-        animate={{ marginLeft: isMobile ? 0 : 260 }}
-        transition={{ duration: 0.3 }}
-        className={`min-h-screen ${isMobile ? 'pb-20' : ''}`}
+
+      <main
+        className="min-h-dvh w-full pb-20 transition-[padding] duration-250 lg:pb-0"
+        style={{ paddingLeft: 'var(--shell-pad, 0px)' }}
+        data-collapsed={collapsed}
       >
         {children}
-      </motion.main>
+      </main>
+
+      {/* Desktop-only shell padding, driven by the sidebar width. */}
+      <style>{`@media (min-width: 1024px){main{--shell-pad:${collapsed ? 72 : 260}px}}`}</style>
     </div>
   );
 };
