@@ -7,10 +7,15 @@ import { cn } from '@/lib/utils';
 import { NAV_GROUPS } from './navConfig';
 import { LanguageSwitcher } from './LanguageSwitcher';
 
-export const Sidebar = () => {
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
+
+export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const { t } = useTranslation();
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+
 
   return (
     <motion.aside
