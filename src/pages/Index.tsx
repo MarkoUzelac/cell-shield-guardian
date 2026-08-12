@@ -94,12 +94,16 @@ const Index = () => {
               />
             </p>
             <p className="text-sm leading-relaxed text-muted-foreground">
-              {t('pages.index.demoPointerBefore')}{' '}
-              <Link to="/demo" className="font-medium text-primary underline underline-offset-2">
-                {t('pages.index.demoPointerLink')}
+              {t('pages.index.capabilityPointerBefore')}{' '}
+              <Link
+                to="/capabilities"
+                className="font-medium text-primary underline underline-offset-2"
+              >
+                {t('pages.index.capabilityPointerLink')}
               </Link>{' '}
-              {t('pages.index.demoPointerAfter')}
+              {t('pages.index.capabilityPointerAfter')}
             </p>
+
           </CardContent>
         </Card>
       </div>
