@@ -3,6 +3,8 @@ import { AlertTriangle, Clock, Wifi, WifiOff } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
 import { useIsMobile } from '@/hooks/use-mobile';
+import { LanguageSwitcher } from './LanguageSwitcher';
+
 
 interface HeaderProps {
   title: string;
@@ -38,13 +40,17 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
     <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg">
       <div className="flex items-center justify-between gap-3 px-3 py-3 sm:px-6 sm:py-4">
         <div className="min-w-0 flex-1">
-          <h1 className="truncate text-lg font-bold text-foreground sm:text-2xl">{title}</h1>
+          <h1 className="truncate font-display text-lg uppercase text-foreground sm:text-2xl">
+            {title}
+          </h1>
           {subtitle && (
             <p className="mt-0.5 truncate text-xs text-muted-foreground sm:text-sm">{subtitle}</p>
           )}
         </div>
 
         <div className="flex shrink-0 items-center gap-2 sm:gap-3">
+          {!isMobile && <LanguageSwitcher variant="compact" />}
+
           {!isMobile && (
             <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
               <Clock className="h-4 w-4 text-muted-foreground" aria-hidden />
@@ -53,6 +59,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
               </span>
             </div>
           )}
+
 
           <div
             className={cn(

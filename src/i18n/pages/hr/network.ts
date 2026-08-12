@@ -1,0 +1,197 @@
+// Hrvatski prijevod za stranicu Mrežna inteligencija.
+export const network = {
+  header: {
+    title: 'Mrežna inteligencija',
+    subtitle: 'Analiza operatera, testiranje brzine i sigurnosni nadzor',
+  },
+  disclaimer: {
+    title: 'Samo edukativne informacije',
+    body: 'Ova stranica pruža mrežnu dijagnostiku i edukativne informacije o potencijalnim sigurnosnim rizicima. Prikazani pokazatelji su informativni i NISU konačan dokaz nadzora ili napada. Većina anomalija ima bezazlena objašnjenja.',
+  },
+  consent: {
+    enableTitle: 'Omogućiti mrežnu dijagnostiku?',
+    enableBody: 'Ovo će podijeliti vašu IP adresu s ipapi.co radi podataka o lokaciji/operateru. Testovi brzine koriste httpbin.org. Osobni podaci se ne pohranjuju.',
+    enableButton: 'Omogući dijagnostiku',
+    disableButton: 'Onemogući vanjsku dijagnostiku',
+    enabledToastTitle: 'Mrežna dijagnostika omogućena',
+    enabledToastDescription: 'Dohvaćanje mrežnih informacija...',
+    disabledToastTitle: 'Mrežna dijagnostika onemogućena',
+    disabledToastDescription: 'Vanjski API pozivi su onemogućeni.',
+    requiredToastTitle: 'Omogućite mrežnu dijagnostiku',
+    requiredToastDescription: 'Molimo omogućite mrežnu dijagnostiku za pokretanje testa brzine.',
+  },
+  errors: {
+    invalidDataTitle: 'Primljeni su neispravni podaci',
+    invalidDataDescription: 'Mrežne informacije mogu biti nepotpune.',
+    requestTimeoutTitle: 'Isteklo vrijeme čekanja zahtjeva',
+    requestTimeoutDescription: 'Zahtjev za mrežne informacije je istekao.',
+    speedTestTimeoutTitle: 'Isteklo vrijeme testa brzine',
+    speedTestTimeoutDescription: 'Test brzine je predugo trajao. Pokušajte ponovno.',
+  },
+  speedTest: {
+    completeTitle: 'Test brzine završen',
+    completeDescription: 'Preuzimanje: {{speed}} Mb/s',
+    estimationDescription: 'Rezultati temeljeni na procjeni mreže preglednika',
+  },
+  statusCards: {
+    networkType: 'Vrsta mreže',
+    ispCarrier: 'ISP/operater',
+    latency: 'Latencija',
+    estBandwidth: 'Procj. propusnost',
+    unknown: 'Nepoznato',
+    loading: 'Učitavanje...',
+    enableToView: 'Omogućite za prikaz',
+  },
+  tabs: {
+    security: 'Sigurnosna analiza',
+    speed: 'Test brzine',
+    carrier: 'Podaci o operateru',
+    frequencies: 'Frekvencije',
+  },
+  security: {
+    indicatorsTitle: 'Sigurnosni pokazatelji',
+    indicatorsDescription: 'Analiza potencijalnih mrežnih sigurnosnih rizika u stvarnom vremenu',
+    refreshButton: 'Osvježi analizu',
+    refreshedToastTitle: 'Sigurnosna analiza osvježena',
+    statusBadge: {
+      safe: 'SIGURNO',
+      warning: 'OPREZ',
+      danger: 'RIZIK',
+      unknown: 'NEPOZNATO',
+    },
+    indicators: {
+      encryption: {
+        name: 'Enkripcija veze',
+        descriptionSecure: 'Vaša veza je enkriptirana pomoću TLS/SSL',
+        descriptionInsecure: 'Veza nije enkriptirana - podaci mogu biti presretnuti',
+        details: 'HTTPS enkriptira podatke između vašeg uređaja i poslužitelja',
+      },
+      networkType: {
+        name: 'Generacija mreže',
+        description: 'Povezano putem {{type}} mreže',
+        detailsWarning2g: 'UPOZORENJE: 2G mreže imaju slabu enkripciju i podložne su IMSI hvatačima',
+        detailsCaution3g: 'OPREZ: 3G ima poznate ranjivosti',
+        detailsSecure: '4G/5G mreže imaju jaču enkripciju',
+      },
+      downgradeRisk: {
+        name: 'Rizik od napada degradacijom',
+        descriptionAlert: 'UPOZORENJE: Moguće doživljavate prisilnu degradaciju mreže',
+        descriptionSafe: 'Prisilna degradacija nije otkrivena',
+        details: 'IMSI hvatači često prisiljavaju telefone na spajanje putem 2G radi lakšeg presretanja',
+      },
+      latency: {
+        name: 'Latencija veze',
+        description: 'Trenutna latencija: {{rtt}} ms',
+        details: 'Neuobičajeno visoka latencija može ukazivati na presretanje prometa ili napad posrednika (MITM)',
+      },
+      dataSaver: {
+        name: 'Način štednje podataka',
+        descriptionActive: 'Štednja podataka je aktivna - dio sadržaja može biti proksiran',
+        descriptionInactive: 'Štednja podataka nije aktivna',
+        details: 'Proksirane veze mogu prolaziti kroz poslužitelje trećih strana',
+      },
+      dnsSecurity: {
+        name: 'DNS sigurnost',
+        description: 'Status DNS sigurnosti se ne može utvrditi iz preglednika',
+        details: 'Razmislite o korištenju DNS-over-HTTPS (DoH) za enkriptirane DNS upite',
+      },
+    },
+    watchFor: {
+      title: 'Na što obratiti pozornost',
+      imsiCatcher: {
+        title: 'Znakovi IMSI hvatača',
+        items: [
+          'Nagla degradacija na 2G u području jakog signala',
+          'Neuobičajene promjene ID-a bazne stanice',
+          'Brzo pražnjenje baterije',
+          'Pogoršanje kvalitete poziva',
+        ],
+      },
+      silentSms: {
+        title: 'Pokazatelji tihog SMS-a',
+        items: [
+          'Neobjašnjiva mrežna aktivnost',
+          'Kratki prekidi signala',
+          'Neuobičajeni obrasci korištenja podataka',
+          'Telefon se budi bez obavijesti',
+        ],
+      },
+      mitm: {
+        title: 'Napad posrednika (MITM)',
+        items: [
+          'Upozorenja o certifikatima na pouzdanim stranicama',
+          'Neuobičajeno visoka latencija',
+          'Anomalije u DNS razrješavanju',
+          'Neočekivana preusmjeravanja',
+        ],
+      },
+      locationTracking: {
+        title: 'Praćenje lokacije',
+        items: [
+          'Česti prijenosi između baznih stanica dok mirujete',
+          'GPS zahtjevi od nepoznatih aplikacija',
+          'Wi-Fi probni zahtjevi',
+          'Aktivnost Bluetooth skeniranja',
+        ],
+      },
+    },
+  },
+  carrier: {
+    title: 'Informacije o operateru i mreži',
+    description: 'Detalji o vašoj trenutnoj mrežnoj vezi',
+    ipAddress: 'IP adresa',
+    ispOrganization: 'ISP/organizacija',
+    asn: 'ASN',
+    networkType: 'Vrsta mreže',
+    country: 'Zemlja',
+    region: 'Regija',
+    city: 'Grad',
+    timezone: 'Vremenska zona',
+    connectionDetails: 'Detalji veze',
+    effectiveType: 'Efektivna vrsta',
+    downlink: 'Downlink',
+    rtt: 'RTT',
+    dataSaver: 'Štednja podataka',
+    enabled: 'Omogućeno',
+    disabled: 'Onemogućeno',
+    notAvailable: 'N/D',
+    mobileOperatorsIn: 'Mobilni operateri u zemlji {{country}}',
+    mobileOperatorsDescription: 'MCC {{mcc}} \u00b7 operateri koji djeluju u vašem mjestu',
+    refreshButton: 'Osvježi informacije',
+    refreshedToastTitle: 'Podaci o operateru osvježeni',
+  },
+  frequencies: {
+    title: 'Uobičajene mobilne frekvencije',
+    description: 'Referentni vodič kroz frekvencijske opsege mobilnih mreža i njihove sigurnosne karakteristike',
+    riskBadge: {
+      high: 'VISOK RIZIK',
+      medium: 'SREDNJI',
+      low: 'NIZAK RIZIK',
+      unknown: 'NEPOZNATO',
+    },
+    bands: {
+      '2G (GSM)': {
+        note: 'Slaba enkripcija, podložno presretanju',
+      },
+      '3G (UMTS)': {
+        note: 'Bolja enkripcija, još uvijek neke ranjivosti',
+      },
+      '4G (LTE)': {
+        note: 'Jaka enkripcija, najsigurnija zastarjela mreža',
+      },
+      '5G (NR)': {
+        note: 'Najnoviji standardi enkripcije, poboljšana sigurnost',
+      },
+    },
+    monitoringRecommendations: {
+      title: 'Preporuke za nadzor',
+      items: [
+        'Koristite RTL-SDR s gr-gsm za pasivno praćenje GSM frekvencija',
+        'Usredotočite se na opsege 900 MHz i 1800 MHz za GSM u većini regija',
+        'Pratite neobične emitirajuće kanale ili lažne bazne stanice',
+        'Usporedite snimljene ID-eve ćelija s bazom podataka OpenCellID',
+        'Pratite obrasce IMSI/TMSI koji ukazuju na pokušaje praćenja',
+      ],
+    },
+  },
+} as const;

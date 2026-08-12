@@ -1,151 +1,114 @@
-import { useState } from 'react';
+
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  Radio,
-  Map,
-  FileSearch,
-  AlertTriangle,
-  Settings,
-  Info,
-  Shield,
-  Activity,
-  ChevronLeft,
-  ChevronRight,
-  Wifi,
-  Crosshair,
-  ShieldCheck,
-  ListChecks,
-} from 'lucide-react';
+import { ChevronLeft, ChevronRight, Shield } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
+import { NAV_GROUPS } from './navConfig';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
-const navItems = [
-  { to: '/', icon: Activity, labelKey: 'nav.home' },
-  { to: '/capabilities', icon: ListChecks, labelKey: 'nav.capabilities' },
-  { to: '/demo', icon: Crosshair, labelKey: 'nav.demo' },
-  { to: '/map', icon: Map, labelKey: 'nav.map' },
-  { to: '/network', icon: Wifi, labelKey: 'nav.network' },
-  { to: '/protection', icon: ShieldCheck, labelKey: 'nav.protection' },
-  { to: '/metadata', icon: FileSearch, labelKey: 'nav.metadata' },
-  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alerts' },
-  { to: '/settings', icon: Settings, labelKey: 'nav.settings' },
-  { to: '/about', icon: Info, labelKey: 'nav.about' },
-] as const;
+interface SidebarProps {
+  collapsed: boolean;
+  onToggle: () => void;
+}
 
-export const Sidebar = () => {
+export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
   const { t } = useTranslation();
-  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
+
 
   return (
     <motion.aside
-      initial={{ width: 260 }}
+      initial={false}
       animate={{ width: collapsed ? 72 : 260 }}
-      transition={{ duration: 0.3, ease: 'easeInOut' }}
-      className="fixed left-0 top-0 h-screen bg-sidebar border-r border-sidebar-border z-50 flex flex-col"
+      transition={{ duration: 0.25, ease: 'easeInOut' }}
+      className="fixed left-0 top-0 z-50 flex h-screen flex-col border-r border-sidebar-border bg-sidebar"
     >
-      {/* Logo */}
-      <div className="p-4 border-b border-sidebar-border">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center glow-primary">
-            <Shield className="w-6 h-6 text-primary" />
-          </div>
-          <AnimatePresence>
+      {/* Brand */}
+      <div className="border-b border-sidebar-border p-4">
+        <NavLink
+          to="/"
+          className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10">
+            <Shield className="h-5 w-5 text-primary" aria-hidden="true" />
+          </span>
+          <AnimatePresence initial={false}>
             {!collapsed && (
-              <motion.div
-                initial={{ opacity: 0, x: -10 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -10 }}
-                className="flex flex-col"
-              >
-                <span className="font-semibold text-foreground">{t('common.appShortName')}</span>
-                <span className="text-xs text-muted-foreground">{t('common.appVersion')}</span>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Navigation */}
-      <nav className="flex-1 p-3 space-y-1">
-        {navItems.map((item) => {
-          const isActive = location.pathname === item.to;
-          return (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              className={cn(
-                'flex items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 min-h-[44px]',
-                'hover:bg-sidebar-accent focus:ring-2 focus:ring-primary group',
-                isActive && 'bg-sidebar-accent text-primary'
-              )}
-            >
-              <item.icon
-                className={cn(
-                  'w-5 h-5 transition-colors',
-                  isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-                )}
-              />
-              <AnimatePresence>
-                {!collapsed && (
-                  <motion.span
-                    initial={{ opacity: 0, x: -10 }}
-                    animate={{ opacity: 1, x: 0 }}
-                    exit={{ opacity: 0, x: -10 }}
-                    className={cn(
-                      'text-sm font-medium',
-                      isActive ? 'text-primary' : 'text-muted-foreground group-hover:text-foreground'
-                    )}
-                  >
-                    {t(item.labelKey)}
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </NavLink>
-          );
-        })}
-      </nav>
-
-      {/* Scan Status */}
-      <div className="p-3 border-t border-sidebar-border">
-        <div className={cn(
-          'flex items-center gap-3 px-3 py-2.5 rounded-lg bg-primary/10',
-          collapsed && 'justify-center'
-        )}>
-          <div className="relative">
-            <Radio className="w-5 h-5 text-primary" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-success status-active" />
-          </div>
-          <AnimatePresence>
-            {!collapsed && (
-              <motion.div
+              <motion.span
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
                 exit={{ opacity: 0 }}
-                className="flex flex-col"
+                className="flex min-w-0 flex-col"
               >
-                <span className="text-xs font-medium text-primary">{t('common.localAnalysis')}</span>
-                <span className="text-xs text-muted-foreground">{t('common.localAnalysisHint')}</span>
-
-              </motion.div>
+                <span className="truncate font-display text-sm font-bold uppercase tracking-tight text-foreground">
+                  {t('common.appShortName')}
+                </span>
+                <span className="eyebrow truncate">{t('common.appVersion')}</span>
+              </motion.span>
             )}
           </AnimatePresence>
-        </div>
+        </NavLink>
       </div>
 
-      {/* Collapse Button */}
-      <button
-        onClick={() => setCollapsed(!collapsed)}
-        className="absolute -right-5 top-1/2 -translate-y-1/2 w-10 h-10 rounded-full bg-sidebar-accent border border-sidebar-border flex items-center justify-center hover:bg-primary/20 focus:ring-2 focus:ring-primary transition-colors"
-        aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
-      >
-        {collapsed ? (
-          <ChevronRight className="w-5 h-5 text-muted-foreground" />
-        ) : (
-          <ChevronLeft className="w-5 h-5 text-muted-foreground" />
+      {/* Navigation */}
+      <nav className="flex-1 overflow-y-auto p-3">
+        {NAV_GROUPS.map((group, groupIndex) => (
+          <div key={group.id} className={cn(groupIndex > 0 && 'mt-5')}>
+            {!collapsed && <p className="eyebrow px-3 pb-2">{t(group.titleKey)}</p>}
+            {collapsed && groupIndex > 0 && <div className="mx-3 mb-2 border-t border-sidebar-border" />}
+            <ul className="space-y-0.5">
+              {group.items.map((item) => {
+                const isActive = location.pathname === item.to;
+                return (
+                  <li key={item.to}>
+                    <NavLink
+                      to={item.to}
+                      title={collapsed ? t(item.labelKey) : undefined}
+                      className={cn(
+                        'group flex min-h-11 items-center gap-3 rounded-md px-3 py-2 transition-colors',
+                        'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                        isActive
+                          ? 'bg-sidebar-accent text-primary'
+                          : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
+                      )}
+                    >
+                      <item.icon className="h-[18px] w-[18px] shrink-0" aria-hidden="true" />
+                      {!collapsed && (
+                        <span className="truncate text-sm font-medium">{t(item.labelKey)}</span>
+                      )}
+                      {isActive && !collapsed && (
+                        <span className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-primary" />
+                      )}
+                    </NavLink>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
+      </nav>
+
+      {/* Footer */}
+      <div className="space-y-3 border-t border-sidebar-border p-3">
+        {!collapsed && (
+          <>
+            <LanguageSwitcher variant="compact" />
+            <div className="px-1">
+              <p className="eyebrow-accent">{t('common.localAnalysis')}</p>
+              <p className="mt-0.5 text-xs text-muted-foreground">{t('common.localAnalysisHint')}</p>
+            </div>
+          </>
         )}
-      </button>
+        <button
+          type="button"
+          onClick={() => onToggle()}
+          aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+          className="flex min-h-11 w-full items-center justify-center rounded-md border border-sidebar-border text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+        >
+          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
+      </div>
     </motion.aside>
   );
 };

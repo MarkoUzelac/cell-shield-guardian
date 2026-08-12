@@ -12,13 +12,11 @@ import { triangulation as triangulationComponents } from '../components/en-trian
 import { misc as miscComponents } from '../components/en-misc';
 import { about } from '../pages/en/about';
 import { alerts } from '../pages/en/alerts';
-import { demo } from '../pages/en/demo';
 import { map } from '../pages/en/map';
 import { metadata } from '../pages/en/metadata';
 import { network } from '../pages/en/network';
 import { protection } from '../pages/en/protection';
 import { settings } from '../pages/en/settings';
-import { tactical } from '../pages/en/tactical';
 
 export const en = {
   common: {
@@ -42,7 +40,13 @@ export const en = {
       subtitle: 'Real-time tower data & advanced alerts',
       price: '€9.99/mo',
     },
+    language: {
+      label: 'Language',
+      switchTo: 'Switch language to {{language}}',
+      autoDetected: 'Language set from your region',
+    },
   },
+
 
   header: {
     disclaimer:
@@ -50,17 +54,21 @@ export const en = {
   },
 
   nav: {
+    groups: {
+      measure: 'Measure',
+      analyse: 'Analyse',
+      learn: 'Learn',
+    },
     home: 'Privacy & Connection',
+
     homeLong: 'Privacy & Connection Check',
     homeShort: 'Check',
     homeDescription: 'Live browser measurements',
     capabilities: 'Capability Matrix',
     capabilitiesDescription: 'What your browser can measure',
-    demo: 'Cellular Simulation',
-    demoDescription: 'Demo data — not from your device',
-    map: 'Triangulation Map',
+    map: 'Tower Map',
     mapShort: 'Map',
-    mapDescription: 'Simulated cell tower mapping',
+    mapDescription: 'Nearby mast locations from OpenStreetMap',
     network: 'Network Intelligence',
     networkShort: 'Network',
     networkDescription: 'Network security analysis',
@@ -353,13 +361,11 @@ export const en = {
     // translated (and reviewed) independently of the shared vocabulary above.
     about,
     alerts,
-    demo,
     map,
     metadata,
     network,
     protection,
     settings,
-    tactical,
 
     index: {
       title: 'Privacy & Connection Check',
@@ -369,10 +375,11 @@ export const en = {
       cannotTellTitle: 'What this tool cannot tell you',
       cannotTellBody:
         'A web page has no access to your mobile network. IMSI catchers, cell tower identity, SIM details, encryption downgrades, baseband state and VPN usage cannot be detected from a browser, and this dashboard will never guess at them. Checks that cannot be performed are reported as <strong>Not available</strong>, which is not the same as safe.',
-      demoPointerBefore:
-        'A simulation of what a privileged native Android app could show is available on the',
-      demoPointerLink: 'demo dashboard',
-      demoPointerAfter: '— its data is generated locally and clearly labelled as synthetic.',
+      capabilityPointerBefore:
+        'Every reading here comes from a browser API that runs on your device. To see exactly which of those APIs your browser supports, open the',
+      capabilityPointerLink: 'capability matrix',
+      capabilityPointerAfter: '— it lists each measurement and why some are unavailable.',
+
     },
     capabilities: {
       title: 'Browser Capability Matrix',

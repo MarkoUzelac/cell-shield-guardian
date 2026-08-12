@@ -17,9 +17,7 @@ const AlertsPage = lazy(() => import("./pages/AlertsPage"));
 const SettingsPage = lazy(() => import("./pages/SettingsPage"));
 const AboutPage = lazy(() => import("./pages/AboutPage"));
 const NetworkIntelligencePage = lazy(() => import("./pages/NetworkIntelligencePage"));
-const TacticalDashboard = lazy(() => import("./pages/TacticalDashboard"));
 const ProtectionGuidePage = lazy(() => import("./pages/ProtectionGuidePage"));
-const DemoDashboard = lazy(() => import("./pages/DemoDashboard"));
 const CapabilityMatrixPage = lazy(() => import("./pages/CapabilityMatrixPage"));
 
 const queryClient = new QueryClient();
@@ -43,14 +41,12 @@ const App = () => (
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/capabilities" element={<CapabilityMatrixPage />} />
-              <Route path="/demo" element={<DemoDashboard />} />
               <Route path="/map" element={<MapPage />} />
               <Route path="/metadata" element={<MetadataPage />} />
               <Route path="/alerts" element={<AlertsPage />} />
               <Route path="/settings" element={<SettingsPage />} />
               <Route path="/about" element={<AboutPage />} />
               <Route path="/network" element={<NetworkIntelligencePage />} />
-              <Route path="/tactical" element={<TacticalDashboard />} />
               <Route path="/protection" element={<ProtectionGuidePage />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
