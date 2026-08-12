@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Syne:wght@600;700;800&family=DM+Mono:wght@300;400;500&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@300;400;500;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,64 +6,65 @@
 
 @layer base {
   :root {
-    /* Phosphor terminal theme — near-black zinc + acid green */
-    --background: 240 10% 4%;
-    --foreground: 240 5% 96%;
+    /* Phosphor identity — near-black olive + acid green (#B7F000) */
+    --background: 90 6% 4%;
+    --foreground: 60 12% 94%;
 
-    --card: 240 7% 8%;
-    --card-foreground: 240 5% 96%;
+    --card: 100 6% 8%;
+    --card-foreground: 60 12% 94%;
 
-    --popover: 240 7% 9%;
-    --popover-foreground: 240 5% 96%;
+    --popover: 96 6% 10%;
+    --popover-foreground: 60 12% 94%;
 
-    /* Phosphor green */
-    --primary: 75 100% 65%;
-    --primary-foreground: 240 10% 4%;
+    /* Acid phosphor green */
+    --primary: 74 100% 47%;
+    --primary-foreground: 90 6% 4%;
 
-    --secondary: 240 6% 13%;
-    --secondary-foreground: 240 5% 96%;
+    --secondary: 90 5% 13%;
+    --secondary-foreground: 60 12% 94%;
 
-    --muted: 240 6% 11%;
-    --muted-foreground: 240 5% 58%;
+    --muted: 90 5% 11%;
+    --muted-foreground: 80 4% 62%;
 
-    --accent: 75 100% 65%;
-    --accent-foreground: 240 10% 4%;
+    --accent: 74 100% 47%;
+    --accent-foreground: 90 6% 4%;
 
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 240 5% 96%;
+    --destructive: 4 84% 58%;
+    --destructive-foreground: 60 12% 94%;
 
-    --warning: 38 92% 50%;
-    --warning-foreground: 240 10% 4%;
+    --warning: 42 96% 55%;
+    --warning-foreground: 90 6% 4%;
 
-    --success: 152 65% 48%;
-    --success-foreground: 240 10% 4%;
+    --success: 74 100% 47%;
+    --success-foreground: 90 6% 4%;
 
-    --border: 240 6% 14%;
-    --input: 240 6% 14%;
-    --ring: 75 100% 65%;
+    --border: 90 5% 14%;
+    --input: 90 5% 14%;
+    --ring: 74 100% 47%;
 
     --radius: 0.375rem;
 
     /* Custom tokens */
-    --glow-primary: 75 100% 65%;
-    --glow-warning: 38 92% 50%;
-    --glow-danger: 0 84% 60%;
-    --glow-success: 152 65% 48%;
+    --glow-primary: 74 100% 47%;
+    --glow-warning: 42 96% 55%;
+    --glow-danger: 4 84% 58%;
+    --glow-success: 74 100% 47%;
 
-    --grid-color: 240 6% 12%;
-    --signal-active: 75 100% 65%;
-    --signal-warning: 38 92% 50%;
-    --signal-danger: 0 84% 60%;
+    --grid-color: 90 5% 12%;
+    --signal-active: 74 100% 47%;
+    --signal-warning: 42 96% 55%;
+    --signal-danger: 4 84% 58%;
 
-    --sidebar-background: 240 10% 3%;
-    --sidebar-foreground: 240 5% 96%;
-    --sidebar-primary: 75 100% 65%;
-    --sidebar-primary-foreground: 240 10% 4%;
-    --sidebar-accent: 240 6% 10%;
-    --sidebar-accent-foreground: 240 5% 96%;
-    --sidebar-border: 240 6% 12%;
-    --sidebar-ring: 75 100% 65%;
+    --sidebar-background: 96 7% 5%;
+    --sidebar-foreground: 60 12% 94%;
+    --sidebar-primary: 74 100% 47%;
+    --sidebar-primary-foreground: 90 6% 4%;
+    --sidebar-accent: 90 5% 11%;
+    --sidebar-accent-foreground: 60 12% 94%;
+    --sidebar-border: 90 5% 13%;
+    --sidebar-ring: 74 100% 47%;
   }
+
 
   .dark {
     /* Same as root - dark by default */

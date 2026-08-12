@@ -1,6 +1,5 @@
-import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
-import { Download, Filter, Search, Trash2 } from 'lucide-react';
+import { useMemo, useState } from 'react';
+import { Download, Filter, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
 import { Header } from '@/components/layout/Header';
@@ -16,46 +15,61 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Alert } from '@/types/signal';
-import { generateMockAlerts, simulateRealtimeAlert } from '@/lib/mockData';
+import { useDiagnostics } from '@/hooks/useDiagnostics';
+import type { DiagnosticResult, DiagnosticStatus } from '@/lib/diagnostics/types';
 import { toast } from 'sonner';
+
+/**
+ * Every alert on this page is derived from a real diagnostic measurement
+ * taken in this browser (see `useDiagnostics` / `src/lib/diagnostics`).
+ * Nothing here is randomly generated.
+ */
+const statusToAlertType = (status: DiagnosticStatus): Alert['type'] | null => {
+  if (status === 'warning' || status === 'error') return 'critical';
+  if (status === 'attention') return 'warning';
+  return null;
+};
+
+const toAlert = (result: DiagnosticResult): Alert => ({
+  id: result.id,
+  type: statusToAlertType(result.status) ?? 'info',
+  title: result.label,
+  message: [
+    result.explanation,
+    `Diagnostic: ${result.id} — measured value: ${result.value}${result.unit ? ` ${result.unit}` : ''}.`,
+    result.recommendation ? `Recommendation: ${result.recommendation}` : null,
+  ]
+    .filter(Boolean)
+    .join(' '),
+  timestamp: new Date(result.timestamp),
+  acknowledged: false,
+  source: `Diagnostics · ${result.category}`,
+});
 
 const AlertsPage = () => {
   const { t } = useTranslation();
-  const [alerts, setAlerts] = useState<Alert[]>([]);
+  const { results, phase, scan } = useDiagnostics(true);
+  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
+  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'info'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
-  useEffect(() => {
-    // Load more alerts for the logs page
-    const initialAlerts = [
-      ...generateMockAlerts(),
-      ...generateMockAlerts().map((a, i) => ({
-        ...a,
-        id: `${a.id}-${i}`,
-        timestamp: new Date(Date.now() - (i + 4) * 900000),
-      })),
-    ];
-    setAlerts(initialAlerts);
-
-    // Subscribe to real-time alerts
-    const unsub = simulateRealtimeAlert((alert) => {
-      setAlerts(prev => [alert, ...prev]);
-      toast.warning(alert.title, {
-        description: alert.message,
-      });
-    });
-
-    return unsub;
-  }, []);
+  const alerts: Alert[] = useMemo(
+    () =>
+      results
+        .filter((r) => statusToAlertType(r.status) !== null)
+        .filter((r) => !dismissed.has(r.id))
+        .map((r) => ({ ...toAlert(r), acknowledged: acknowledged.has(r.id) }))
+        .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
+    [results, acknowledged, dismissed],
+  );
 
   const handleAcknowledge = (id: string) => {
-    setAlerts(prev =>
-      prev.map(a => (a.id === id ? { ...a, acknowledged: true } : a))
-    );
+    setAcknowledged((prev) => new Set(prev).add(id));
   };
 
   const handleDismiss = (id: string) => {
-    setAlerts(prev => prev.filter(a => a.id !== id));
+    setDismissed((prev) => new Set(prev).add(id));
   };
 
   const handleExport = () => {
@@ -71,25 +85,29 @@ const AlertsPage = () => {
   };
 
   const handleClearAcknowledged = () => {
-    setAlerts(prev => prev.filter(a => !a.acknowledged));
+    setDismissed((prev) => {
+      const next = new Set(prev);
+      acknowledged.forEach((id) => next.add(id));
+      return next;
+    });
     toast.success(t('pages.alerts.toast.clearedAcknowledged'));
   };
 
   const filteredAlerts = alerts
-    .filter(a => filter === 'all' || a.type === filter)
+    .filter((a) => filter === 'all' || a.type === filter)
     .filter(
-      a =>
+      (a) =>
         searchQuery === '' ||
         a.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        a.message.toLowerCase().includes(searchQuery.toLowerCase())
+        a.message.toLowerCase().includes(searchQuery.toLowerCase()),
     );
 
   const stats = {
     total: alerts.length,
-    critical: alerts.filter(a => a.type === 'critical').length,
-    warning: alerts.filter(a => a.type === 'warning').length,
-    info: alerts.filter(a => a.type === 'info').length,
-    unacknowledged: alerts.filter(a => !a.acknowledged).length,
+    critical: alerts.filter((a) => a.type === 'critical').length,
+    warning: alerts.filter((a) => a.type === 'warning').length,
+    info: alerts.filter((a) => a.type === 'info').length,
+    unacknowledged: alerts.filter((a) => !a.acknowledged).length,
   };
 
   return (
@@ -166,6 +184,10 @@ const AlertsPage = () => {
               </div>
 
               <div className="flex gap-2">
+                <Button variant="outline" size="sm" onClick={() => void scan()} disabled={phase === 'running'}>
+                  <RefreshCw className={`w-4 h-4 mr-2 ${phase === 'running' ? 'animate-spin' : ''}`} />
+                  {t('pages.alerts.actions.rescan')}
+                </Button>
                 <Button variant="outline" size="sm" onClick={handleClearAcknowledged}>
                   <Trash2 className="w-4 h-4 mr-2" />
                   {t('pages.alerts.actions.clearRead')}
@@ -185,13 +207,24 @@ const AlertsPage = () => {
             <CardTitle className="text-lg">
               {t('pages.alerts.history.title', { count: filteredAlerts.length })}
             </CardTitle>
+            <p className="text-xs text-muted-foreground">{t('pages.alerts.source.label')}</p>
           </CardHeader>
           <CardContent>
-            <AlertsList
-              alerts={filteredAlerts}
-              onAcknowledge={handleAcknowledge}
-              onDismiss={handleDismiss}
-            />
+            {phase === 'running' && alerts.length === 0 ? (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                {t('pages.alerts.scanning')}
+              </p>
+            ) : filteredAlerts.length > 0 ? (
+              <AlertsList
+                alerts={filteredAlerts}
+                onAcknowledge={handleAcknowledge}
+                onDismiss={handleDismiss}
+              />
+            ) : (
+              <p className="text-sm text-muted-foreground text-center py-8">
+                {t('pages.alerts.empty')}
+              </p>
+            )}
           </CardContent>
         </Card>
       </div>
