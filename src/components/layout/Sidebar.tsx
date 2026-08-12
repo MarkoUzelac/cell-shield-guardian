@@ -1,4 +1,4 @@
-import { useState } from 'react';
+
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Shield } from 'lucide-react';
@@ -102,7 +102,7 @@ export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
         )}
         <button
           type="button"
-          onClick={() => setCollapsed((prev) => !prev)}
+          onClick={() => onToggle()}
           aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
           className="flex min-h-11 w-full items-center justify-center rounded-md border border-sidebar-border text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
