@@ -1,255 +1,150 @@
+import { useEffect, useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
-import { 
-  Activity, Map, Wifi, AlertTriangle, Settings, Menu, 
-  Shield, FileSearch, Info, Radio, X, ChevronRight,
-  Bell, Volume2, VolumeX, Power, Crown, Crosshair, ShieldCheck, ListChecks
-} from 'lucide-react';
+import { Menu, Shield, X } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '@/lib/utils';
-import { useState, useEffect } from 'react';
-import { Sheet, SheetContent, SheetTrigger, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetClose,
+} from '@/components/ui/sheet';
 import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { motion, AnimatePresence } from 'framer-motion';
-
-const mainNavItems = [
-  { to: '/', icon: Activity, labelKey: 'nav.homeShort' },
-  { to: '/map', icon: Map, labelKey: 'nav.mapShort' },
-  { to: '/network', icon: Wifi, labelKey: 'nav.networkShort' },
-  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alertsShort' },
-] as const;
-
-const allNavItems = [
-  { to: '/', icon: Activity, labelKey: 'nav.homeLong', descriptionKey: 'nav.homeDescription' },
-  { to: '/capabilities', icon: ListChecks, labelKey: 'nav.capabilities', descriptionKey: 'nav.capabilitiesDescription' },
-  { to: '/demo', icon: Crosshair, labelKey: 'nav.demo', descriptionKey: 'nav.demoDescription' },
-  { to: '/map', icon: Map, labelKey: 'nav.map', descriptionKey: 'nav.mapDescription' },
-  { to: '/network', icon: Wifi, labelKey: 'nav.network', descriptionKey: 'nav.networkDescription' },
-  { to: '/protection', icon: ShieldCheck, labelKey: 'nav.protection', descriptionKey: 'nav.protectionDescription' },
-  { to: '/metadata', icon: FileSearch, labelKey: 'nav.metadata', descriptionKey: 'nav.metadataDescription' },
-  { to: '/alerts', icon: AlertTriangle, labelKey: 'nav.alerts', descriptionKey: 'nav.alertsDescription' },
-  { to: '/settings', icon: Settings, labelKey: 'nav.settings', descriptionKey: 'nav.settingsDescription' },
-  { to: '/about', icon: Info, labelKey: 'nav.about', descriptionKey: 'nav.aboutDescription' },
-] as const;
-
-const quickActions = [
-  { icon: Bell, label: 'Notifications', badge: 3 },
-  { icon: Volume2, label: 'Sound Alerts' },
-];
+import { NAV_GROUPS, PRIMARY_MOBILE_ITEMS } from './navConfig';
+import { LanguageSwitcher } from './LanguageSwitcher';
 
 export const MobileNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
-  const [currentTime, setCurrentTime] = useState(new Date());
 
-  useEffect(() => {
-    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
-    return () => clearInterval(timer);
-  }, []);
-
-  // Close sheet when route changes
+  // Close the sheet whenever the route changes.
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
 
   return (
-    <>
-      {/* Bottom Navigation Bar */}
-      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-lg border-t border-border safe-area-bottom lg:hidden">
-        <div className="flex items-center justify-around h-16 px-1">
-          {mainNavItems.map((item) => {
-            const isActive = location.pathname === item.to;
-            return (
+    <nav
+      className="safe-area-bottom fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-background/95 backdrop-blur-lg lg:hidden"
+      aria-label={t('common.moreNavigation')}
+    >
+      <ul className="flex h-16 items-stretch justify-around px-1">
+        {PRIMARY_MOBILE_ITEMS.map((item) => {
+          const isActive = location.pathname === item.to;
+          return (
+            <li key={item.to} className="flex-1">
               <NavLink
-                key={item.to}
                 to={item.to}
                 className={cn(
-                  'flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 focus:ring-2 focus:ring-primary',
-                  isActive 
-                    ? 'text-primary bg-primary/10' 
-                    : 'text-muted-foreground hover:text-foreground active:bg-muted/50'
+                  'flex h-full min-h-11 flex-col items-center justify-center gap-1 rounded-lg px-1 transition-colors active:scale-95',
+                  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                  isActive ? 'text-primary' : 'text-muted-foreground'
                 )}
               >
-                <item.icon className={cn('w-5 h-5', isActive && 'text-primary')} />
-                <span className="text-[10px] font-medium leading-tight">{t(item.labelKey)}</span>
-                {isActive && (
-                  <motion.div 
-                    layoutId="activeTab"
-                    className="absolute bottom-1 w-1 h-1 rounded-full bg-primary"
-                  />
-                )}
+                <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span className="max-w-full truncate text-[10px] font-medium leading-none">
+                  {t(item.shortLabelKey)}
+                </span>
+                <span
+                  className={cn('h-0.5 w-5 rounded-full', isActive ? 'bg-primary' : 'bg-transparent')}
+                  aria-hidden="true"
+                />
               </NavLink>
-            );
-          })}
-          
-          {/* More Menu Trigger */}
+            </li>
+          );
+        })}
+
+        <li className="flex-1">
           <Sheet open={open} onOpenChange={setOpen}>
             <SheetTrigger asChild>
-              <button 
-                className={cn(
-                  "flex flex-col items-center justify-center gap-0.5 px-3 py-2 rounded-xl transition-all min-w-[56px] min-h-[48px] active:scale-95 focus:ring-2 focus:ring-primary",
-                  "text-muted-foreground hover:text-foreground active:bg-muted/50"
-                )}
+              <button
+                type="button"
                 aria-label={t('common.moreNavigation')}
+                className="flex h-full min-h-11 w-full flex-col items-center justify-center gap-1 rounded-lg px-1 text-muted-foreground transition-colors active:scale-95 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
               >
-                <Menu className="w-5 h-5" />
-                <span className="text-[10px] font-medium leading-tight">{t('common.more')}</span>
+                <Menu className="h-5 w-5 shrink-0" aria-hidden="true" />
+                <span className="text-[10px] font-medium leading-none">{t('common.more')}</span>
+                <span className="h-0.5 w-5" aria-hidden="true" />
               </button>
             </SheetTrigger>
-            
-            <SheetContent 
-              side="bottom" 
-              className="h-[85vh] rounded-t-2xl p-0 bg-background border-t border-border"
+
+            <SheetContent
+              side="bottom"
+              className="flex max-h-[85dvh] flex-col rounded-t-2xl border-t border-border bg-background p-0"
             >
-              {/* Header */}
-              <div className="sticky top-0 z-10 bg-background/95 backdrop-blur-lg border-b border-border">
-                <SheetHeader className="p-4 pb-3">
-                  <div className="flex items-center justify-between">
-                    <SheetTitle className="flex items-center gap-2 text-base">
-                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <Shield className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <span className="font-semibold">{t('common.appName')}</span>
-                        <span className="text-[10px] text-muted-foreground font-normal">v1.0</span>
-                      </div>
-                    </SheetTitle>
-                    <SheetClose asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full">
-                        <X className="w-4 h-4" />
-                      </Button>
-                    </SheetClose>
-                  </div>
-                </SheetHeader>
-                
-                {/* Status Bar — only verifiable state */}
-                <div className="px-4 pb-3 flex items-center justify-end">
-                  <span className="text-[10px] font-mono text-muted-foreground">
-                    {currentTime.toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
-
-              {/* Scrollable Content */}
-              <div className="overflow-y-auto h-[calc(85vh-120px)] pb-safe">
-                {/* Quick Actions */}
-                <div className="p-4 pb-2">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">
-                    Quick Actions
-                  </p>
-                  <div className="grid grid-cols-2 gap-2">
-                    <Button 
-                      variant="outline" 
-                      className="h-auto py-3 px-3 justify-start gap-2 bg-card hover:bg-muted/50"
+              <SheetHeader className="shrink-0 border-b border-border p-4 text-left">
+                <div className="flex items-center justify-between gap-3">
+                  <SheetTitle className="flex min-w-0 items-center gap-2 text-base">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10">
+                      <Shield className="h-4 w-4 text-primary" aria-hidden="true" />
+                    </span>
+                    <span className="truncate font-display uppercase tracking-tight">
+                      {t('common.appShortName')}
+                    </span>
+                  </SheetTitle>
+                  <SheetClose asChild>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-11 w-11 shrink-0"
+                      aria-label={t('common.close')}
                     >
-                      <div className="w-8 h-8 rounded-lg bg-warning/20 flex items-center justify-center">
-                        <Bell className="w-4 h-4 text-warning" />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <span className="text-xs font-medium">Alerts</span>
-                        <span className="text-[10px] text-muted-foreground">3 unread</span>
-                      </div>
+                      <X className="h-4 w-4" />
                     </Button>
-                    <Button 
-                      variant="outline" 
-                      className="h-auto py-3 px-3 justify-start gap-2 bg-card hover:bg-muted/50"
-                    >
-                      <div className="w-8 h-8 rounded-lg bg-primary/20 flex items-center justify-center">
-                        <Volume2 className="w-4 h-4 text-primary" />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <span className="text-xs font-medium">Sound</span>
-                        <span className="text-[10px] text-muted-foreground">Enabled</span>
-                      </div>
-                    </Button>
-                  </div>
+                  </SheetClose>
                 </div>
+              </SheetHeader>
 
-                {/* Pro Upgrade Banner */}
-                <div className="px-4 py-2">
-                  <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-primary/20 via-primary/10 to-accent/20 border border-primary/30 p-3">
-                    <div className="flex items-center justify-between gap-3">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <Crown className="w-5 h-5 text-primary shrink-0" />
-                        <div className="min-w-0">
-                          <p className="font-semibold text-foreground text-sm">{t('common.proUpsell.title')}</p>
-                          <p className="text-[10px] text-muted-foreground">{t('common.proUpsell.subtitle')}</p>
-                        </div>
-                      </div>
-                      <Button size="sm" className="bg-primary hover:bg-primary/90 shrink-0 h-8 text-xs">
-                        {t('common.proUpsell.price')}
-                      </Button>
-                    </div>
+              <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-safe">
+                {NAV_GROUPS.map((group, groupIndex) => (
+                  <div key={group.id} className={cn(groupIndex > 0 && 'mt-5')}>
+                    <p className="eyebrow pb-2">{t(group.titleKey)}</p>
+                    <ul className="space-y-1">
+                      {group.items.map((item) => {
+                        const isActive = location.pathname === item.to;
+                        return (
+                          <li key={item.to}>
+                            <NavLink
+                              to={item.to}
+                              className={cn(
+                                'flex min-h-[56px] items-center gap-3 rounded-lg border px-3 py-2 transition-colors',
+                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                                isActive
+                                  ? 'border-primary/40 bg-primary/10 text-primary'
+                                  : 'border-border text-foreground'
+                              )}
+                            >
+                              <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                              <span className="min-w-0 flex-1">
+                                <span className="block truncate text-sm font-medium">
+                                  {t(item.labelKey)}
+                                </span>
+                                <span className="block truncate text-xs text-muted-foreground">
+                                  {t(item.descriptionKey)}
+                                </span>
+                              </span>
+                            </NavLink>
+                          </li>
+                        );
+                      })}
+                    </ul>
                   </div>
-                </div>
+                ))}
 
-                <Separator className="my-2" />
-
-                {/* Navigation */}
-                <div className="p-4 pt-2">
-                  <p className="text-[10px] uppercase tracking-wider text-muted-foreground font-medium mb-2">
-                    Navigation
+                <div className="mt-6 border-t border-border pt-4">
+                  <p className="eyebrow pb-2">{t('common.language.label')}</p>
+                  <LanguageSwitcher variant="compact" />
+                  <p className="mt-3 text-xs text-muted-foreground">
+                    {t('common.language.autoDetected')}
                   </p>
-                  <nav className="space-y-1">
-                    {allNavItems.map((item) => {
-                      const isActive = location.pathname === item.to;
-                      return (
-                        <NavLink
-                          key={item.to}
-                          to={item.to}
-                          onClick={() => setOpen(false)}
-                          className={cn(
-                            'flex items-center gap-3 p-3 rounded-xl transition-all active:scale-[0.98]',
-                            isActive 
-                              ? 'bg-primary/10 text-primary border border-primary/30' 
-                              : 'bg-card text-foreground hover:bg-muted/50 active:bg-muted border border-transparent'
-                          )}
-                        >
-                          <div className={cn(
-                            "w-10 h-10 rounded-lg flex items-center justify-center shrink-0",
-                            isActive ? "bg-primary/20" : "bg-muted/50"
-                          )}>
-                            <item.icon className={cn(
-                              "w-5 h-5",
-                              isActive ? "text-primary" : "text-muted-foreground"
-                            )} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <span className={cn(
-                              "text-sm font-medium block",
-                              isActive && "text-primary"
-                            )}>
-                              {t(item.labelKey)}
-                            </span>
-                            <span className="text-[10px] text-muted-foreground block">
-                              {t(item.descriptionKey)}
-                            </span>
-                          </div>
-                          <ChevronRight className={cn(
-                            "w-4 h-4 shrink-0",
-                            isActive ? "text-primary" : "text-muted-foreground"
-                          )} />
-                        </NavLink>
-                      );
-                    })}
-                  </nav>
-                </div>
-
-                {/* Footer */}
-                <div className="p-4 pt-2">
-                  <Separator className="mb-4" />
-                  <div className="flex items-center justify-between text-[10px] text-muted-foreground">
-                    <span>{t('common.appName')}</span>
-                    <span>{t('common.educationalUseOnly')}</span>
-                  </div>
                 </div>
               </div>
             </SheetContent>
           </Sheet>
-        </div>
-      </nav>
-    </>
+        </li>
+      </ul>
+    </nav>
   );
 };
