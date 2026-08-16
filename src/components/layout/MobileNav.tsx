@@ -159,15 +159,27 @@ export const MobileNav = () => {
                   aria-label={t('common.jumpToSection')}
                   className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-secondary/40 p-1"
                 >
-                  {NAV_GROUPS.map((group) => {
+                  {NAV_GROUPS.map((group, groupIndex) => {
                     const isSelected = group.id === activeGroup.id;
                     return (
                       <button
                         key={group.id}
+                        id={`nav-tab-${group.id}`}
                         type="button"
                         role="tab"
                         aria-selected={isSelected}
+                        aria-controls={`nav-panel-${group.id}`}
+                        tabIndex={isSelected ? 0 : -1}
                         onClick={() => setActiveGroupId(group.id)}
+                        onKeyDown={(event) => {
+                          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+                          event.preventDefault();
+                          const offset = event.key === 'ArrowRight' ? 1 : -1;
+                          const next =
+                            NAV_GROUPS[(groupIndex + offset + NAV_GROUPS.length) % NAV_GROUPS.length];
+                          setActiveGroupId(next.id);
+                          document.getElementById(`nav-tab-${next.id}`)?.focus();
+                        }}
                         className={cn(
                           'min-h-11 rounded-lg px-2 text-xs font-medium uppercase tracking-wide transition-colors active:scale-95',
                           'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
@@ -180,6 +192,7 @@ export const MobileNav = () => {
                       </button>
                     );
                   })}
+
                 </div>
 
                 <div className="mt-3 flex items-center justify-between gap-3">
