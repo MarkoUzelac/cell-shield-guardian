@@ -23,6 +23,8 @@ import { ScanLogPanel } from '@/components/offline/ScanLogPanel';
 import { usePersistentSet } from '@/hooks/usePersistentSet';
 import { LiveStreamControl } from '@/components/live/LiveStreamControl';
 import { useLiveEvent, useLiveStream } from '@/hooks/useLiveStream';
+import { ThreatScoreCard } from '@/components/threat/ThreatScoreCard';
+import { useThreatScore } from '@/hooks/useThreatScore';
 
 /**
  * Every alert on this page is derived from a real diagnostic measurement
@@ -70,6 +72,10 @@ const AlertsPage = () => {
         .sort((a, b) => b.timestamp.getTime() - a.timestamp.getTime()),
     [results, acknowledged, dismissed],
   );
+
+  // Threat Score: handover patterns observed on this device + the anomalies
+  // found by the diagnostic run behind these alerts.
+  const { threat, handovers } = useThreatScore(results);
 
   const { publish } = useLiveStream();
   const knownIds = useRef<Set<string>>(new Set());
@@ -144,6 +150,8 @@ const AlertsPage = () => {
         <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
 
         <LiveStreamControl idPrefix="alerts" />
+
+        <ThreatScoreCard threat={threat} handovers={handovers} />
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
