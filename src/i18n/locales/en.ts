@@ -48,6 +48,20 @@ export const en = {
     },
   },
 
+  a11y: {
+    skipToContent: 'Skip to main content',
+    primaryNav: 'Primary navigation',
+    homeLink: 'Cell Shield Guardian — go to the home check',
+    currentTime: 'Current time {{time}}',
+    navigatedTo: 'Navigated to {{page}}',
+    shortcuts: {
+      title: 'Keyboard shortcuts',
+      description: 'Press Shift + ? at any time to open or close this list.',
+      help: 'Show keyboard shortcuts',
+      sidebar: 'Collapse or expand the sidebar',
+    },
+  },
+
 
   header: {
     disclaimer:

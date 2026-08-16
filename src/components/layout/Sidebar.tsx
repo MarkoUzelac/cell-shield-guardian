@@ -28,6 +28,7 @@ export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
       <div className="border-b border-sidebar-border p-4">
         <NavLink
           to="/"
+          aria-label={t('a11y.homeLink')}
           className="flex items-center gap-3 rounded-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-md border border-primary/40 bg-primary/10">
@@ -52,10 +53,19 @@ export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto p-3">
+      <nav className="flex-1 overflow-y-auto p-3" aria-label={t('a11y.primaryNav')}>
         {NAV_GROUPS.map((group, groupIndex) => (
-          <div key={group.id} className={cn(groupIndex > 0 && 'mt-5')}>
-            {!collapsed && <p className="eyebrow px-3 pb-2">{t(group.titleKey)}</p>}
+          <section
+            key={group.id}
+            aria-labelledby={`sidebar-group-${group.id}`}
+            className={cn(groupIndex > 0 && 'mt-5')}
+          >
+            <p
+              id={`sidebar-group-${group.id}`}
+              className={cn('eyebrow px-3 pb-2', collapsed && 'sr-only')}
+            >
+              {t(group.titleKey)}
+            </p>
             {collapsed && groupIndex > 0 && <div className="mx-3 mb-2 border-t border-sidebar-border" />}
             <ul className="space-y-0.5">
               {group.items.map((item) => {
@@ -85,7 +95,7 @@ export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
                 );
               })}
             </ul>
-          </div>
+          </section>
         ))}
       </nav>
 
@@ -104,9 +114,16 @@ export const Sidebar = ({ collapsed, onToggle }: SidebarProps) => {
           type="button"
           onClick={() => onToggle()}
           aria-label={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
+          aria-expanded={!collapsed}
+          aria-keyshortcuts="Alt+S"
+          title={collapsed ? t('common.expandSidebar') : t('common.collapseSidebar')}
           className="flex min-h-11 w-full items-center justify-center rounded-md border border-sidebar-border text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
-          {collapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+          {collapsed ? (
+            <ChevronRight className="h-4 w-4" aria-hidden="true" />
+          ) : (
+            <ChevronLeft className="h-4 w-4" aria-hidden="true" />
+          )}
         </button>
       </div>
     </motion.aside>
