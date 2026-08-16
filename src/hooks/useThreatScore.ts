@@ -62,9 +62,7 @@ export const useThreatScore = (
 
   const threat = useMemo(
     () => computeThreatScore({ diagnostics, handovers, extraFactors }),
-    // `extraFactors` is rebuilt by callers with useMemo; length + ids are the
-    // meaningful identity here.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // `extraFactors` is rebuilt by callers with useMemo, so it is stable.
     [diagnostics, handovers, extraFactors],
   );
 
