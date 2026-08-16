@@ -19,11 +19,23 @@ export const MobileNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [activeGroupId, setActiveGroupId] = useState<string>(NAV_GROUPS[0].id);
 
   // Close the sheet whenever the route changes.
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
+
+  // Opening the sheet lands on the section that holds the current route.
+  useEffect(() => {
+    if (!open) return;
+    const owning = NAV_GROUPS.find((group) =>
+      group.items.some((item) => item.to === location.pathname)
+    );
+    if (owning) setActiveGroupId(owning.id);
+  }, [open, location.pathname]);
+
+  const activeGroup = NAV_GROUPS.find((group) => group.id === activeGroupId) ?? NAV_GROUPS[0];
 
   return (
     <nav
