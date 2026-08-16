@@ -82,7 +82,7 @@ export const LiveStreamControl = ({ idPrefix = 'live', className }: Props) => {
           <SelectContent>
             {LIVE_INTERVALS.map((ms) => (
               <SelectItem key={ms} value={String(ms)}>
-                {t('live.interval', { seconds: ms / 1000 })}
+                {t('live.interval', { count: ms / 1000 })}
               </SelectItem>
             ))}
           </SelectContent>
@@ -110,7 +110,7 @@ export const LiveStreamControl = ({ idPrefix = 'live', className }: Props) => {
             <Activity className="h-3.5 w-3.5 text-primary" aria-hidden />
             {lastTick === null
               ? t('live.streaming')
-              : t('live.lastUpdate', { seconds: formatSince(lastTick, now) })}
+              : t('live.lastUpdate', { count: formatSince(lastTick, now) })}
           </>
         ) : (
           t('live.offDescription')
