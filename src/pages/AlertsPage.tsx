@@ -18,6 +18,9 @@ import { Alert } from '@/types/signal';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
 import type { DiagnosticResult, DiagnosticStatus } from '@/lib/diagnostics/types';
 import { toast } from 'sonner';
+import { OfflineBanner } from '@/components/offline/OfflineBanner';
+import { ScanLogPanel } from '@/components/offline/ScanLogPanel';
+import { usePersistentSet } from '@/hooks/usePersistentSet';
 
 /**
  * Every alert on this page is derived from a real diagnostic measurement
@@ -48,9 +51,11 @@ const toAlert = (result: DiagnosticResult): Alert => ({
 
 const AlertsPage = () => {
   const { t } = useTranslation();
-  const { results, phase, scan } = useDiagnostics(true);
-  const [acknowledged, setAcknowledged] = useState<Set<string>>(new Set());
-  const [dismissed, setDismissed] = useState<Set<string>>(new Set());
+  const { results, phase, scan, usingCache, cachedAt } = useDiagnostics(true);
+  // Acknowledged / dismissed state is cached on-device so the log survives a
+  // reload and stays usable with no connection.
+  const { value: acknowledged, add: acknowledge } = usePersistentSet('alerts:acknowledged');
+  const { value: dismissed, addMany: dismissMany, add: dismiss } = usePersistentSet('alerts:dismissed');
   const [filter, setFilter] = useState<'all' | 'critical' | 'warning' | 'info'>('all');
   const [searchQuery, setSearchQuery] = useState('');
 
@@ -64,13 +69,9 @@ const AlertsPage = () => {
     [results, acknowledged, dismissed],
   );
 
-  const handleAcknowledge = (id: string) => {
-    setAcknowledged((prev) => new Set(prev).add(id));
-  };
+  const handleAcknowledge = (id: string) => acknowledge(id);
 
-  const handleDismiss = (id: string) => {
-    setDismissed((prev) => new Set(prev).add(id));
-  };
+  const handleDismiss = (id: string) => dismiss(id);
 
   const handleExport = () => {
     const data = JSON.stringify(alerts, null, 2);
@@ -85,11 +86,7 @@ const AlertsPage = () => {
   };
 
   const handleClearAcknowledged = () => {
-    setDismissed((prev) => {
-      const next = new Set(prev);
-      acknowledged.forEach((id) => next.add(id));
-      return next;
-    });
+    dismissMany(acknowledged);
     toast.success(t('pages.alerts.toast.clearedAcknowledged'));
   };
 
@@ -118,6 +115,8 @@ const AlertsPage = () => {
       />
 
       <div className="p-6 space-y-6">
+        <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
+
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
           <Card className="bg-card border-border">
@@ -227,6 +226,8 @@ const AlertsPage = () => {
             )}
           </CardContent>
         </Card>
+
+        <ScanLogPanel refreshKey={cachedAt} />
       </div>
     </MainLayout>
   );

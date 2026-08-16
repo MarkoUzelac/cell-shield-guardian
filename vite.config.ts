@@ -2,6 +2,7 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react-swc";
 import path from "path";
 import { componentTagger } from "lovable-tagger";
+import { VitePWA } from "vite-plugin-pwa";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
@@ -9,7 +10,59 @@ export default defineConfig(({ mode }) => ({
     host: "::",
     port: 8080,
   },
-  plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
+  plugins: [
+    react(),
+    mode === "development" && componentTagger(),
+    // Offline support. Registration is guarded in
+    // `src/lib/offline/registerServiceWorker.ts` so the worker never runs in
+    // dev or the Lovable preview.
+    VitePWA({
+      registerType: "autoUpdate",
+      injectRegister: null,
+      filename: "sw.js",
+      devOptions: { enabled: false },
+      manifest: false,
+      workbox: {
+        globPatterns: ["**/*.{js,css,html,svg,ico,woff2}"],
+        navigateFallback: "/index.html",
+        navigateFallbackDenylist: [/^\/~oauth/],
+        cleanupOutdatedCaches: true,
+        clientsClaim: true,
+        skipWaiting: true,
+        runtimeCaching: [
+          {
+            // HTML must always try the network first so deploys land instantly.
+            urlPattern: ({ request }: { request: Request }) => request.mode === "navigate",
+            handler: "NetworkFirst",
+            options: {
+              cacheName: "html-navigations",
+              networkTimeoutSeconds: 5,
+              expiration: { maxEntries: 20, maxAgeSeconds: 60 * 60 * 24 },
+            },
+          },
+          {
+            urlPattern: ({ url, request }: { url: URL; request: Request }) =>
+              url.origin === globalThis.location?.origin &&
+              ["script", "style", "font", "image"].includes(request.destination),
+            handler: "CacheFirst",
+            options: {
+              cacheName: "static-assets",
+              expiration: { maxEntries: 120, maxAgeSeconds: 60 * 60 * 24 * 30 },
+            },
+          },
+          {
+            // Map tiles: usable offline for areas already visited.
+            urlPattern: ({ url }: { url: URL }) => /tile\.openstreetmap|basemaps|tiles?\./.test(url.hostname),
+            handler: "StaleWhileRevalidate",
+            options: {
+              cacheName: "map-tiles",
+              expiration: { maxEntries: 400, maxAgeSeconds: 60 * 60 * 24 * 14 },
+            },
+          },
+        ],
+      },
+    }),
+  ].filter(Boolean),
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),

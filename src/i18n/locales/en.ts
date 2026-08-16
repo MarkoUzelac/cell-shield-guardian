@@ -63,6 +63,23 @@ export const en = {
   },
 
 
+  offline: {
+    offlineTitle: 'You are offline.',
+    offlineDescription: 'Showing the last results stored on this device.',
+    cachedTitle: 'Stored results.',
+    cachedAt: 'Last measured {{timestamp}}.',
+    log: {
+      title: 'Scan log',
+      description: 'The last {{count}} scans, stored on this device only.',
+      empty: 'No stored scans yet. Run a check and it will be kept here for offline use.',
+      export: 'Export log',
+      clear: 'Clear stored data',
+      cleared: 'Stored offline data cleared.',
+      entry: '{{count}} checks',
+      storage: '{{used}} of {{quota}} used on this device',
+    },
+  },
+
   header: {
     disclaimer:
       'Browser-observable signals only. Cellular and radio-layer data cannot be read from a web page.',

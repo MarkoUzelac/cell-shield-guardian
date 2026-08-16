@@ -31,6 +31,9 @@ export interface RealTowerResult {
   error: string | null;
 }
 
+import { cachedFetch } from './offline/cachedFetch';
+import { CACHE_KEYS } from './offline/store';
+
 const OVERPASS_ENDPOINT = 'https://overpass-api.de/api/interpreter';
 const TIMEOUT_MS = 20000;
 
@@ -38,6 +41,11 @@ const TIMEOUT_MS = 20000;
 // (e.g. React effects re-running) don't hammer the public Overpass server.
 const cache = new Map<string, { result: RealTowerResult; expiresAt: number }>();
 const CACHE_TTL_MS = 5 * 60 * 1000;
+
+const writeTowerCache = async (key: string, result: RealTowerResult) => {
+  const { writeEntry } = await import('./offline/store');
+  await writeEntry(CACHE_KEYS.towers(key), result, null);
+};
 
 const roundCoord = (n: number) => Math.round(n * 200) / 200; // ~500m grid
 
@@ -103,6 +111,22 @@ export const fetchRealTowers = async (
     return cached.result;
   }
 
+  // Offline / failed request: fall back to the last stored result for this
+  // area rather than showing an empty map.
+  const offlineFallback = async (): Promise<RealTowerResult | null> => {
+    const stored = await cachedFetch<RealTowerResult>(
+      CACHE_KEYS.towers(key),
+      () => Promise.reject(new Error('offline')),
+      CACHE_TTL_MS,
+    ).catch(() => null);
+    return stored ? { ...stored.value, error: 'offline-cache' } : null;
+  };
+
+  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+    const fallback = await offlineFallback();
+    if (fallback) return fallback;
+  }
+
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), TIMEOUT_MS);
   if (signal) {
@@ -135,11 +159,16 @@ export const fetchRealTowers = async (
       error: null,
     };
     cache.set(key, { result, expiresAt: Date.now() + CACHE_TTL_MS });
+    // Mirror into IndexedDB so the area is still viewable after a reload
+    // without a connection.
+    void writeTowerCache(key, result);
     return result;
   } catch (err) {
     const message = err instanceof Error
       ? (err.name === 'AbortError' ? 'timeout' : err.message)
       : 'unknown error';
+    const fallback = await offlineFallback();
+    if (fallback) return fallback;
     return {
       towers: [],
       source: 'overpass',
