@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { Download, Filter, RefreshCw, Search, Trash2 } from 'lucide-react';
 import { useTranslation } from 'react-i18next';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -21,6 +21,8 @@ import { toast } from 'sonner';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { ScanLogPanel } from '@/components/offline/ScanLogPanel';
 import { usePersistentSet } from '@/hooks/usePersistentSet';
+import { LiveStreamControl } from '@/components/live/LiveStreamControl';
+import { useLiveEvent, useLiveStream } from '@/hooks/useLiveStream';
 
 /**
  * Every alert on this page is derived from a real diagnostic measurement
@@ -69,6 +71,30 @@ const AlertsPage = () => {
     [results, acknowledged, dismissed],
   );
 
+  const { publish } = useLiveStream();
+  const knownIds = useRef<Set<string>>(new Set());
+
+  // Live stream: re-measure on tick and announce newly raised alerts.
+  useLiveEvent('tick', () => {
+    if (phase === 'running') return;
+    void scan();
+  });
+
+  useEffect(() => {
+    if (phase !== 'complete') return;
+    const fresh = alerts.filter((a) => !knownIds.current.has(a.id));
+    alerts.forEach((a) => knownIds.current.add(a.id));
+    if (fresh.length > 0 && knownIds.current.size > fresh.length) {
+      toast.warning(t('pages.alerts.toast.newAlerts', { count: fresh.length }));
+    }
+    publish({
+      type: 'alerts',
+      at: Date.now(),
+      total: alerts.length,
+      unacknowledged: alerts.filter((a) => !a.acknowledged).length,
+    });
+  }, [phase, alerts, publish, t]);
+
   const handleAcknowledge = (id: string) => acknowledge(id);
 
   const handleDismiss = (id: string) => dismiss(id);
@@ -116,6 +142,8 @@ const AlertsPage = () => {
 
       <div className="p-6 space-y-6">
         <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
+
+        <LiveStreamControl idPrefix="alerts" />
 
         {/* Stats */}
         <div className="grid grid-cols-2 md:grid-cols-5 gap-4">

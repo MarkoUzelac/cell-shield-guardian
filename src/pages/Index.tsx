@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Info, SlidersHorizontal } from 'lucide-react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -14,6 +14,8 @@ import { useDiagnostics } from '@/hooks/useDiagnostics';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { groupByCategory } from '@/lib/diagnostics/engine';
 import { downloadReport } from '@/lib/diagnostics/report';
+import { LiveStreamControl } from '@/components/live/LiveStreamControl';
+import { useLiveEvent, useLiveStream } from '@/hooks/useLiveStream';
 import { type DiagnosticCategory } from '@/lib/diagnostics/types';
 
 const ORDER: DiagnosticCategory[] = ['security', 'connection', 'network', 'privacy', 'browser'];
@@ -25,6 +27,24 @@ const Index = () => {
     useDiagnostics();
 
   const grouped = useMemo(() => groupByCategory(results), [results]);
+  const { publish } = useLiveStream();
+
+  // Live stream: re-measure on every tick, then report the outcome so other
+  // subscribed views (alerts, map) can react to the same run.
+  useLiveEvent('tick', () => {
+    if (phase === 'running') return;
+    void scan();
+  });
+
+  useEffect(() => {
+    if (phase !== 'complete') return;
+    publish({
+      type: 'diagnostics',
+      at: Date.now(),
+      total: results.length,
+      issues: results.filter((r) => r.status === 'warning' || r.status === 'error').length,
+    });
+  }, [phase, results, publish]);
 
   return (
     <MainLayout>
@@ -35,6 +55,10 @@ const Index = () => {
 
       <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
         <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
+
+        <LiveStreamControl idPrefix="dashboard" />
+
+
 
         <OverallStatusCard
           status={summary.overall}
