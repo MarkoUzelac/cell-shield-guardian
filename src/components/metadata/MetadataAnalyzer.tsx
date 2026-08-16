@@ -1,4 +1,4 @@
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useMemo } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Upload, FileImage, AlertTriangle, MapPin, Trash2, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -8,6 +8,10 @@ import { MetadataResult } from '@/types/signal';
 import { generateMockMetadata } from '@/lib/mockData';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
+import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { useThreatScore } from '@/hooks/useThreatScore';
+import { metadataFactors } from '@/lib/threat/threatScore';
+import { ThreatScoreCard } from '@/components/threat/ThreatScoreCard';
 
 export const MetadataAnalyzer = () => {
   const { t } = useTranslation();
@@ -15,6 +19,29 @@ export const MetadataAnalyzer = () => {
   const [file, setFile] = useState<File | null>(null);
   const [result, setResult] = useState<MetadataResult | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
+
+  // Threat Score context: the last diagnostic run stored on this device plus
+  // the connection transitions observed since the page opened. No new scan is
+  // started here — the analyzer only reads what was already measured.
+  const { results } = useDiagnostics(false);
+
+  /** Metadata fields that can identify a person, a device or a place. */
+  const IDENTIFYING_KEYS = ['serial', 'author', 'owner', 'user', 'device', 'gps', 'software', 'make', 'model'];
+
+  const fileFactors = useMemo(() => {
+    if (!result) return [];
+    const identifying = Object.keys(result.metadata).filter((key) =>
+      IDENTIFYING_KEYS.some((needle) => key.toLowerCase().includes(needle)),
+    ).length;
+    return metadataFactors({
+      privacyRiskCount: result.privacyRisks.length,
+      hasGps: Boolean(result.gpsLocation),
+      identifyingFieldCount: identifying,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [result]);
+
+  const { threat, handovers } = useThreatScore(results, fileFactors);
 
   const handleDragOver = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -178,6 +205,12 @@ export const MetadataAnalyzer = () => {
                 exit={{ opacity: 0 }}
                 className="space-y-6"
               >
+                {/* Threat Score — file exposure blended with session signals */}
+                <div className="space-y-2">
+                  <ThreatScoreCard threat={threat} handovers={handovers} compact />
+                  <p className="text-xs text-muted-foreground">{t('threat.metadataHint')}</p>
+                </div>
+
                 {/* Privacy Risks */}
                 {result.privacyRisks.length > 0 && (
                   <div className="p-4 rounded-lg bg-destructive/10 border border-destructive/30">
