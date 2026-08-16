@@ -27,6 +27,26 @@ const Index = () => {
     useDiagnostics();
 
   const grouped = useMemo(() => groupByCategory(results), [results]);
+  const { publish } = useLiveStream();
+
+  // Live stream: re-measure on every tick, then report the outcome so other
+  // subscribed views (alerts, map) can react to the same run.
+  useLiveEvent('tick', () => {
+    if (phase === 'running') return;
+    void scan();
+  });
+
+  useLiveEvent('tick', () => undefined);
+
+  useEffect(() => {
+    if (phase !== 'complete') return;
+    publish({
+      type: 'diagnostics',
+      at: Date.now(),
+      total: results.length,
+      issues: results.filter((r) => r.status === 'warning' || r.status === 'error').length,
+    });
+  }, [phase, results, publish]);
 
   return (
     <MainLayout>
@@ -37,6 +57,10 @@ const Index = () => {
 
       <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
         <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
+
+        <LiveStreamControl idPrefix="dashboard" />
+
+
 
         <OverallStatusCard
           status={summary.overall}
