@@ -14,6 +14,8 @@ import { useDiagnostics } from '@/hooks/useDiagnostics';
 import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { groupByCategory } from '@/lib/diagnostics/engine';
 import { downloadReport } from '@/lib/diagnostics/report';
+import { LiveStreamControl } from '@/components/live/LiveStreamControl';
+import { useLiveEvent, useLiveStream } from '@/hooks/useLiveStream';
 import { type DiagnosticCategory } from '@/lib/diagnostics/types';
 
 const ORDER: DiagnosticCategory[] = ['security', 'connection', 'network', 'privacy', 'browser'];
