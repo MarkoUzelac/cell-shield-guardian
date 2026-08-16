@@ -130,4 +130,5 @@ export const CACHE_KEYS = {
   alertState: 'alerts:state',
   towers: (key: string) => `towers:${key}`,
   network: 'network:last',
+  handovers: 'threat:handovers',
 } as const;
