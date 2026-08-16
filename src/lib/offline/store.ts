@@ -73,6 +73,19 @@ export const readEntry = async <T>(key: string): Promise<CacheEnvelope<T> | null
   return entry ?? null;
 };
 
+/**
+ * IndexedDB rejects values that structured clone can't handle (DOM objects,
+ * functions, class instances) — diagnostics keep raw API objects around, so
+ * everything is normalised to plain JSON before it is stored.
+ */
+const toStorable = <T>(value: T): T => {
+  try {
+    return JSON.parse(JSON.stringify(value)) as T;
+  } catch {
+    return value;
+  }
+};
+
 /** Writes an entry. `ttlMs` of `null` means "keep until explicitly replaced". */
 export const writeEntry = async <T>(
   key: string,
@@ -80,7 +93,7 @@ export const writeEntry = async <T>(
   ttlMs: number | null = null,
 ): Promise<CacheEnvelope<T>> => {
   const envelope: CacheEnvelope<T> = {
-    value,
+    value: toStorable(value),
     cachedAt: Date.now(),
     expiresAt: ttlMs === null ? null : Date.now() + ttlMs,
   };
