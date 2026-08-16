@@ -11,6 +11,7 @@ import { Switch } from '@/components/ui/switch';
 import { OverallStatusCard } from '@/components/diagnostics/OverallStatusCard';
 import { CategoryCard } from '@/components/diagnostics/CategoryCard';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
+import { OfflineBanner } from '@/components/offline/OfflineBanner';
 import { groupByCategory } from '@/lib/diagnostics/engine';
 import { downloadReport } from '@/lib/diagnostics/report';
 import { type DiagnosticCategory } from '@/lib/diagnostics/types';
@@ -20,7 +21,8 @@ const ORDER: DiagnosticCategory[] = ['security', 'connection', 'network', 'priva
 const Index = () => {
   const { t } = useTranslation();
   const [showTechnical, setShowTechnical] = useState(false);
-  const { results, summary, phase, progress, startedAt, durationMs, scan } = useDiagnostics();
+  const { results, summary, phase, progress, startedAt, durationMs, scan, usingCache, cachedAt } =
+    useDiagnostics();
 
   const grouped = useMemo(() => groupByCategory(results), [results]);
 
@@ -32,6 +34,8 @@ const Index = () => {
       />
 
       <div className="mx-auto w-full max-w-3xl space-y-4 p-3 pb-8 md:p-6">
+        <OfflineBanner usingCache={usingCache} cachedAt={cachedAt} />
+
         <OverallStatusCard
           status={summary.overall}
           phase={phase}
