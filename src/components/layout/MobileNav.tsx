@@ -19,11 +19,23 @@ export const MobileNav = () => {
   const { t } = useTranslation();
   const location = useLocation();
   const [open, setOpen] = useState(false);
+  const [activeGroupId, setActiveGroupId] = useState<string>(NAV_GROUPS[0].id);
 
   // Close the sheet whenever the route changes.
   useEffect(() => {
     setOpen(false);
   }, [location.pathname]);
+
+  // Opening the sheet lands on the section that holds the current route.
+  useEffect(() => {
+    if (!open) return;
+    const owning = NAV_GROUPS.find((group) =>
+      group.items.some((item) => item.to === location.pathname)
+    );
+    if (owning) setActiveGroupId(owning.id);
+  }, [open, location.pathname]);
+
+  const activeGroup = NAV_GROUPS.find((group) => group.id === activeGroupId) ?? NAV_GROUPS[0];
 
   return (
     <nav
@@ -72,7 +84,7 @@ export const MobileNav = () => {
 
             <SheetContent
               side="bottom"
-              className="flex max-h-[85dvh] flex-col rounded-t-2xl border-t border-border bg-background p-0"
+              className="flex max-h-[88dvh] flex-col rounded-t-2xl border-t border-border bg-background p-0"
             >
               <SheetHeader className="shrink-0 border-b border-border p-4 text-left">
                 <div className="flex items-center justify-between gap-3">
@@ -97,48 +109,74 @@ export const MobileNav = () => {
                 </div>
               </SheetHeader>
 
-              <div className="min-h-0 flex-1 overflow-y-auto p-4 pb-safe">
-                {NAV_GROUPS.map((group, groupIndex) => (
-                  <div key={group.id} className={cn(groupIndex > 0 && 'mt-5')}>
-                    <p className="eyebrow pb-2">{t(group.titleKey)}</p>
-                    <ul className="space-y-1">
-                      {group.items.map((item) => {
-                        const isActive = location.pathname === item.to;
-                        return (
-                          <li key={item.to}>
-                            <NavLink
-                              to={item.to}
-                              className={cn(
-                                'flex min-h-[56px] items-center gap-3 rounded-lg border px-3 py-2 transition-colors',
-                                'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
-                                isActive
-                                  ? 'border-primary/40 bg-primary/10 text-primary'
-                                  : 'border-border text-foreground'
-                              )}
-                            >
-                              <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
-                              <span className="min-w-0 flex-1">
-                                <span className="block truncate text-sm font-medium">
-                                  {t(item.labelKey)}
-                                </span>
-                                <span className="block truncate text-xs text-muted-foreground">
-                                  {t(item.descriptionKey)}
-                                </span>
-                              </span>
-                            </NavLink>
-                          </li>
-                        );
-                      })}
-                    </ul>
-                  </div>
-                ))}
+              {/* Items first (upper area), destinations reachable by thumb at
+                  the bottom via the section switcher below. */}
+              <div className="min-h-0 flex-1 overflow-y-auto px-4 py-3">
+                <p className="eyebrow pb-2">{t(activeGroup.titleKey)}</p>
+                <ul className="grid grid-cols-2 gap-2">
+                  {activeGroup.items.map((item) => {
+                    const isActive = location.pathname === item.to;
+                    return (
+                      <li key={item.to}>
+                        <NavLink
+                          to={item.to}
+                          className={cn(
+                            'flex h-full min-h-[88px] flex-col justify-between rounded-xl border p-3 transition-colors active:scale-[0.98]',
+                            'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                            isActive
+                              ? 'border-primary/40 bg-primary/10 text-primary'
+                              : 'border-border text-foreground'
+                          )}
+                        >
+                          <item.icon className="h-5 w-5 shrink-0" aria-hidden="true" />
+                          <span className="mt-2 min-w-0">
+                            <span className="block truncate text-sm font-medium">
+                              {t(item.labelKey)}
+                            </span>
+                            <span className="line-clamp-2 text-xs text-muted-foreground">
+                              {t(item.descriptionKey)}
+                            </span>
+                          </span>
+                        </NavLink>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
 
-                <div className="mt-6 border-t border-border pt-4">
-                  <p className="eyebrow pb-2">{t('common.language.label')}</p>
+              {/* Thumb zone: section switcher + language, pinned to the bottom. */}
+              <div className="shrink-0 border-t border-border bg-background p-3 pb-safe">
+                <div
+                  role="tablist"
+                  aria-label={t('common.jumpToSection')}
+                  className="grid grid-cols-3 gap-1 rounded-xl border border-border bg-secondary/40 p-1"
+                >
+                  {NAV_GROUPS.map((group) => {
+                    const isSelected = group.id === activeGroup.id;
+                    return (
+                      <button
+                        key={group.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={isSelected}
+                        onClick={() => setActiveGroupId(group.id)}
+                        className={cn(
+                          'min-h-11 rounded-lg px-2 text-xs font-medium uppercase tracking-wide transition-colors active:scale-95',
+                          'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring',
+                          isSelected
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground'
+                        )}
+                      >
+                        {t(group.titleKey)}
+                      </button>
+                    );
+                  })}
+                </div>
+
+                <div className="mt-3 flex items-center justify-between gap-3">
+                  <span className="eyebrow">{t('common.language.label')}</span>
                   <LanguageSwitcher variant="compact" />
-                  <p className="mt-3 text-xs text-muted-foreground">
-                    {t('common.language.autoDetected')}
-                  </p>
                 </div>
               </div>
             </SheetContent>
