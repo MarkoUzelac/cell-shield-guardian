@@ -226,6 +226,8 @@ const AlertsPage = () => {
             )}
           </CardContent>
         </Card>
+
+        <ScanLogPanel refreshKey={cachedAt} />
       </div>
     </MainLayout>
   );
