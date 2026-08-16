@@ -218,7 +218,7 @@ const AlertsPage = () => {
                 </Select>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2 w-full md:w-auto">
                 <Button variant="outline" size="sm" onClick={() => void scan()} disabled={phase === 'running'}>
                   <RefreshCw className={`w-4 h-4 mr-2 ${phase === 'running' ? 'animate-spin' : ''}`} />
                   {t('pages.alerts.actions.rescan')}
