@@ -54,14 +54,20 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
           {!isMobile && (
             <div className="flex items-center gap-2 rounded-lg bg-muted/50 px-3 py-1.5">
               <Clock className="h-4 w-4 text-muted-foreground" aria-hidden />
-              <span className="font-mono text-sm text-foreground">
+              <time
+                dateTime={currentTime.toISOString()}
+                aria-label={t('a11y.currentTime', { time: currentTime.toLocaleTimeString() })}
+                className="font-mono text-sm text-foreground"
+              >
                 {currentTime.toLocaleTimeString()}
-              </span>
+              </time>
             </div>
           )}
 
 
           <div
+            role="status"
+            aria-live="polite"
             className={cn(
               'flex items-center gap-1.5 rounded-lg border px-2 py-1.5 sm:px-3',
               online
@@ -82,7 +88,7 @@ export const Header = ({ title, subtitle }: HeaderProps) => {
       </div>
 
       <div className="border-t border-warning/30 bg-warning/10 px-3 py-1.5 sm:px-6 sm:py-2">
-        <p className="flex items-center gap-1.5 text-[10px] text-warning sm:gap-2 sm:text-xs">
+        <p role="note" className="flex items-center gap-1.5 text-[10px] text-warning sm:gap-2 sm:text-xs">
           <AlertTriangle className="h-3 w-3 shrink-0 sm:h-3.5 sm:w-3.5" aria-hidden />
           <span>{t('header.disclaimer')}</span>
         </p>
