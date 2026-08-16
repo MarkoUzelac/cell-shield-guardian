@@ -13,6 +13,8 @@ export const alerts = {
   toast: {
     exportSuccess: 'Alerts exported successfully',
     clearedAcknowledged: 'Cleared acknowledged alerts',
+    newAlerts_one: '{{count}} new alert from the latest measurement',
+    newAlerts_other: '{{count}} new alerts from the latest measurement',
   },
   stats: {
     total: 'Total',
