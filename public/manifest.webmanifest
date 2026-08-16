@@ -1,6 +1,6 @@
 {
-  "name": "Cell Shield Guardian — Browser Privacy & Connection Check",
-  "short_name": "Cell Shield",
+  "name": "cellguardian — Browser Privacy & Connection Check",
+  "short_name": "cellguardian",
   "description": "Check what your browser reveals about your privacy, connection and security. Every check runs locally on your device.",
   "start_url": "/",
   "scope": "/",
