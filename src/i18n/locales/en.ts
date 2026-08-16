@@ -33,6 +33,7 @@ export const en = {
     expandSidebar: 'Expand sidebar',
     collapseSidebar: 'Collapse sidebar',
     moreNavigation: 'More navigation options',
+    jumpToSection: 'Jump to section',
     loading: 'Loading…',
     educationalUseOnly: 'Educational Use Only',
     proUpsell: {
