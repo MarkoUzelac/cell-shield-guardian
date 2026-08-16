@@ -97,8 +97,7 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
 
     if (speeds.length === 0) {
       // Fallback: use Network Information API
-      const conn = (navigator as any).connection;
-      return conn?.downlink || 0;
+      return getConnection()?.downlink ?? 0;
     }
 
     // Return the average of successful tests
@@ -120,8 +119,7 @@ export const SpeedTestPanel = ({ hasConsent }: { hasConsent: boolean }) => {
       const elapsed = (performance.now() - start) / 1000;
       return (data.length * 8) / (elapsed * 1000000);
     } catch {
-      const conn = (navigator as any).connection;
-      return (conn?.downlink || 0) * 0.3;
+      return (getConnection()?.downlink ?? 0) * 0.3;
     }
   }, []);
 

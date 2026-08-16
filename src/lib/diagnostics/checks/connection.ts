@@ -1,21 +1,12 @@
 import type { DiagnosticDefinition } from '../types';
 import { make, unavailable } from '../shared';
 
-interface NavigatorConnection {
-  effectiveType?: string;
-  type?: string;
-  downlink?: number;
-  rtt?: number;
-  saveData?: boolean;
-}
+export type NavigatorConnection = NetworkInformation;
 
+/** Single typed accessor for the Network Information API across prefixes. */
 export function getConnection(): NavigatorConnection | undefined {
-  const nav = navigator as Navigator & {
-    connection?: NavigatorConnection;
-    mozConnection?: NavigatorConnection;
-    webkitConnection?: NavigatorConnection;
-  };
-  return nav.connection ?? nav.mozConnection ?? nav.webkitConnection;
+  if (typeof navigator === 'undefined') return undefined;
+  return navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
 }
 
 const EFFECTIVE_TYPE_LABEL: Record<string, string> = {
@@ -67,7 +58,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
       const effectiveType = c.effectiveType;
       const label = effectiveType
         ? EFFECTIVE_TYPE_LABEL[effectiveType] ?? effectiveType
-        : (c.type as string);
+        : (c.type!);
       return make({
         id: 'connection.type',
         label: 'Connection type',
@@ -77,7 +68,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
         source: 'browser-api',
         confidence: 'estimated',
         variant: effectiveType && EFFECTIVE_TYPE_LABEL[effectiveType] ? effectiveType : 'raw',
-        params: { type: effectiveType ?? (c.type as string) },
+        params: { type: effectiveType ?? (c.type!) },
         explanation:
           'Your browser groups your connection into a broad speed class based on recent traffic. It is an estimate, not a measurement, and it does not reveal your carrier or network operator.',
         raw: { ...c },

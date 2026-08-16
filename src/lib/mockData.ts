@@ -18,7 +18,7 @@ const generateRandomCellId = () => {
 export const generateCellTowersAroundLocation = (
   baseLat: number,
   baseLng: number,
-  count: number = 10,
+  count = 10,
   country: CountryOperators = DEFAULT_COUNTRY
 ): CellTower[] => {
   return Array.from({ length: count }, (_, i) => {
@@ -49,13 +49,13 @@ export const generateCellTowersAroundLocation = (
 };
 
 // Legacy function - now uses Zagreb as default
-export const generateMockCellTowers = (count: number = 10): CellTower[] => {
+export const generateMockCellTowers = (count = 10): CellTower[] => {
   // Default to Zagreb, Croatia
   return generateCellTowersAroundLocation(45.8150, 15.9819, count);
 };
 
 export const generateMockIMSIRecords = (
-  count: number = 20,
+  count = 20,
   country: CountryOperators = DEFAULT_COUNTRY
 ): IMSIRecord[] => {
   return Array.from({ length: count }, (_, i) => {

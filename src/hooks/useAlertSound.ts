@@ -8,7 +8,7 @@ const createOscillatorSound = (
   frequency: number,
   duration: number,
   type: OscillatorType = 'sine',
-  volume: number = 0.3
+  volume = 0.3
 ) => {
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
@@ -31,7 +31,7 @@ const createOscillatorSound = (
 const playSoundPattern = (
   audioContext: AudioContext,
   pattern: { freq: number; duration: number; delay: number; type?: OscillatorType }[],
-  volume: number = 0.3
+  volume = 0.3
 ) => {
   pattern.forEach(({ freq, duration, delay, type }) => {
     setTimeout(() => {
@@ -47,7 +47,7 @@ export const useAlertSound = () => {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = new (window.AudioContext ?? window.webkitAudioContext!)();
     }
     return audioContextRef.current;
   }, []);
@@ -59,7 +59,7 @@ export const useAlertSound = () => {
     
     // Resume audio context if suspended (browser autoplay policy)
     if (audioContext.state === 'suspended') {
-      audioContext.resume();
+      void audioContext.resume();
     }
 
     switch (type) {

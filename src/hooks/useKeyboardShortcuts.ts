@@ -16,7 +16,7 @@ const isEditable = (target: EventTarget | null) => {
     tag === 'INPUT' ||
     tag === 'TEXTAREA' ||
     tag === 'SELECT' ||
-    el.isContentEditable === true
+    el.isContentEditable
   );
 };
 
