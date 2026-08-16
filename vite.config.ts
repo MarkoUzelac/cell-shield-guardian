@@ -32,7 +32,7 @@ export default defineConfig(({ mode }) => ({
         runtimeCaching: [
           {
             // HTML must always try the network first so deploys land instantly.
-            urlPattern: ({ request }) => request.mode === "navigate",
+            urlPattern: ({ request }: { request: Request }) => request.mode === "navigate",
             handler: "NetworkFirst",
             options: {
               cacheName: "html-navigations",
@@ -41,8 +41,8 @@ export default defineConfig(({ mode }) => ({
             },
           },
           {
-            urlPattern: ({ url, request }) =>
-              url.origin === self.location.origin &&
+            urlPattern: ({ url, request }: { url: URL; request: Request }) =>
+              url.origin === globalThis.location?.origin &&
               ["script", "style", "font", "image"].includes(request.destination),
             handler: "CacheFirst",
             options: {
@@ -52,7 +52,7 @@ export default defineConfig(({ mode }) => ({
           },
           {
             // Map tiles: usable offline for areas already visited.
-            urlPattern: ({ url }) => /tile\.openstreetmap|basemaps|tiles?\./.test(url.hostname),
+            urlPattern: ({ url }: { url: URL }) => /tile\.openstreetmap|basemaps|tiles?\./.test(url.hostname),
             handler: "StaleWhileRevalidate",
             options: {
               cacheName: "map-tiles",
