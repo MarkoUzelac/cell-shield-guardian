@@ -77,6 +77,69 @@ export const en = {
     note: 'Live updates re-take the same in-browser measurements on a timer. There is no server feed, and cellular identity such as IMSI or cell ID cannot be read from a web page.',
   },
 
+  threat: {
+    title: 'Threat Score',
+    levels: {
+      low: 'Low exposure',
+      moderate: 'Moderate exposure',
+      elevated: 'Elevated exposure',
+      high: 'High exposure',
+    },
+    levelHint: {
+      low: 'Nothing unusual in the measurements or in how your connection behaved.',
+      moderate: 'A few findings or connection changes worth a look, but no strong pattern.',
+      elevated: 'Several findings combine with an unstable connection pattern. Review the contributors below.',
+      high: 'Multiple serious findings and frequent connection changes. Review the contributors and the alerts list.',
+    },
+    contributors: 'What raised the score',
+    noContributors: 'Nothing raised the score in this session.',
+    handovers: {
+      transitions: 'Connection transitions',
+      downgrades: 'Downgrades',
+      flaps: 'Online/offline flaps',
+      rate: 'Per minute',
+    },
+    factors: {
+      criticalFindings_one: '{{count}} diagnostic raised a warning or error',
+      criticalFindings_other: '{{count}} diagnostics raised a warning or error',
+      attentionFindings_one: '{{count}} diagnostic needs attention',
+      attentionFindings_other: '{{count}} diagnostics need attention',
+      insecureTransport_one: '{{count}} security finding about how this page is delivered',
+      insecureTransport_other: '{{count}} security findings about how this page is delivered',
+      handoverRate: '{{rate}} connection transitions per minute',
+      downgrades_one: '{{count}} downgrade to a slower connection class',
+      downgrades_other: '{{count}} downgrades to a slower connection class',
+      connectionFlaps_one: '{{count}} online/offline transition',
+      connectionFlaps_other: '{{count}} online/offline transitions',
+      unavailableVisibility: '{{count}} of {{total}} checks cannot be performed in this browser',
+      fileGps: 'The file carries GPS coordinates',
+      filePrivacyRisks_one: '{{count}} privacy risk found in the file',
+      filePrivacyRisks_other: '{{count}} privacy risks found in the file',
+      fileIdentifiers_one: '{{count}} identifying metadata field in the file',
+      fileIdentifiers_other: '{{count}} identifying metadata fields in the file',
+    },
+    method:
+      'Scored from diagnostics measured in this browser and from connection transitions observed over the last {{minutes}} minutes. A web page cannot see cellular handovers, cell identity or IMSI, so those are never part of this score.',
+    log: {
+      title: 'Observed connection transitions',
+      empty: 'No connection transitions observed yet in this session.',
+      reset: 'Clear transition log',
+      kinds: {
+        downgrade: 'Downgrade',
+        upgrade: 'Upgrade',
+        'type-change': 'Type change',
+        'quality-shift': 'Quality shift',
+        offline: 'Went offline',
+        online: 'Came back online',
+      },
+    },
+    metadataTitle: 'File + session Threat Score',
+    metadataHint:
+      'Combines the exposure found in this file with the diagnostics and connection behaviour measured on this device.',
+  },
+
+
+
 
   offline: {
     offlineTitle: 'You are offline.',
