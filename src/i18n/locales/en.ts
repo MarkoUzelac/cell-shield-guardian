@@ -62,6 +62,21 @@ export const en = {
     },
   },
 
+  live: {
+    title: 'Live updates',
+    intervalLabel: 'Refresh interval',
+    interval_one: 'Every {{count}} second',
+    interval_other: 'Every {{count}} seconds',
+    refreshNow: 'Refresh now',
+    streaming: 'Streaming — waiting for the first update.',
+    lastUpdate_one: 'Updated {{count}} second ago.',
+    lastUpdate_other: 'Updated {{count}} seconds ago.',
+    pausedHidden: 'Paused while this tab is in the background. It resumes when you return.',
+    offDescription: 'Off. Measurements only run when you press a refresh button.',
+    badge: 'Live',
+    note: 'Live updates re-take the same in-browser measurements on a timer. There is no server feed, and cellular identity such as IMSI or cell ID cannot be read from a web page.',
+  },
+
 
   offline: {
     offlineTitle: 'You are offline.',
