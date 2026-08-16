@@ -12,19 +12,19 @@ type State = {
 };
 
 export class ErrorBoundary extends React.Component<Props, State> {
-  state: State = { hasError: false };
+  override state: State = { hasError: false };
 
   static getDerivedStateFromError(error: unknown): State {
     return { hasError: true, error };
   }
 
-  componentDidCatch(error: unknown) {
+  override componentDidCatch(error: unknown) {
     // Technical detail stays in the console; users never see a stack trace.
     // eslint-disable-next-line no-console
     console.error("ErrorBoundary caught:", error);
   }
 
-  render() {
+  override render() {
     if (this.state.hasError) {
       const fallback = this.props.fallback?.(this.state.error);
       if (fallback) return fallback;
