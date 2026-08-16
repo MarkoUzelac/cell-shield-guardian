@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { MetadataResult } from '@/types/signal';
-import { generateMockMetadata } from '@/lib/mockData';
+import { analyzeFile } from '@/lib/metadata/exif';
 import { cn } from '@/lib/utils';
 import { useTranslation } from 'react-i18next';
 import { useDiagnostics } from '@/hooks/useDiagnostics';
@@ -74,16 +74,18 @@ export const MetadataAnalyzer = () => {
     setIsAnalyzing(true);
     setResult(null);
 
-    // Simulate analysis delay
-    await new Promise(resolve => setTimeout(resolve, 2000));
+    // Parsed on this device with FileReader — the file is never uploaded, and
+    // only fields actually present in it are reported.
+    const analysis = await analyzeFile(selectedFile, {
+      gps: t('components.metadata.risks.gps'),
+      serial: t('components.metadata.risks.serial'),
+      author: t('components.metadata.risks.author'),
+      device: t('components.metadata.risks.device'),
+      software: t('components.metadata.risks.software'),
+      timestamp: t('components.metadata.risks.timestamp'),
+    });
 
-    // Generate mock result (in real app, would call backend API with ExifTool)
-    const mockResult = generateMockMetadata();
-    mockResult.filename = selectedFile.name;
-    mockResult.fileSize = selectedFile.size;
-    mockResult.fileType = selectedFile.type;
-
-    setResult(mockResult);
+    setResult(analysis);
     setIsAnalyzing(false);
   };
 
