@@ -45,9 +45,9 @@ export const fetchRealNetworkInfo = async (
   try {
     const response = await fetch(ENDPOINT, { signal: controller.signal });
     if (!response.ok) throw new Error(`ipwho.is returned ${response.status}`);
-    const json = await response.json();
-    if (json?.success === false) {
-      throw new Error(json?.message ?? 'ipwho.is lookup failed');
+    const json = (await response.json()) as IpWhoIsResponse;
+    if (json.success === false) {
+      throw new Error(json.message ?? 'ipwho.is lookup failed');
     }
 
     const data: RealNetworkInfo = {

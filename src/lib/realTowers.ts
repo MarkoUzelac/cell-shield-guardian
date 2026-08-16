@@ -75,8 +75,21 @@ const parseTechnology = (tags: Record<string, string>): string[] | null => {
   return found.length > 0 ? found : null;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-const toRealTower = (el: any): RealTower | null => {
+/** Shape of a single element returned by the Overpass API. */
+interface OverpassElement {
+  type?: string;
+  id?: number | string;
+  lat?: number;
+  lon?: number;
+  center?: { lat?: number; lon?: number };
+  tags?: Record<string, string>;
+}
+
+interface OverpassResponse {
+  elements?: OverpassElement[];
+}
+
+const toRealTower = (el: OverpassElement): RealTower | null => {
   const lat = el.lat ?? el.center?.lat;
   const lng = el.lon ?? el.center?.lon;
   if (typeof lat !== 'number' || typeof lng !== 'number') return null;
@@ -146,11 +159,11 @@ export const fetchRealTowers = async (
       throw new Error(`Overpass API returned ${response.status}`);
     }
 
-    const data = await response.json();
-    const elements = Array.isArray(data?.elements) ? data.elements : [];
+    const data = (await response.json()) as OverpassResponse;
+    const elements: OverpassElement[] = Array.isArray(data.elements) ? data.elements : [];
     const towers = elements
       .map(toRealTower)
-      .filter((t: RealTower | null): t is RealTower => t !== null);
+      .filter((t): t is RealTower => t !== null);
 
     const result: RealTowerResult = {
       towers,

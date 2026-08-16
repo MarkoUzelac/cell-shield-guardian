@@ -1,21 +1,12 @@
 import type { DiagnosticDefinition } from '../types';
 import { make, unavailable } from '../shared';
 
-interface NavigatorConnection {
-  effectiveType?: string;
-  type?: string;
-  downlink?: number;
-  rtt?: number;
-  saveData?: boolean;
-}
+export type NavigatorConnection = NetworkInformation;
 
+/** Single typed accessor for the Network Information API across prefixes. */
 export function getConnection(): NavigatorConnection | undefined {
-  const nav = navigator as Navigator & {
-    connection?: NavigatorConnection;
-    mozConnection?: NavigatorConnection;
-    webkitConnection?: NavigatorConnection;
-  };
-  return nav.connection ?? nav.mozConnection ?? nav.webkitConnection;
+  if (typeof navigator === 'undefined') return undefined;
+  return navigator.connection ?? navigator.mozConnection ?? navigator.webkitConnection;
 }
 
 const EFFECTIVE_TYPE_LABEL: Record<string, string> = {

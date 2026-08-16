@@ -47,7 +47,7 @@ export const useAlertSound = () => {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      audioContextRef.current = new (window.AudioContext ?? window.webkitAudioContext!)();
     }
     return audioContextRef.current;
   }, []);
@@ -59,7 +59,7 @@ export const useAlertSound = () => {
     
     // Resume audio context if suspended (browser autoplay policy)
     if (audioContext.state === 'suspended') {
-      audioContext.resume();
+      void audioContext.resume();
     }
 
     switch (type) {

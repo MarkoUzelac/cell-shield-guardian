@@ -53,9 +53,9 @@ export const useCountry = (latitude: number | null, longitude: number | null) =>
           { signal: controller.signal }
         );
         if (!res.ok) throw new Error('reverse geocode failed');
-        const data = await res.json();
-        const iso: string | undefined = data?.countryCode;
-        const name: string | undefined = data?.countryName;
+        const data = (await res.json()) as { countryCode?: string; countryName?: string };
+        const iso = data.countryCode;
+        const name = data.countryName;
         if (cancelled) return;
 
         if (iso) {
@@ -77,7 +77,7 @@ export const useCountry = (latitude: number | null, longitude: number | null) =>
       }
     };
 
-    resolve();
+    void resolve();
 
     return () => {
       cancelled = true;
