@@ -1,4 +1,4 @@
-# App SignalMap™
+# Cell Shield Guardian
 
 Cell Shield Guardian is a privacy-focused web application for defensive privacy awareness, browser diagnostics, connection checks, and research-oriented analysis.
 
@@ -15,7 +15,7 @@ Cell Shield Guardian is a privacy-focused web application for defensive privacy 
 
 **Lovable app:** https://cell-shield-guardian.lovable.app
 
-**GitHub:** https://github.com/MarkoUzelac/cell-shield-guardian/tree/SignalMap/App
+**GitHub:** https://github.com/MarkoUzelac/cell-shield-guardian/tree/cellguardian
 
 ## Metadata and SEO
 
@@ -32,10 +32,11 @@ Prefer working locally? You need Node.js and npm.
 ```sh
 git clone https://github.com/MarkoUzelac/cell-shield-guardian.git
 cd cell-shield-guardian
+git checkout cellguardian
 npm install
 npm run dev
 ```
 
-The source of truth for the current application is the `SignalMap/App` branch.
+The current application source is maintained on the `cellguardian` branch.
 
-This project is built with [Lovable](https://lovable.dev). Changes made through Lovable are synchronized to this repository.
+This project is built with Lovable. Changes made through Lovable are synchronized to this repository.
