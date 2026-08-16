@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 import { MainLayout } from '@/components/layout/MainLayout';
@@ -11,6 +11,9 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { fetchRealTowers, type RealTower } from '@/lib/realTowers';
 import { useGeolocation } from '@/hooks/useGeolocation';
 import { useCountry } from '@/hooks/useCountry';
+import { LiveStreamControl } from '@/components/live/LiveStreamControl';
+import { useLiveEvent } from '@/hooks/useLiveStream';
+import { liveStream } from '@/lib/live/liveBus';
 import { cn } from '@/lib/utils';
 import { MapPin, Navigation, RefreshCw, Loader2, ChevronDown, Target, Radio } from 'lucide-react';
 
@@ -33,14 +36,32 @@ const MapPage = () => {
   // User location for marker
   const userLocation = latitude && longitude ? { lat: latitude, lng: longitude } : null;
 
+  const loadingRef = useRef(false);
+
   const loadTowers = useCallback(async (lat: number, lng: number) => {
+    if (loadingRef.current) return;
+    loadingRef.current = true;
     setIsLoadingTowers(true);
     setLoadError(null);
     const result = await fetchRealTowers(lat, lng, 3000);
     setTowers(result.towers);
     setLoadError(result.error);
     setIsLoadingTowers(false);
+    loadingRef.current = false;
+    // Announce the refresh on the live stream so other views stay in sync.
+    liveStream.publish({
+      type: 'towers',
+      at: Date.now(),
+      count: result.towers.length,
+      cached: result.error !== null && result.towers.length > 0,
+    });
   }, []);
+
+  // Live stream: refresh map data on every tick, using the newest position.
+  useLiveEvent('tick', () => {
+    if (latitude === null || longitude === null) return;
+    void loadTowers(latitude, longitude);
+  });
 
   // Load real towers from OpenStreetMap around the user's location
   useEffect(() => {
@@ -67,6 +88,8 @@ const MapPage = () => {
       />
 
       <div className="p-3 md:p-6 space-y-4">
+        <LiveStreamControl idPrefix="map" />
+
         {/* Location Status Bar - Compact on mobile */}
         <Card className="bg-card/50 border-border">
           <CardContent className="p-3">
