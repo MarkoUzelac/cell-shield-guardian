@@ -67,7 +67,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
       const effectiveType = c.effectiveType;
       const label = effectiveType
         ? EFFECTIVE_TYPE_LABEL[effectiveType] ?? effectiveType
-        : (c.type as string);
+        : (c.type!);
       return make({
         id: 'connection.type',
         label: 'Connection type',
@@ -77,7 +77,7 @@ export const connectionChecks: DiagnosticDefinition[] = [
         source: 'browser-api',
         confidence: 'estimated',
         variant: effectiveType && EFFECTIVE_TYPE_LABEL[effectiveType] ? effectiveType : 'raw',
-        params: { type: effectiveType ?? (c.type as string) },
+        params: { type: effectiveType ?? (c.type!) },
         explanation:
           'Your browser groups your connection into a broad speed class based on recent traffic. It is an estimate, not a measurement, and it does not reveal your carrier or network operator.',
         raw: { ...c },

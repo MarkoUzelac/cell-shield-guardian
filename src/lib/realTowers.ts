@@ -122,7 +122,7 @@ export const fetchRealTowers = async (
     return stored ? { ...stored.value, error: 'offline-cache' } : null;
   };
 
-  if (typeof navigator !== 'undefined' && navigator.onLine === false) {
+  if (typeof navigator !== 'undefined' && !navigator.onLine) {
     const fallback = await offlineFallback();
     if (fallback) return fallback;
   }

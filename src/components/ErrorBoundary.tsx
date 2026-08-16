@@ -20,7 +20,7 @@ export class ErrorBoundary extends React.Component<Props, State> {
 
   override componentDidCatch(error: unknown) {
     // Technical detail stays in the console; users never see a stack trace.
-    // eslint-disable-next-line no-console
+     
     console.error("ErrorBoundary caught:", error);
   }
 

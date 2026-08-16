@@ -8,7 +8,7 @@ const createOscillatorSound = (
   frequency: number,
   duration: number,
   type: OscillatorType = 'sine',
-  volume: number = 0.3
+  volume = 0.3
 ) => {
   const oscillator = audioContext.createOscillator();
   const gainNode = audioContext.createGain();
@@ -31,7 +31,7 @@ const createOscillatorSound = (
 const playSoundPattern = (
   audioContext: AudioContext,
   pattern: { freq: number; duration: number; delay: number; type?: OscillatorType }[],
-  volume: number = 0.3
+  volume = 0.3
 ) => {
   pattern.forEach(({ freq, duration, delay, type }) => {
     setTimeout(() => {

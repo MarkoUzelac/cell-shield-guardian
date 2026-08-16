@@ -71,7 +71,7 @@ export const ThreatScoreCard = ({
 
         <Progress value={threat.score} aria-label={t('threat.title')} />
 
-        {compact === false && (
+        {!compact && (
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
             {[
               { key: 'transitions', value: handovers.total },

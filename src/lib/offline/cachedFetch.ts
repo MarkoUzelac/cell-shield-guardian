@@ -11,7 +11,7 @@ export interface CachedResult<T> {
   error: string | null;
 }
 
-const isOffline = () => typeof navigator !== 'undefined' && navigator.onLine === false;
+const isOffline = () => typeof navigator !== 'undefined' && !navigator.onLine;
 
 /**
  * Stale-while-offline wrapper: returns fresh cache when it is still valid,
@@ -23,7 +23,7 @@ export const cachedFetch = async <T>(
   fetcher: () => Promise<T>,
   ttlMs: number,
 ): Promise<CachedResult<T>> => {
-  const entry = (await readEntry<T>(key)) as CacheEnvelope<T> | null;
+  const entry = (await readEntry<T>(key));
 
   if (entry && !isExpired(entry)) {
     return { value: entry.value, origin: 'cache', cachedAt: entry.cachedAt, stale: false, error: null };

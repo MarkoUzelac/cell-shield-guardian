@@ -41,7 +41,7 @@ export function usePermissionProbes({ onChange }: UsePermissionProbesOptions = {
 
   useEffect(() => {
     let cancelled = false;
-    const cleanups: Array<() => void> = [];
+    const cleanups: (() => void)[] = [];
 
     void Promise.all(
       PERMISSION_PROBES.map(async (probe) => {
