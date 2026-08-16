@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Download, Info, SlidersHorizontal } from 'lucide-react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -35,8 +35,6 @@ const Index = () => {
     if (phase === 'running') return;
     void scan();
   });
-
-  useLiveEvent('tick', () => undefined);
 
   useEffect(() => {
     if (phase !== 'complete') return;
